@@ -8,19 +8,19 @@ description: "Migrate a user's OpenClaw customization footprint into Hermes Agen
 
 # Openclaw Migration
 
-Migrate a user's OpenClaw customization footprint into Hermes Agent. Imports Hermes-compatible memories, SOUL.md, command allowlists, user skills, and selected workspace assets from ~/.openclaw, then reports exactly what could not be migrated and why.
+Migrate a user's OpenClaw customization footprint into Hermes Agent. Imports Hermes-compatible memories, SOUL.md, command allowlists, user skills, and selected workspace assets from ~/.dxrk, then reports exactly what could not be migrated and why.
 
 ## Skill metadata
 
 | | |
 |---|---|
-| Source | Optional — install with `hermes skills install official/migration/openclaw-migration` |
-| Path | `optional-skills/migration/openclaw-migration` |
+| Source | Optional — install with `dxrk skills install official/migration/dxrk-migration` |
+| Path | `optional-skills/migration/dxrk-migration` |
 | Version | `1.0.0` |
 | Author | Hermes Agent (Nous Research) |
 | License | MIT |
 | Tags | `Migration`, `OpenClaw`, `Hermes`, `Memory`, `Persona`, `Import` |
-| Related skills | [`hermes-agent`](/docs/user-guide/skills/bundled/autonomous-ai-agents/autonomous-ai-agents-hermes-agent) |
+| Related skills | [`dxrk-agent`](/docs/user-guide/skills/bundled/autonomous-ai-agents/autonomous-ai-agents-dxrk-agent) |
 
 ## Reference: full SKILL.md
 
@@ -37,28 +37,28 @@ Use this skill when a user wants to move their OpenClaw setup into Hermes Agent 
 For a quick, non-interactive migration, use the built-in CLI command:
 
 ```bash
-hermes claw migrate              # Full interactive migration
-hermes claw migrate --dry-run    # Preview what would be migrated
-hermes claw migrate --preset user-data   # Migrate without secrets
-hermes claw migrate --overwrite  # Overwrite existing conflicts
-hermes claw migrate --source /custom/path/.openclaw  # Custom source
+dxrk claw migrate              # Full interactive migration
+dxrk claw migrate --dry-run    # Preview what would be migrated
+dxrk claw migrate --preset user-data   # Migrate without secrets
+dxrk claw migrate --overwrite  # Overwrite existing conflicts
+dxrk claw migrate --source /custom/path/.dxrk  # Custom source
 ```
 
 The CLI command runs the same migration script described below. Use this skill (via the agent) when you want an interactive, guided migration with dry-run previews and per-item conflict resolution.
 
-**First-time setup:** The `hermes setup` wizard automatically detects `~/.openclaw` and offers migration before configuration begins.
+**First-time setup:** The `dxrk setup` wizard automatically detects `~/.dxrk` and offers migration before configuration begins.
 
 ## What this skill does
 
-It uses `scripts/openclaw_to_hermes.py` to:
+It uses `scripts/dxrk_to_dxrk.py` to:
 
 - import `SOUL.md` into the Hermes home directory as `SOUL.md`
 - transform OpenClaw `MEMORY.md` and `USER.md` into Hermes memory entries
 - merge OpenClaw command approval patterns into Hermes `command_allowlist`
 - migrate Hermes-compatible messaging settings such as `TELEGRAM_ALLOWED_USERS` and `MESSAGING_CWD`
-- copy OpenClaw skills into `~/.hermes/skills/openclaw-imports/`
+- copy OpenClaw skills into `~/.dxrk/skills/dxrk-imports/`
 - optionally copy the OpenClaw workspace instructions file into a chosen Hermes workspace
-- mirror compatible workspace assets such as `workspace/tts/` into `~/.hermes/tts/`
+- mirror compatible workspace assets such as `workspace/tts/` into `~/.dxrk/tts/`
 - archive non-secret docs that do not have a direct Hermes destination
 - produce a structured report listing migrated items, conflicts, skipped items, and reasons
 
@@ -66,17 +66,17 @@ It uses `scripts/openclaw_to_hermes.py` to:
 
 The helper script lives in this skill directory at:
 
-- `scripts/openclaw_to_hermes.py`
+- `scripts/dxrk_to_dxrk.py`
 
 When this skill is installed from the Skills Hub, the normal location is:
 
-- `~/.hermes/skills/migration/openclaw-migration/scripts/openclaw_to_hermes.py`
+- `~/.dxrk/skills/migration/dxrk-migration/scripts/dxrk_to_dxrk.py`
 
-Do not guess a shorter path like `~/.hermes/skills/openclaw-migration/...`.
+Do not guess a shorter path like `~/.dxrk/skills/dxrk-migration/...`.
 
 Before running the helper:
 
-1. Prefer the installed path under `~/.hermes/skills/migration/openclaw-migration/`.
+1. Prefer the installed path under `~/.dxrk/skills/migration/dxrk-migration/`.
 2. If that path fails, inspect the installed skill directory and resolve the script relative to the installed `SKILL.md`.
 3. Only use `find` as a fallback if the installed location is missing or the skill was moved manually.
 4. When calling the terminal tool, do not pass `workdir: "~"`. Use an absolute directory such as the user's home directory, or omit `workdir` entirely.
@@ -246,37 +246,37 @@ The helper script still supports category-level `--include` / `--exclude`, but t
 Dry run with full discovery:
 
 ```bash
-python3 ~/.hermes/skills/migration/openclaw-migration/scripts/openclaw_to_hermes.py
+python3 ~/.dxrk/skills/migration/dxrk-migration/scripts/dxrk_to_dxrk.py
 ```
 
 When using the terminal tool, prefer an absolute invocation pattern such as:
 
 ```json
-{"command":"python3 /home/USER/.hermes/skills/migration/openclaw-migration/scripts/openclaw_to_hermes.py","workdir":"/home/USER"}
+{"command":"python3 /home/USER/.dxrk/skills/migration/dxrk-migration/scripts/dxrk_to_dxrk.py","workdir":"/home/USER"}
 ```
 
 Dry run with the user-data preset:
 
 ```bash
-python3 ~/.hermes/skills/migration/openclaw-migration/scripts/openclaw_to_hermes.py --preset user-data
+python3 ~/.dxrk/skills/migration/dxrk-migration/scripts/dxrk_to_dxrk.py --preset user-data
 ```
 
 Execute a user-data migration:
 
 ```bash
-python3 ~/.hermes/skills/migration/openclaw-migration/scripts/openclaw_to_hermes.py --execute --preset user-data --skill-conflict skip
+python3 ~/.dxrk/skills/migration/dxrk-migration/scripts/dxrk_to_dxrk.py --execute --preset user-data --skill-conflict skip
 ```
 
 Execute a full compatible migration:
 
 ```bash
-python3 ~/.hermes/skills/migration/openclaw-migration/scripts/openclaw_to_hermes.py --execute --preset full --migrate-secrets --skill-conflict skip
+python3 ~/.dxrk/skills/migration/dxrk-migration/scripts/dxrk_to_dxrk.py --execute --preset full --migrate-secrets --skill-conflict skip
 ```
 
 Execute with workspace instructions included:
 
 ```bash
-python3 ~/.hermes/skills/migration/openclaw-migration/scripts/openclaw_to_hermes.py --execute --preset user-data --skill-conflict rename --workspace-target "/absolute/workspace/path"
+python3 ~/.dxrk/skills/migration/dxrk-migration/scripts/dxrk_to_dxrk.py --execute --preset user-data --skill-conflict rename --workspace-target "/absolute/workspace/path"
 ```
 
 Do not use `$PWD` or the home directory as the workspace target by default. Ask for an explicit workspace path first.
@@ -287,7 +287,7 @@ Do not use `$PWD` or the home directory as the workspace target by default. Ask 
 2. Do not migrate secrets by default. Tokens, auth blobs, device credentials, and raw gateway config should stay out of Hermes unless the user explicitly asks for secret migration.
 3. Do not silently overwrite non-empty Hermes targets unless the user explicitly wants that. The helper script will preserve backups when overwriting is enabled.
 4. Always give the user the skipped-items report. That report is part of the migration, not an optional extra.
-5. Prefer the primary OpenClaw workspace (`~/.openclaw/workspace/`) over `workspace.default/`. Only use the default workspace as fallback when the primary files are missing.
+5. Prefer the primary OpenClaw workspace (`~/.dxrk/workspace/`) over `workspace.default/`. Only use the default workspace as fallback when the primary files are missing.
 6. Even in secret-migration mode, only migrate secrets with a clean Hermes destination. Unsupported auth blobs must still be reported as skipped.
 7. If the dry run shows a large asset copy, a conflicting `SOUL.md`, or overflowed memory entries, call those out separately before execution.
 8. Default to `user-data only` if the user is unsure.
@@ -311,5 +311,5 @@ After a successful run, the user should have:
 
 - Hermes persona state imported
 - Hermes memory files populated with converted OpenClaw knowledge
-- OpenClaw skills available under `~/.hermes/skills/openclaw-imports/`
+- OpenClaw skills available under `~/.dxrk/skills/dxrk-imports/`
 - a migration report showing any conflicts, omissions, or unsupported data

@@ -6,7 +6,7 @@ based on the user's configured IANA timezone (e.g. ``Asia/Kolkata``).
 
 Resolution order:
   1. ``HERMES_TIMEZONE`` environment variable
-  2. ``timezone`` key in ``~/.hermes/config.yaml``
+  2. ``timezone`` key in ``~/.dxrk/config.yaml``
   3. Falls back to the server's local time (``datetime.now().astimezone()``)
 
 Invalid timezone values log a warning and fall back safely — Hermes never
@@ -16,7 +16,7 @@ crashes due to a bad timezone string.
 import logging
 import os
 from datetime import datetime
-from hermes_constants import get_config_path
+from dxrk_constants import get_config_path
 from typing import Optional
 
 logger = logging.getLogger(__name__)

@@ -30,7 +30,7 @@ from acp.schema import (
 )
 from acp_adapter.server import HermesACPAgent, HERMES_VERSION
 from acp_adapter.session import SessionManager
-from hermes_state import SessionDB
+from dxrk_state import SessionDB
 
 
 @pytest.fixture()
@@ -62,7 +62,7 @@ class TestInitialize:
         resp = await agent.initialize(protocol_version=1)
         assert resp.agent_info is not None
         assert isinstance(resp.agent_info, Implementation)
-        assert resp.agent_info.name == "hermes-agent"
+        assert resp.agent_info.name == "dxrk-agent"
         assert resp.agent_info.version == HERMES_VERSION
 
     @pytest.mark.asyncio
@@ -155,7 +155,7 @@ class TestSessionOps:
         acp_agent = HermesACPAgent(session_manager=manager)
 
         with patch(
-            "hermes_cli.models.curated_models_for_provider",
+            "dxrk_cli.models.curated_models_for_provider",
             return_value=[("gpt-5.4", "recommended"), ("gpt-5.4-mini", "")],
         ):
             resp = await acp_agent.new_session(cwd="/tmp")
@@ -398,11 +398,11 @@ class TestSessionConfiguration:
                 api_mode=kwargs.get("api_mode"),
             )
 
-        monkeypatch.setattr("hermes_cli.config.load_config", lambda: {
+        monkeypatch.setattr("dxrk_cli.config.load_config", lambda: {
             "model": {"provider": "openrouter", "default": "openrouter/gpt-5"}
         })
         monkeypatch.setattr(
-            "hermes_cli.runtime_provider.resolve_runtime_provider",
+            "dxrk_cli.runtime_provider.resolve_runtime_provider",
             fake_resolve_runtime_provider,
         )
         manager = SessionManager(db=SessionDB(tmp_path / "state.db"))
@@ -778,11 +778,11 @@ class TestSlashCommands:
                 api_mode=kwargs.get("api_mode"),
             )
 
-        monkeypatch.setattr("hermes_cli.config.load_config", lambda: {
+        monkeypatch.setattr("dxrk_cli.config.load_config", lambda: {
             "model": {"provider": "openrouter", "default": "openrouter/gpt-5"}
         })
         monkeypatch.setattr(
-            "hermes_cli.runtime_provider.resolve_runtime_provider",
+            "dxrk_cli.runtime_provider.resolve_runtime_provider",
             fake_resolve_runtime_provider,
         )
         manager = SessionManager(db=SessionDB(tmp_path / "state.db"))
@@ -821,7 +821,7 @@ class TestRegisterSessionMcpServers:
 
         state = mock_manager.create_session(cwd="/tmp")
         # Give the mock agent the attributes _register_session_mcp_servers reads
-        state.agent.enabled_toolsets = ["hermes-acp"]
+        state.agent.enabled_toolsets = ["dxrk-acp"]
         state.agent.disabled_toolsets = None
         state.agent.tools = []
         state.agent.valid_tool_names = set()
@@ -854,7 +854,7 @@ class TestRegisterSessionMcpServers:
         from acp.schema import McpServerHttp, HttpHeader
 
         state = mock_manager.create_session(cwd="/tmp")
-        state.agent.enabled_toolsets = ["hermes-acp"]
+        state.agent.enabled_toolsets = ["dxrk-acp"]
         state.agent.disabled_toolsets = None
         state.agent.tools = []
         state.agent.valid_tool_names = set()
@@ -885,7 +885,7 @@ class TestRegisterSessionMcpServers:
         from acp.schema import McpServerStdio
 
         state = mock_manager.create_session(cwd="/tmp")
-        state.agent.enabled_toolsets = ["hermes-acp"]
+        state.agent.enabled_toolsets = ["dxrk-acp"]
         state.agent.disabled_toolsets = None
         state.agent.tools = []
         state.agent.valid_tool_names = set()
@@ -908,11 +908,11 @@ class TestRegisterSessionMcpServers:
             await agent._register_session_mcp_servers(state, [server])
 
         mock_defs.assert_called_once_with(
-            enabled_toolsets=["hermes-acp", "mcp-srv"],
+            enabled_toolsets=["dxrk-acp", "mcp-srv"],
             disabled_toolsets=None,
             quiet_mode=True,
         )
-        assert state.agent.enabled_toolsets == ["hermes-acp", "mcp-srv"]
+        assert state.agent.enabled_toolsets == ["dxrk-acp", "mcp-srv"]
         assert state.agent.tools == fake_tools
         assert state.agent.valid_tool_names == {"mcp_srv_search", "terminal"}
         # _invalidate_system_prompt should have been called

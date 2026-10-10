@@ -30,7 +30,7 @@ import re
 import tempfile
 from contextlib import contextmanager
 from pathlib import Path
-from hermes_constants import get_hermes_home
+from dxrk_constants import get_dxrk_home
 from typing import Dict, Any, List, Optional
 
 # fcntl is Unix-only; on Windows use msvcrt for file locking
@@ -52,7 +52,7 @@ logger = logging.getLogger(__name__)
 # happened after the first import.
 def get_memory_dir() -> Path:
     """Return the profile-scoped memories directory."""
-    return get_hermes_home() / "memories"
+    return get_dxrk_home() / "memories"
 
 ENTRY_DELIMITER = "\n§\n"
 
@@ -77,7 +77,7 @@ _MEMORY_THREAT_PATTERNS = [
     # Persistence via shell rc
     (r'authorized_keys', "ssh_backdoor"),
     (r'\$HOME/\.ssh|\~/\.ssh', "ssh_access"),
-    (r'\$HOME/\.hermes/\.env|\~/\.hermes/\.env', "hermes_env"),
+    (r'\$HOME/\.dxrk/\.env|\~/\.dxrk/\.env', "dxrk_env"),
 ]
 
 # Subset of invisible chars for injection detection

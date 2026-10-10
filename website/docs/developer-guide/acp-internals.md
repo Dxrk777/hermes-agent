@@ -22,9 +22,9 @@ Key implementation files:
 ## Boot flow
 
 ```text
-hermes acp / hermes-acp / python -m acp_adapter
+dxrk acp / dxrk-acp / python -m acp_adapter
   -> acp_adapter.entry.main()
-  -> load ~/.hermes/.env
+  -> load ~/.dxrk/.env
   -> configure stderr logging
   -> construct HermesACPAgent
   -> acp.run_agent(agent)
@@ -114,7 +114,7 @@ Examples:
 ```text
 new_session(cwd)
   -> create SessionState
-  -> create AIAgent(platform="acp", enabled_toolsets=["hermes-acp"])
+  -> create AIAgent(platform="acp", enabled_toolsets=["dxrk-acp"])
   -> bind task_id/session_id to cwd override
 
 prompt(..., session_id)
@@ -145,7 +145,7 @@ ACP does not implement its own auth store.
 Instead it reuses Hermes' runtime resolver:
 
 - `acp_adapter/auth.py`
-- `hermes_cli/runtime_provider.py`
+- `dxrk_cli/runtime_provider.py`
 
 So ACP advertises and uses the currently configured Hermes provider/credentials.
 
@@ -177,6 +177,6 @@ ACP temporarily installs an approval callback on the terminal tool during prompt
 ## Related files
 
 - `tests/acp/` — ACP test suite
-- `toolsets.py` — `hermes-acp` toolset definition
-- `hermes_cli/main.py` — `hermes acp` CLI subcommand
-- `pyproject.toml` — `[acp]` optional dependency + `hermes-acp` script
+- `toolsets.py` — `dxrk-acp` toolset definition
+- `dxrk_cli/main.py` — `dxrk acp` CLI subcommand
+- `pyproject.toml` — `[acp]` optional dependency + `dxrk-acp` script

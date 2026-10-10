@@ -188,7 +188,7 @@
           },
         },
         React.createElement("span", { style: { opacity: 0.5, fontSize: "0.55rem" } }, "pilot"),
-        React.createElement("span", { style: { fontWeight: 700 } }, "hermes agent"),
+        React.createElement("span", { style: { fontWeight: 700 } }, "dxrk agent"),
         React.createElement("span", { style: { opacity: 0.5, fontSize: "0.55rem" } }, "compass"),
       ),
       // Telemetry bars
@@ -279,7 +279,7 @@
           mixBlendMode: "plus-lighter",
         },
       },
-      "compass hermes systems / cosmic era 71",
+      "compass dxrk systems / cosmic era 71",
     );
   }
 

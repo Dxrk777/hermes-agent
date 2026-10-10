@@ -7,32 +7,32 @@ description: "Plugins shipped with Hermes Agent that run automatically via lifec
 
 # Built-in Plugins
 
-Hermes ships a small set of plugins bundled with the repository. They live under `<repo>/plugins/<name>/` and load automatically alongside user-installed plugins in `~/.hermes/plugins/`. They use the same plugin surface as third-party plugins — hooks, tools, slash commands — just maintained in-tree.
+Hermes ships a small set of plugins bundled with the repository. They live under `<repo>/plugins/<name>/` and load automatically alongside user-installed plugins in `~/.dxrk/plugins/`. They use the same plugin surface as third-party plugins — hooks, tools, slash commands — just maintained in-tree.
 
-See the [Plugins](/docs/user-guide/features/plugins) page for the general plugin system, and [Build a Hermes Plugin](/docs/guides/build-a-hermes-plugin) to write your own.
+See the [Plugins](/docs/user-guide/features/plugins) page for the general plugin system, and [Build a Hermes Plugin](/docs/guides/build-a-dxrk-plugin) to write your own.
 
 ## How discovery works
 
 The `PluginManager` scans four sources, in order:
 
 1. **Bundled** — `<repo>/plugins/<name>/` (what this page documents)
-2. **User** — `~/.hermes/plugins/<name>/`
-3. **Project** — `./.hermes/plugins/<name>/` (requires `HERMES_ENABLE_PROJECT_PLUGINS=1`)
-4. **Pip entry points** — `hermes_agent.plugins`
+2. **User** — `~/.dxrk/plugins/<name>/`
+3. **Project** — `./.dxrk/plugins/<name>/` (requires `HERMES_ENABLE_PROJECT_PLUGINS=1`)
+4. **Pip entry points** — `dxrk_agent.plugins`
 
 On name collision, later sources win — a user plugin named `disk-cleanup` would replace the bundled one.
 
-`plugins/memory/` and `plugins/context_engine/` are deliberately excluded from bundled scanning. Those directories use their own discovery paths because memory providers and context engines are single-select providers configured through `hermes memory setup` / `context.engine` in config.
+`plugins/memory/` and `plugins/context_engine/` are deliberately excluded from bundled scanning. Those directories use their own discovery paths because memory providers and context engines are single-select providers configured through `dxrk memory setup` / `context.engine` in config.
 
 ## Bundled plugins are opt-in
 
-Bundled plugins ship disabled. Discovery finds them (they appear in `hermes plugins list` and the interactive `hermes plugins` UI), but none load until you explicitly enable them:
+Bundled plugins ship disabled. Discovery finds them (they appear in `dxrk plugins list` and the interactive `dxrk plugins` UI), but none load until you explicitly enable them:
 
 ```bash
-hermes plugins enable disk-cleanup
+dxrk plugins enable disk-cleanup
 ```
 
-Or via `~/.hermes/config.yaml`:
+Or via `~/.dxrk/config.yaml`:
 
 ```yaml
 plugins:
@@ -45,7 +45,7 @@ This is the same mechanism user-installed plugins use. Bundled plugins are never
 To turn a bundled plugin off again:
 
 ```bash
-hermes plugins disable disk-cleanup
+dxrk plugins disable disk-cleanup
 # or: remove it from plugins.enabled in config.yaml
 ```
 
@@ -59,7 +59,7 @@ Auto-tracks and removes ephemeral files created during sessions — test scripts
 
 | Hook | Behaviour |
 |---|---|
-| `post_tool_call` | When `write_file` / `terminal` / `patch` creates a file matching `test_*`, `tmp_*`, or `*.test.*` inside `HERMES_HOME` or `/tmp/hermes-*`, track it silently as `test` / `temp` / `cron-output`. |
+| `post_tool_call` | When `write_file` / `terminal` / `patch` creates a file matching `test_*`, `tmp_*`, or `*.test.*` inside `HERMES_HOME` or `/tmp/dxrk-*`, track it silently as `test` / `temp` / `cron-output`. |
 | `on_session_end` | If any test files were auto-tracked during the turn, run the safe `quick` cleanup and log a one-line summary. Stays silent otherwise. |
 
 **Deletion rules:**
@@ -93,18 +93,18 @@ Auto-tracks and removes ephemeral files created during sessions — test scripts
 | `tracked.json.bak` | Atomic-write backup of the above |
 | `cleanup.log` | Append-only audit trail of every track / skip / reject / delete |
 
-**Safety** — cleanup only ever touches paths under `HERMES_HOME` or `/tmp/hermes-*`. Windows mounts (`/mnt/c/...`) are rejected. Well-known top-level state dirs (`logs/`, `memories/`, `sessions/`, `cron/`, `cache/`, `skills/`, `plugins/`, `disk-cleanup/` itself) are never removed even when empty — a fresh install does not get gutted on first session end.
+**Safety** — cleanup only ever touches paths under `HERMES_HOME` or `/tmp/dxrk-*`. Windows mounts (`/mnt/c/...`) are rejected. Well-known top-level state dirs (`logs/`, `memories/`, `sessions/`, `cron/`, `cache/`, `skills/`, `plugins/`, `disk-cleanup/` itself) are never removed even when empty — a fresh install does not get gutted on first session end.
 
-**Enabling:** `hermes plugins enable disk-cleanup` (or check the box in `hermes plugins`).
+**Enabling:** `dxrk plugins enable disk-cleanup` (or check the box in `dxrk plugins`).
 
-**Disabling again:** `hermes plugins disable disk-cleanup`.
+**Disabling again:** `dxrk plugins disable disk-cleanup`.
 
 ## Adding a bundled plugin
 
-Bundled plugins are written exactly like any other Hermes plugin — see [Build a Hermes Plugin](/docs/guides/build-a-hermes-plugin). The only differences are:
+Bundled plugins are written exactly like any other Hermes plugin — see [Build a Hermes Plugin](/docs/guides/build-a-dxrk-plugin). The only differences are:
 
-- Directory lives at `<repo>/plugins/<name>/` instead of `~/.hermes/plugins/<name>/`
-- Manifest source is reported as `bundled` in `hermes plugins list`
+- Directory lives at `<repo>/plugins/<name>/` instead of `~/.dxrk/plugins/<name>/`
+- Manifest source is reported as `bundled` in `dxrk plugins list`
 - User plugins with the same name override the bundled version
 
 A plugin is a good candidate for bundling when:

@@ -8,13 +8,13 @@ description: "Give the agent its own dedicated email inbox via AgentMail"
 
 # Agentmail
 
-Give the agent its own dedicated email inbox via AgentMail. Send, receive, and manage email autonomously using agent-owned email addresses (e.g. hermes-agent@agentmail.to).
+Give the agent its own dedicated email inbox via AgentMail. Send, receive, and manage email autonomously using agent-owned email addresses (e.g. dxrk-agent@agentmail.to).
 
 ## Skill metadata
 
 | | |
 |---|---|
-| Source | Optional — install with `hermes skills install official/email/agentmail` |
+| Source | Optional — install with `dxrk skills install official/email/agentmail` |
 | Path | `optional-skills/email/agentmail` |
 | Version | `1.0.0` |
 | Tags | `email`, `communication`, `agentmail`, `mcp` |
@@ -51,7 +51,7 @@ AgentMail gives the agent its own identity and inbox.
 - Create an account and generate an API key (starts with `am_`)
 
 ### 2. Configure MCP Server
-Add to `~/.hermes/config.yaml` (paste your actual key — MCP env vars are not expanded from .env):
+Add to `~/.dxrk/config.yaml` (paste your actual key — MCP env vars are not expanded from .env):
 ```yaml
 mcp_servers:
   agentmail:
@@ -63,7 +63,7 @@ mcp_servers:
 
 ### 3. Restart Hermes
 ```bash
-hermes
+dxrk
 ```
 All 11 AgentMail tools are now available automatically.
 
@@ -87,8 +87,8 @@ All 11 AgentMail tools are now available automatically.
 
 ### Create an inbox and send an email
 1. Create a dedicated inbox:
-   - Use `create_inbox` with a username (e.g. `hermes-agent`)
-   - The agent gets address: `hermes-agent@agentmail.to`
+   - Use `create_inbox` with a username (e.g. `dxrk-agent`)
+   - The agent gets address: `dxrk-agent@agentmail.to`
 2. Send an email:
    - Use `send_message` with `inbox_id`, `to`, `subject`, `text`
 3. Check for replies:
@@ -116,7 +116,7 @@ All 11 AgentMail tools are now available automatically.
 
 **Agent-to-human outreach:**
 ```
-1. create_inbox (username: "hermes-outreach")
+1. create_inbox (username: "dxrk-outreach")
 2. send_message (to: user@example.com, subject: "Hello", text: "...")
 3. list_threads to check for replies
 ```
@@ -131,7 +131,7 @@ All 11 AgentMail tools are now available automatically.
 ## Verification
 After setup, test with:
 ```
-hermes --toolsets mcp -q "Create an AgentMail inbox called test-agent and tell me its email address"
+dxrk --toolsets mcp -q "Create an AgentMail inbox called test-agent and tell me its email address"
 ```
 You should see the new inbox address returned.
 

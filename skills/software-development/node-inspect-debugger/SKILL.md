@@ -5,9 +5,9 @@ version: 1.0.0
 author: Hermes Agent
 license: MIT
 metadata:
-  hermes:
+  dxrk:
     tags: [debugging, nodejs, node-inspect, cdp, breakpoints, ui-tui]
-    related_skills: [systematic-debugging, python-debugpy, debugging-hermes-tui-commands]
+    related_skills: [systematic-debugging, python-debugpy, debugging-dxrk-tui-commands]
 ---
 
 # Node.js Inspect Debugger
@@ -182,7 +182,7 @@ The TUI is built Ink + tsx. Two common scenarios:
 `ui-tui/package.json` has `npm run dev` (tsx --watch). Add `--inspect-brk` by running tsx directly:
 
 ```bash
-cd /home/bb/hermes-agent/ui-tui
+cd /home/bb/dxrk-agent/ui-tui
 npm run build    # produce dist/ once so transpile isn't needed on first load
 node --inspect-brk dist/entry.js
 # In another terminal:
@@ -198,13 +198,13 @@ cont
 
 When it pauses, `repl` → inspect `props`, state refs, `useInput` handler values, etc.
 
-### Debugging a running `hermes --tui`
+### Debugging a running `dxrk --tui`
 
 The TUI spawns Node from the Python CLI. Easiest path:
 
 ```bash
 # 1. Launch TUI
-hermes --tui &
+dxrk --tui &
 TUI_PID=$(pgrep -f 'ui-tui/dist/entry' | head -1)
 
 # 2. Enable inspector on that Node PID
@@ -226,7 +226,7 @@ Those are Python, not Node — use the `python-debugpy` skill for them. Only Nod
 ## Running Vitest Tests Under the Debugger
 
 ```bash
-cd /home/bb/hermes-agent/ui-tui
+cd /home/bb/dxrk-agent/ui-tui
 # Run a single test file paused on entry
 node --inspect-brk ./node_modules/vitest/vitest.mjs run --no-file-parallelism src/app/foo.test.tsx
 ```

@@ -14,30 +14,30 @@ Every tool belongs to exactly one toolset. When you enable a toolset, all tools 
 
 - **Core** — A single logical group of related tools (e.g., `file` bundles `read_file`, `write_file`, `patch`, `search_files`)
 - **Composite** — Combines multiple core toolsets for a common scenario (e.g., `debugging` bundles file, terminal, and web tools)
-- **Platform** — A complete tool configuration for a specific deployment context (e.g., `hermes-cli` is the default for interactive CLI sessions)
+- **Platform** — A complete tool configuration for a specific deployment context (e.g., `dxrk-cli` is the default for interactive CLI sessions)
 
 ## Configuring Toolsets
 
 ### Per-session (CLI)
 
 ```bash
-hermes chat --toolsets web,file,terminal
-hermes chat --toolsets debugging        # composite — expands to file + terminal + web
-hermes chat --toolsets all              # everything
+dxrk chat --toolsets web,file,terminal
+dxrk chat --toolsets debugging        # composite — expands to file + terminal + web
+dxrk chat --toolsets all              # everything
 ```
 
 ### Per-platform (config.yaml)
 
 ```yaml
 toolsets:
-  - hermes-cli          # default for CLI
-  # - hermes-telegram   # override for Telegram gateway
+  - dxrk-cli          # default for CLI
+  # - dxrk-telegram   # override for Telegram gateway
 ```
 
 ### Interactive management
 
 ```bash
-hermes tools                            # curses UI to enable/disable per platform
+dxrk tools                            # curses UI to enable/disable per platform
 ```
 
 Or in-session:
@@ -58,7 +58,7 @@ Or in-session:
 | `cronjob` | `cronjob` | Schedule and manage recurring tasks. |
 | `delegation` | `delegate_task` | Spawn isolated subagent instances for parallel work. |
 | `feishu_doc` | `feishu_doc_read` | Read Feishu/Lark document content. Used by the Feishu document-comment intelligent-reply handler. |
-| `feishu_drive` | `feishu_drive_add_comment`, `feishu_drive_list_comments`, `feishu_drive_list_comment_replies`, `feishu_drive_reply_comment` | Feishu/Lark drive comment operations. Scoped to the comment agent; not exposed on `hermes-cli` or other messaging toolsets. |
+| `feishu_drive` | `feishu_drive_add_comment`, `feishu_drive_list_comments`, `feishu_drive_list_comment_replies`, `feishu_drive_reply_comment` | Feishu/Lark drive comment operations. Scoped to the comment agent; not exposed on `dxrk-cli` or other messaging toolsets. |
 | `file` | `patch`, `read_file`, `search_files`, `write_file` | File reading, writing, searching, and editing. |
 | `homeassistant` | `ha_call_service`, `ha_get_state`, `ha_list_entities`, `ha_list_services` | Smart home control via Home Assistant. Only available when `HASS_TOKEN` is set. |
 | `image_gen` | `image_generate` | Text-to-image generation via FAL.ai. |
@@ -86,32 +86,32 @@ These expand to multiple core toolsets, providing a convenient shorthand for com
 
 ## Platform Toolsets
 
-Platform toolsets define the complete tool configuration for a deployment target. Most messaging platforms use the same set as `hermes-cli`:
+Platform toolsets define the complete tool configuration for a deployment target. Most messaging platforms use the same set as `dxrk-cli`:
 
-| Toolset | Differences from `hermes-cli` |
+| Toolset | Differences from `dxrk-cli` |
 |---------|-------------------------------|
-| `hermes-cli` | Full toolset — all 36 core tools including `clarify`. The default for interactive CLI sessions. |
-| `hermes-acp` | Drops `clarify`, `cronjob`, `image_generate`, `send_message`, `text_to_speech`, homeassistant tools. Focused on coding tasks in IDE context. |
-| `hermes-api-server` | Drops `clarify`, `send_message`, and `text_to_speech`. Adds everything else — suitable for programmatic access where user interaction isn't possible. |
-| `hermes-telegram` | Same as `hermes-cli`. |
-| `hermes-discord` | Same as `hermes-cli`. |
-| `hermes-slack` | Same as `hermes-cli`. |
-| `hermes-whatsapp` | Same as `hermes-cli`. |
-| `hermes-signal` | Same as `hermes-cli`. |
-| `hermes-matrix` | Same as `hermes-cli`. |
-| `hermes-mattermost` | Same as `hermes-cli`. |
-| `hermes-email` | Same as `hermes-cli`. |
-| `hermes-sms` | Same as `hermes-cli`. |
-| `hermes-bluebubbles` | Same as `hermes-cli`. |
-| `hermes-dingtalk` | Same as `hermes-cli`. |
-| `hermes-feishu` | Same as `hermes-cli`. Note: the `feishu_doc` / `feishu_drive` toolsets are used only by the document-comment handler, not by the regular Feishu chat adapter. |
-| `hermes-qqbot` | Same as `hermes-cli`. |
-| `hermes-wecom` | Same as `hermes-cli`. |
-| `hermes-wecom-callback` | Same as `hermes-cli`. |
-| `hermes-weixin` | Same as `hermes-cli`. |
-| `hermes-homeassistant` | Same as `hermes-cli` plus the `homeassistant` toolset always on. |
-| `hermes-webhook` | Same as `hermes-cli`. |
-| `hermes-gateway` | Internal gateway orchestrator toolset — union of the broadest possible tool set when the gateway needs to accept any message source. |
+| `dxrk-cli` | Full toolset — all 36 core tools including `clarify`. The default for interactive CLI sessions. |
+| `dxrk-acp` | Drops `clarify`, `cronjob`, `image_generate`, `send_message`, `text_to_speech`, homeassistant tools. Focused on coding tasks in IDE context. |
+| `dxrk-api-server` | Drops `clarify`, `send_message`, and `text_to_speech`. Adds everything else — suitable for programmatic access where user interaction isn't possible. |
+| `dxrk-telegram` | Same as `dxrk-cli`. |
+| `dxrk-discord` | Same as `dxrk-cli`. |
+| `dxrk-slack` | Same as `dxrk-cli`. |
+| `dxrk-whatsapp` | Same as `dxrk-cli`. |
+| `dxrk-signal` | Same as `dxrk-cli`. |
+| `dxrk-matrix` | Same as `dxrk-cli`. |
+| `dxrk-mattermost` | Same as `dxrk-cli`. |
+| `dxrk-email` | Same as `dxrk-cli`. |
+| `dxrk-sms` | Same as `dxrk-cli`. |
+| `dxrk-bluebubbles` | Same as `dxrk-cli`. |
+| `dxrk-dingtalk` | Same as `dxrk-cli`. |
+| `dxrk-feishu` | Same as `dxrk-cli`. Note: the `feishu_doc` / `feishu_drive` toolsets are used only by the document-comment handler, not by the regular Feishu chat adapter. |
+| `dxrk-qqbot` | Same as `dxrk-cli`. |
+| `dxrk-wecom` | Same as `dxrk-cli`. |
+| `dxrk-wecom-callback` | Same as `dxrk-cli`. |
+| `dxrk-weixin` | Same as `dxrk-cli`. |
+| `dxrk-homeassistant` | Same as `dxrk-cli` plus the `homeassistant` toolset always on. |
+| `dxrk-webhook` | Same as `dxrk-cli`. |
+| `dxrk-gateway` | Internal gateway orchestrator toolset — union of the broadest possible tool set when the gateway needs to accept any message source. |
 
 ## Dynamic Toolsets
 
@@ -139,7 +139,7 @@ Define custom toolsets in `config.yaml` to create project-specific bundles:
 
 ```yaml
 toolsets:
-  - hermes-cli
+  - dxrk-cli
 custom_toolsets:
   data-science:
     - file
@@ -153,8 +153,8 @@ custom_toolsets:
 
 - `all` or `*` — expands to every registered toolset (built-in + dynamic + plugin)
 
-## Relationship to `hermes tools`
+## Relationship to `dxrk tools`
 
-The `hermes tools` command provides a curses-based UI for toggling individual tools on or off per platform. This operates at the tool level (finer than toolsets) and persists to `config.yaml`. Disabled tools are filtered out even if their toolset is enabled.
+The `dxrk tools` command provides a curses-based UI for toggling individual tools on or off per platform. This operates at the tool level (finer than toolsets) and persists to `config.yaml`. Disabled tools are filtered out even if their toolset is enabled.
 
 See also: [Tools Reference](./tools-reference.md) for the complete list of individual tools and their parameters.

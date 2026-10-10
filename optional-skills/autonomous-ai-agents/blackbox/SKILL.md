@@ -5,9 +5,9 @@ version: 1.0.0
 author: Hermes Agent (Nous Research)
 license: MIT
 metadata:
-  hermes:
+  dxrk:
     tags: [Coding-Agent, Blackbox, Multi-Agent, Judge, Multi-Model]
-    related_skills: [claude-code, codex, hermes-agent]
+    related_skills: [claude-code, codex, dxrk-agent]
 ---
 
 # Blackbox CLI

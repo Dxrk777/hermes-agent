@@ -14,26 +14,26 @@ It's the recommended way to run Hermes interactively.
 
 ```bash
 # Launch the TUI
-hermes --tui
+dxrk --tui
 
 # Resume the latest TUI session (falls back to the latest classic session)
-hermes --tui -c
-hermes --tui --continue
+dxrk --tui -c
+dxrk --tui --continue
 
 # Resume a specific session by ID or title
-hermes --tui -r 20260409_000000_aa11bb
-hermes --tui --resume "my t0p session"
+dxrk --tui -r 20260409_000000_aa11bb
+dxrk --tui --resume "my t0p session"
 
 # Run source directly — skips the prebuild step (for TUI contributors)
-hermes --tui --dev
+dxrk --tui --dev
 ```
 
 You can also enable it via env var:
 
 ```bash
 export HERMES_TUI=1
-hermes          # now uses the TUI
-hermes chat     # same
+dxrk          # now uses the TUI
+dxrk chat     # same
 ```
 
 The classic CLI remains available as the default. Anything documented in [CLI Interface](cli.md) — slash commands, quick commands, skill preloading, personalities, multi-line input, interrupts — works in the TUI identically.
@@ -52,7 +52,7 @@ Same [skins](features/skins.md) and [personalities](features/personality.md) app
 
 ## Requirements
 
-- **Node.js** ≥ 20 — the TUI runs as a subprocess launched from the Python CLI. `hermes doctor` verifies this.
+- **Node.js** ≥ 20 — the TUI runs as a subprocess launched from the Python CLI. `dxrk doctor` verifies this.
 - **TTY** — like the classic CLI, piping stdin or running in non-interactive environments falls back to single-query mode.
 
 On first launch Hermes installs the TUI's Node dependencies into `ui-tui/node_modules` (one-time, a few seconds). Subsequent launches are fast. If you pull a new Hermes version, the TUI bundle is rebuilt automatically when sources are newer than the dist.
@@ -63,7 +63,7 @@ Distributions that ship a prebuilt bundle (Nix, system packages) can point Herme
 
 ```bash
 export HERMES_TUI_DIR=/path/to/prebuilt/ui-tui
-hermes --tui
+dxrk --tui
 ```
 
 The directory must contain `dist/entry.js` and an up-to-date `node_modules`.
@@ -108,7 +108,7 @@ The per-skin status-bar colors and thresholds are shared with the classic CLI �
 
 ## Configuration
 
-The TUI respects all standard Hermes config: `~/.hermes/config.yaml`, profiles, personalities, skins, quick commands, credential pools, memory providers, tool/skill enablement. No TUI-specific config file exists.
+The TUI respects all standard Hermes config: `~/.dxrk/config.yaml`, profiles, personalities, skins, quick commands, credential pools, memory providers, tool/skill enablement. No TUI-specific config file exists.
 
 A handful of keys tune the TUI surface specifically:
 
@@ -158,13 +158,13 @@ existing configs keep working unchanged.
 
 ## Sessions
 
-Sessions are shared between the TUI and the classic CLI — both write to the same `~/.hermes/state.db`. You can start a session in one, resume in the other. The session picker surfaces sessions from both sources, with a source tag.
+Sessions are shared between the TUI and the classic CLI — both write to the same `~/.dxrk/state.db`. You can start a session in one, resume in the other. The session picker surfaces sessions from both sources, with a source tag.
 
 See [Sessions](sessions.md) for lifecycle, search, compression, and export.
 
 ## Reverting to the classic CLI
 
-Launching `hermes` (without `--tui`) stays on the classic CLI. To make a machine prefer the TUI, set `HERMES_TUI=1` in your shell profile. To go back, unset it.
+Launching `dxrk` (without `--tui`) stays on the classic CLI. To make a machine prefer the TUI, set `HERMES_TUI=1` in your shell profile. To go back, unset it.
 
 If the TUI fails to launch (no Node, missing bundle, TTY issue), Hermes prints a diagnostic and falls back — rather than leaving you stuck.
 

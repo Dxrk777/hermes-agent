@@ -100,12 +100,12 @@ If you run your own homeserver (Synapse, Conduit, Dendrite):
 register_new_matrix_user -c /etc/synapse/homeserver.yaml http://localhost:8008
 ```
 
-2. Choose a username like `hermes` — the full user ID will be `@hermes:your-server.org`.
+2. Choose a username like `dxrk` — the full user ID will be `@dxrk:your-server.org`.
 
 ### Option B: Use matrix.org or Another Public Homeserver
 
 1. Go to [Element Web](https://app.element.io) and create a new account.
-2. Pick a username for your bot (e.g., `hermes-bot`).
+2. Pick a username for your bot (e.g., `dxrk-bot`).
 
 ### Option C: Use Your Own Account
 
@@ -132,7 +132,7 @@ curl -X POST https://your-server/_matrix/client/v3/login \
   -H "Content-Type: application/json" \
   -d '{
     "type": "m.login.password",
-    "user": "@hermes:your-server.org",
+    "user": "@dxrk:your-server.org",
     "password": "your-password"
   }'
 ```
@@ -148,7 +148,7 @@ The access token gives full access to the bot's Matrix account. Never share it p
 Instead of providing an access token, you can give Hermes the bot's user ID and password. Hermes will log in automatically on startup. This is simpler but means the password is stored in your `.env` file.
 
 ```bash
-MATRIX_USER_ID=@hermes:your-server.org
+MATRIX_USER_ID=@dxrk:your-server.org
 MATRIX_PASSWORD=your-password
 ```
 
@@ -173,14 +173,14 @@ Matrix User IDs always start with `@` and contain a `:` followed by the server n
 Run the guided setup command:
 
 ```bash
-hermes gateway setup
+dxrk gateway setup
 ```
 
 Select **Matrix** when prompted, then provide your homeserver URL, access token (or user ID + password), and allowed user IDs when asked.
 
 ### Option B: Manual Configuration
 
-Add the following to your `~/.hermes/.env` file:
+Add the following to your `~/.dxrk/.env` file:
 
 **Using an access token:**
 
@@ -190,7 +190,7 @@ MATRIX_HOMESERVER=https://matrix.example.org
 MATRIX_ACCESS_TOKEN=***
 
 # Optional: user ID (auto-detected from token if omitted)
-# MATRIX_USER_ID=@hermes:matrix.example.org
+# MATRIX_USER_ID=@dxrk:matrix.example.org
 
 # Security: restrict who can interact with the bot
 MATRIX_ALLOWED_USERS=@alice:matrix.example.org
@@ -204,14 +204,14 @@ MATRIX_ALLOWED_USERS=@alice:matrix.example.org
 ```bash
 # Required
 MATRIX_HOMESERVER=https://matrix.example.org
-MATRIX_USER_ID=@hermes:matrix.example.org
+MATRIX_USER_ID=@dxrk:matrix.example.org
 MATRIX_PASSWORD=***
 
 # Security
 MATRIX_ALLOWED_USERS=@alice:matrix.example.org
 ```
 
-Optional behavior settings in `~/.hermes/config.yaml`:
+Optional behavior settings in `~/.dxrk/config.yaml`:
 
 ```yaml
 group_sessions_per_user: true
@@ -224,13 +224,13 @@ group_sessions_per_user: true
 Once configured, start the Matrix gateway:
 
 ```bash
-hermes gateway
+dxrk gateway
 ```
 
 The bot should connect to your homeserver and start syncing within a few seconds. Send it a message — either a DM or in a room it has joined — to test.
 
 :::tip
-You can run `hermes gateway` in the background or as a systemd service for persistent operation. See the deployment docs for details.
+You can run `dxrk gateway` in the background or as a systemd service for persistent operation. See the deployment docs for details.
 :::
 
 ## End-to-End Encryption (E2EE)
@@ -245,8 +245,8 @@ E2EE requires the `mautrix` library with encryption extras and the `libolm` C li
 # Install mautrix with E2EE support
 pip install 'mautrix[encryption]'
 
-# Or install with hermes extras
-pip install 'hermes-agent[matrix]'
+# Or install with dxrk extras
+pip install 'dxrk-agent[matrix]'
 ```
 
 You also need `libolm` installed on your system:
@@ -264,7 +264,7 @@ sudo dnf install libolm-devel
 
 ### Enable E2EE
 
-Add to your `~/.hermes/.env`:
+Add to your `~/.dxrk/.env`:
 
 ```bash
 MATRIX_ENCRYPTION=true
@@ -272,7 +272,7 @@ MATRIX_ENCRYPTION=true
 
 When E2EE is enabled, Hermes:
 
-- Stores encryption keys in `~/.hermes/platforms/matrix/store/` (legacy installs: `~/.hermes/matrix/store/`)
+- Stores encryption keys in `~/.dxrk/platforms/matrix/store/` (legacy installs: `~/.dxrk/matrix/store/`)
 - Uploads device keys on first connection
 - Decrypts incoming messages and encrypts outgoing messages automatically
 - Auto-joins encrypted rooms when invited
@@ -290,7 +290,7 @@ MATRIX_RECOVERY_KEY=EsT... your recovery key here
 On each startup, if `MATRIX_RECOVERY_KEY` is set, Hermes imports cross-signing keys from the homeserver's secure secret storage and signs the current device. This is idempotent and safe to leave enabled permanently.
 
 :::warning[Deleting the crypto store]
-If you delete `~/.hermes/platforms/matrix/store/crypto.db`, the bot loses its encryption identity. Simply restarting with the same device ID will **not** fully recover — the homeserver still holds one-time keys signed with the old identity key, and peers cannot establish new Olm sessions.
+If you delete `~/.dxrk/platforms/matrix/store/crypto.db`, the bot loses its encryption identity. Simply restarting with the same device ID will **not** fully recover — the homeserver still holds one-time keys signed with the old identity key, and peers cannot establish new Olm sessions.
 
 Hermes detects this condition on startup and refuses to enable E2EE, logging: `device XXXX has stale one-time keys on the server signed with a previous identity key`.
 
@@ -302,24 +302,24 @@ Hermes detects this condition on startup and refuses to enable E2EE, logging: `d
    ```bash
    sudo systemctl stop matrix-synapse
    sudo sqlite3 /var/lib/matrix-synapse/homeserver.db "
-     DELETE FROM e2e_device_keys_json WHERE device_id = 'DEVICE_ID' AND user_id = '@hermes:your-server';
-     DELETE FROM e2e_one_time_keys_json WHERE device_id = 'DEVICE_ID' AND user_id = '@hermes:your-server';
-     DELETE FROM e2e_fallback_keys_json WHERE device_id = 'DEVICE_ID' AND user_id = '@hermes:your-server';
-     DELETE FROM devices WHERE device_id = 'DEVICE_ID' AND user_id = '@hermes:your-server';
+     DELETE FROM e2e_device_keys_json WHERE device_id = 'DEVICE_ID' AND user_id = '@dxrk:your-server';
+     DELETE FROM e2e_one_time_keys_json WHERE device_id = 'DEVICE_ID' AND user_id = '@dxrk:your-server';
+     DELETE FROM e2e_fallback_keys_json WHERE device_id = 'DEVICE_ID' AND user_id = '@dxrk:your-server';
+     DELETE FROM devices WHERE device_id = 'DEVICE_ID' AND user_id = '@dxrk:your-server';
    "
    sudo systemctl start matrix-synapse
    ```
    Or via the Synapse admin API (note the URL-encoded user ID):
    ```bash
    curl -X DELETE -H "Authorization: Bearer ADMIN_TOKEN" \
-     'https://your-server/_synapse/admin/v2/users/%40hermes%3Ayour-server/devices/DEVICE_ID'
+     'https://your-server/_synapse/admin/v2/users/%40dxrk%3Ayour-server/devices/DEVICE_ID'
    ```
    Note: deleting a device via the admin API may also invalidate the associated access token. You may need to generate a new token afterward.
 
 2. Delete the local crypto store and restart Hermes:
    ```bash
-   rm -f ~/.hermes/platforms/matrix/store/crypto.db*
-   # restart hermes
+   rm -f ~/.dxrk/platforms/matrix/store/crypto.db*
+   # restart dxrk
    ```
 
 Other Matrix clients (Element, matrix-commander) may cache the old device keys. After recovery, type `/discardsession` in Element to force a new encryption session with the bot.
@@ -339,7 +339,7 @@ Type `/sethome` in any Matrix room where the bot is present. That room becomes t
 
 ### Manual Configuration
 
-Add this to your `~/.hermes/.env`:
+Add this to your `~/.dxrk/.env`:
 
 ```bash
 MATRIX_HOME_ROOM=!abc123def456:matrix.example.org
@@ -383,7 +383,7 @@ pip install 'mautrix[encryption]'
 Or with Hermes extras:
 
 ```bash
-pip install 'hermes-agent[matrix]'
+pip install 'dxrk-agent[matrix]'
 ```
 
 ### Encryption errors / "could not decrypt event"
@@ -426,22 +426,22 @@ changed identity keys for the same device as suspicious.
      -H "Content-Type: application/json" \
      -d '{
        "type": "m.login.password",
-       "identifier": {"type": "m.id.user", "user": "@hermes:your-server.org"},
+       "identifier": {"type": "m.id.user", "user": "@dxrk:your-server.org"},
        "password": "***",
        "initial_device_display_name": "Hermes Agent"
      }'
    ```
 
-   Copy the new `access_token` and update `MATRIX_ACCESS_TOKEN` in `~/.hermes/.env`.
+   Copy the new `access_token` and update `MATRIX_ACCESS_TOKEN` in `~/.dxrk/.env`.
 
 2. **Delete old encryption state**:
 
    ```bash
-   rm -f ~/.hermes/platforms/matrix/store/crypto.db
-   rm -f ~/.hermes/platforms/matrix/store/crypto_store.*
+   rm -f ~/.dxrk/platforms/matrix/store/crypto.db
+   rm -f ~/.dxrk/platforms/matrix/store/crypto_store.*
    ```
 
-3. **Set your recovery key** (if you use cross-signing — most Element users do). Add to `~/.hermes/.env`:
+3. **Set your recovery key** (if you use cross-signing — most Element users do). Add to `~/.dxrk/.env`:
 
    ```bash
    MATRIX_RECOVERY_KEY=EsT... your recovery key here
@@ -456,7 +456,7 @@ changed identity keys for the same device as suspicious.
 5. **Restart the gateway**:
 
    ```bash
-   hermes gateway run
+   dxrk gateway run
    ```
 
    If `MATRIX_RECOVERY_KEY` is set, you should see `Matrix: cross-signing verified via recovery key` in the logs.
@@ -482,20 +482,20 @@ history, so other clients trust it immediately.
 
 ## Proxy Mode (E2EE on macOS)
 
-Matrix E2EE requires `libolm`, which doesn't compile on macOS ARM64 (Apple Silicon). The `hermes-agent[matrix]` extra is gated to Linux only. If you're on macOS, proxy mode lets you run E2EE in a Docker container on a Linux VM while the actual agent runs natively on macOS with full access to your local files, memory, and skills.
+Matrix E2EE requires `libolm`, which doesn't compile on macOS ARM64 (Apple Silicon). The `dxrk-agent[matrix]` extra is gated to Linux only. If you're on macOS, proxy mode lets you run E2EE in a Docker container on a Linux VM while the actual agent runs natively on macOS with full access to your local files, memory, and skills.
 
 ### How It Works
 
 ```
 macOS (Host):
-  └─ hermes gateway
+  └─ dxrk gateway
        ├─ api_server adapter ← listens on 0.0.0.0:8642
        ├─ AIAgent ← single source of truth
        ├─ Sessions, memory, skills
        └─ Local file access (Obsidian, projects, etc.)
 
 Linux VM (Docker):
-  └─ hermes gateway (proxy mode)
+  └─ dxrk gateway (proxy mode)
        ├─ Matrix adapter ← E2EE decryption/encryption
        └─ HTTP forward → macOS:8642/v1/chat/completions
            (no LLM API keys, no agent, no inference)
@@ -507,7 +507,7 @@ The Docker container only handles Matrix protocol + E2EE. When a message arrives
 
 Enable the API server so the host accepts incoming requests from the Docker container.
 
-Add to `~/.hermes/.env`:
+Add to `~/.dxrk/.env`:
 
 ```bash
 API_SERVER_ENABLED=true
@@ -522,7 +522,7 @@ API_SERVER_HOST=0.0.0.0
 Start the gateway:
 
 ```bash
-hermes gateway
+dxrk gateway
 ```
 
 You should see the API server start alongside any other platforms you have configured. Verify it's reachable from the VM:
@@ -540,7 +540,7 @@ The container needs Matrix credentials and the proxy URL. It does NOT need LLM A
 
 ```yaml
 services:
-  hermes-matrix:
+  dxrk-matrix:
     build: .
     environment:
       # Matrix credentials
@@ -554,7 +554,7 @@ services:
       GATEWAY_PROXY_URL: "http://192.168.1.100:8642"
       GATEWAY_PROXY_KEY: "your-secret-key-here"
     volumes:
-      - ./matrix-store:/root/.hermes/platforms/matrix/store
+      - ./matrix-store:/root/.dxrk/platforms/matrix/store
 ```
 
 **`Dockerfile`:**
@@ -563,9 +563,9 @@ services:
 FROM python:3.11-slim
 
 RUN apt-get update && apt-get install -y libolm-dev && rm -rf /var/lib/apt/lists/*
-RUN pip install 'hermes-agent[matrix]'
+RUN pip install 'dxrk-agent[matrix]'
 
-CMD ["hermes", "gateway"]
+CMD ["dxrk", "gateway"]
 ```
 
 That's the entire container. No API keys for OpenRouter, Anthropic, or any inference provider.
@@ -574,7 +574,7 @@ That's the entire container. No API keys for OpenRouter, Anthropic, or any infer
 
 1. Start the host gateway first:
    ```bash
-   hermes gateway
+   dxrk gateway
    ```
 
 2. Start the Docker container:
@@ -625,13 +625,13 @@ Session continuity is maintained via the `X-Hermes-Session-Id` header. The host'
 
 **Cause**: The Hermes gateway isn't running, or it failed to connect.
 
-**Fix**: Check that `hermes gateway` is running. Look at the terminal output for error messages. Common issues: wrong homeserver URL, expired access token, homeserver unreachable.
+**Fix**: Check that `dxrk gateway` is running. Look at the terminal output for error messages. Common issues: wrong homeserver URL, expired access token, homeserver unreachable.
 
 ### "User not allowed" / Bot ignores you
 
 **Cause**: Your User ID isn't in `MATRIX_ALLOWED_USERS`.
 
-**Fix**: Add your User ID to `MATRIX_ALLOWED_USERS` in `~/.hermes/.env` and restart the gateway. Use the full `@user:server` format.
+**Fix**: Add your User ID to `MATRIX_ALLOWED_USERS` in `~/.dxrk/.env` and restart the gateway. Use the full `@user:server` format.
 
 ## Security
 

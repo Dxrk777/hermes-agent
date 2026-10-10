@@ -21,11 +21,11 @@ Pick the row that matches your goal:
 
 | Goal | Do this first | Then do this |
 |---|---|---|
-| I just want Hermes working on my machine | `hermes setup` | Run a real chat and verify it responds |
-| I already know my provider | `hermes model` | Save the config, then start chatting |
-| I want a bot or always-on setup | `hermes gateway setup` after CLI works | Connect Telegram, Discord, Slack, or another platform |
-| I want a local or self-hosted model | `hermes model` → custom endpoint | Verify the endpoint, model name, and context length |
-| I want multi-provider fallback | `hermes model` first | Add routing and fallback only after the base chat works |
+| I just want Hermes working on my machine | `dxrk setup` | Run a real chat and verify it responds |
+| I already know my provider | `dxrk model` | Save the config, then start chatting |
+| I want a bot or always-on setup | `dxrk gateway setup` after CLI works | Connect Telegram, Discord, Slack, or another platform |
+| I want a local or self-hosted model | `dxrk model` → custom endpoint | Verify the endpoint, model name, and context length |
+| I want multi-provider fallback | `dxrk model` first | Add routing and fallback only after the base chat works |
 
 **Rule of thumb:** if Hermes cannot complete a normal chat, do not add more features yet. Get one clean conversation working first, then layer on gateway, cron, skills, voice, or routing.
 
@@ -37,7 +37,7 @@ Run the one-line installer:
 
 ```bash
 # Linux / macOS / WSL2 / Android (Termux)
-curl -fsSL https://raw.githubusercontent.com/NousResearch/hermes-agent/main/scripts/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/NousResearch/dxrk-agent/main/scripts/install.sh | bash
 ```
 
 :::tip Android / Termux
@@ -58,19 +58,19 @@ For detailed installation options, prerequisites, and troubleshooting, see the [
 
 ## 2. Choose a Provider
 
-The single most important setup step. Use `hermes model` to walk through the choice interactively:
+The single most important setup step. Use `dxrk model` to walk through the choice interactively:
 
 ```bash
-hermes model
+dxrk model
 ```
 
 Good defaults:
 
 | Provider | What it is | How to set up |
 |----------|-----------|---------------|
-| **Nous Portal** | Subscription-based, zero-config | OAuth login via `hermes model` |
-| **OpenAI Codex** | ChatGPT OAuth, uses Codex models | Device code auth via `hermes model` |
-| **Anthropic** | Claude models directly (Pro/Max or API key) | `hermes model` with Claude Code auth, or an Anthropic API key |
+| **Nous Portal** | Subscription-based, zero-config | OAuth login via `dxrk model` |
+| **OpenAI Codex** | ChatGPT OAuth, uses Codex models | Device code auth via `dxrk model` |
+| **Anthropic** | Claude models directly (Pro/Max or API key) | `dxrk model` with Claude Code auth, or an Anthropic API key |
 | **OpenRouter** | Multi-provider routing across many models | Enter your API key |
 | **Z.AI** | GLM / Zhipu-hosted models | Set `GLM_API_KEY` / `ZAI_API_KEY` |
 | **Kimi / Moonshot** | Moonshot-hosted coding and chat models | Set `KIMI_API_KEY` |
@@ -86,8 +86,8 @@ Good defaults:
 | **OpenCode Go** | $10/month subscription for open models | Set `OPENCODE_GO_API_KEY` |
 | **DeepSeek** | Direct DeepSeek API access | Set `DEEPSEEK_API_KEY` |
 | **NVIDIA NIM** | Nemotron models via build.nvidia.com or local NIM | Set `NVIDIA_API_KEY` (optional: `NVIDIA_BASE_URL`) |
-| **GitHub Copilot** | GitHub Copilot subscription (GPT-5.x, Claude, Gemini, etc.) | OAuth via `hermes model`, or `COPILOT_GITHUB_TOKEN` / `GH_TOKEN` |
-| **GitHub Copilot ACP** | Copilot ACP agent backend (spawns local `copilot` CLI) | `hermes model` (requires `copilot` CLI + `copilot login`) |
+| **GitHub Copilot** | GitHub Copilot subscription (GPT-5.x, Claude, Gemini, etc.) | OAuth via `dxrk model`, or `COPILOT_GITHUB_TOKEN` / `GH_TOKEN` |
+| **GitHub Copilot ACP** | Copilot ACP agent backend (spawns local `copilot` CLI) | `dxrk model` (requires `copilot` CLI + `copilot login`) |
 | **Vercel AI Gateway** | Vercel AI Gateway routing | Set `AI_GATEWAY_API_KEY` |
 | **Custom Endpoint** | VLLM, SGLang, Ollama, or any OpenAI-compatible API | Set base URL + API key |
 
@@ -98,22 +98,22 @@ Hermes Agent requires a model with at least **64,000 tokens** of context. Models
 :::
 
 :::tip
-You can switch providers at any time with `hermes model` — no lock-in. For a full list of all supported providers and setup details, see [AI Providers](../integrations/providers.md).
+You can switch providers at any time with `dxrk model` — no lock-in. For a full list of all supported providers and setup details, see [AI Providers](../integrations/providers.md).
 :::
 
 ### How settings are stored
 
 Hermes separates secrets from normal config:
 
-- **Secrets and tokens** → `~/.hermes/.env`
-- **Non-secret settings** → `~/.hermes/config.yaml`
+- **Secrets and tokens** → `~/.dxrk/.env`
+- **Non-secret settings** → `~/.dxrk/config.yaml`
 
 The easiest way to set values correctly is through the CLI:
 
 ```bash
-hermes config set model anthropic/claude-opus-4.6
-hermes config set terminal.backend docker
-hermes config set OPENROUTER_API_KEY sk-or-...
+dxrk config set model anthropic/claude-opus-4.6
+dxrk config set terminal.backend docker
+dxrk config set OPENROUTER_API_KEY sk-or-...
 ```
 
 The right value goes to the right file automatically.
@@ -121,14 +121,14 @@ The right value goes to the right file automatically.
 ## 3. Run Your First Chat
 
 ```bash
-hermes            # classic CLI
-hermes --tui      # modern TUI (recommended)
+dxrk            # classic CLI
+dxrk --tui      # modern TUI (recommended)
 ```
 
 You'll see a welcome banner with your model, available tools, and skills. Use a prompt that's specific and easy to verify:
 
 :::tip Pick your interface
-Hermes ships with two terminal interfaces: the classic `prompt_toolkit` CLI and a newer [TUI](../user-guide/tui.md) with modal overlays, mouse selection, and non-blocking input. Both share the same sessions, slash commands, and config — try each with `hermes` vs `hermes --tui`.
+Hermes ships with two terminal interfaces: the classic `prompt_toolkit` CLI and a newer [TUI](../user-guide/tui.md) with modal overlays, mouse selection, and non-blocking input. Both share the same sessions, slash commands, and config — try each with `dxrk` vs `dxrk --tui`.
 :::
 
 ```
@@ -157,8 +157,8 @@ If that works, you're past the hardest part.
 Before moving on, make sure resume works:
 
 ```bash
-hermes --continue    # Resume the most recent session
-hermes -c            # Short form
+dxrk --continue    # Resume the most recent session
+dxrk -c            # Short form
 ```
 
 That should bring you back to the session you just had. If it doesn't, check whether you're in the same profile and whether the session actually saved. This matters later when you're juggling multiple setups or machines.
@@ -200,15 +200,15 @@ Only after the base chat works. Pick what you need:
 ### Bot or shared assistant
 
 ```bash
-hermes gateway setup    # Interactive platform configuration
+dxrk gateway setup    # Interactive platform configuration
 ```
 
 Connect [Telegram](/docs/user-guide/messaging/telegram), [Discord](/docs/user-guide/messaging/discord), [Slack](/docs/user-guide/messaging/slack), [WhatsApp](/docs/user-guide/messaging/whatsapp), [Signal](/docs/user-guide/messaging/signal), [Email](/docs/user-guide/messaging/email), or [Home Assistant](/docs/user-guide/messaging/homeassistant).
 
 ### Automation and tools
 
-- `hermes tools` — tune tool access per platform
-- `hermes skills` — browse and install reusable workflows
+- `dxrk tools` — tune tool access per platform
+- `dxrk skills` — browse and install reusable workflows
 - Cron — only after your bot or CLI setup is stable
 
 ### Sandboxed terminal
@@ -216,14 +216,14 @@ Connect [Telegram](/docs/user-guide/messaging/telegram), [Discord](/docs/user-gu
 For safety, run the agent in a Docker container or on a remote server:
 
 ```bash
-hermes config set terminal.backend docker    # Docker isolation
-hermes config set terminal.backend ssh       # Remote server
+dxrk config set terminal.backend docker    # Docker isolation
+dxrk config set terminal.backend ssh       # Remote server
 ```
 
 ### Voice mode
 
 ```bash
-pip install "hermes-agent[voice]"
+pip install "dxrk-agent[voice]"
 # Includes faster-whisper for free local speech-to-text
 ```
 
@@ -232,8 +232,8 @@ Then in the CLI: `/voice on`. Press `Ctrl+B` to record. See [Voice Mode](../user
 ### Skills
 
 ```bash
-hermes skills search kubernetes
-hermes skills install openai/skills/k8s
+dxrk skills search kubernetes
+dxrk skills install openai/skills/k8s
 ```
 
 Or use `/skills` inside a chat session.
@@ -241,7 +241,7 @@ Or use `/skills` inside a chat session.
 ### MCP servers
 
 ```yaml
-# Add to ~/.hermes/config.yaml
+# Add to ~/.dxrk/config.yaml
 mcp_servers:
   github:
     command: npx
@@ -254,7 +254,7 @@ mcp_servers:
 
 ```bash
 pip install -e '.[acp]'
-hermes acp
+dxrk acp
 ```
 
 See [ACP Editor Integration](../user-guide/features/acp.md).
@@ -267,23 +267,23 @@ These are the problems that waste the most time:
 
 | Symptom | Likely cause | Fix |
 |---|---|---|
-| Hermes opens but gives empty or broken replies | Provider auth or model selection is wrong | Run `hermes model` again and confirm provider, model, and auth |
+| Hermes opens but gives empty or broken replies | Provider auth or model selection is wrong | Run `dxrk model` again and confirm provider, model, and auth |
 | Custom endpoint "works" but returns garbage | Wrong base URL, model name, or not actually OpenAI-compatible | Verify the endpoint in a separate client first |
-| Gateway starts but nobody can message it | Bot token, allowlist, or platform setup is incomplete | Re-run `hermes gateway setup` and check `hermes gateway status` |
-| `hermes --continue` can't find old session | Switched profiles or session never saved | Check `hermes sessions list` and confirm you're in the right profile |
+| Gateway starts but nobody can message it | Bot token, allowlist, or platform setup is incomplete | Re-run `dxrk gateway setup` and check `dxrk gateway status` |
+| `dxrk --continue` can't find old session | Switched profiles or session never saved | Check `dxrk sessions list` and confirm you're in the right profile |
 | Model unavailable or odd fallback behavior | Provider routing or fallback settings are too aggressive | Keep routing off until the base provider is stable |
-| `hermes doctor` flags config problems | Config values are missing or stale | Fix the config, retest a plain chat before adding features |
+| `dxrk doctor` flags config problems | Config values are missing or stale | Fix the config, retest a plain chat before adding features |
 
 ## Recovery Toolkit
 
 When something feels off, use this order:
 
-1. `hermes doctor`
-2. `hermes model`
-3. `hermes setup`
-4. `hermes sessions list`
-5. `hermes --continue`
-6. `hermes gateway status`
+1. `dxrk doctor`
+2. `dxrk model`
+3. `dxrk setup`
+4. `dxrk sessions list`
+5. `dxrk --continue`
+6. `dxrk gateway status`
 
 That sequence gets you from "broken vibes" back to a known state fast.
 
@@ -293,14 +293,14 @@ That sequence gets you from "broken vibes" back to a known state fast.
 
 | Command | Description |
 |---------|-------------|
-| `hermes` | Start chatting |
-| `hermes model` | Choose your LLM provider and model |
-| `hermes tools` | Configure which tools are enabled per platform |
-| `hermes setup` | Full setup wizard (configures everything at once) |
-| `hermes doctor` | Diagnose issues |
-| `hermes update` | Update to latest version |
-| `hermes gateway` | Start the messaging gateway |
-| `hermes --continue` | Resume last session |
+| `dxrk` | Start chatting |
+| `dxrk model` | Choose your LLM provider and model |
+| `dxrk tools` | Configure which tools are enabled per platform |
+| `dxrk setup` | Full setup wizard (configures everything at once) |
+| `dxrk doctor` | Diagnose issues |
+| `dxrk update` | Update to latest version |
+| `dxrk gateway` | Start the messaging gateway |
+| `dxrk --continue` | Resume last session |
 
 ## Next Steps
 

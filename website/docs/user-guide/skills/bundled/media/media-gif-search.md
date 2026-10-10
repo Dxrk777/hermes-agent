@@ -33,7 +33,7 @@ Search and download GIFs directly via the Tenor API using curl. No extra tools n
 
 ## Setup
 
-Set your Tenor API key in your environment (add to `~/.hermes/.env`):
+Set your Tenor API key in your environment (add to `~/.dxrk/.env`):
 
 ```bash
 TENOR_API_KEY=your_key_here
@@ -98,4 +98,4 @@ Each result has multiple formats under `.media_formats`:
 
 - URL-encode the query: spaces as `+`, special chars as `%XX`
 - For sending in chat, `tinygif` URLs are lighter weight
-- GIF URLs can be used directly in markdown: `![alt](https://github.com/NousResearch/hermes-agent/blob/main/skills/media/gif-search/url)`
+- GIF URLs can be used directly in markdown: `![alt](https://github.com/NousResearch/dxrk-agent/blob/main/skills/media/gif-search/url)`

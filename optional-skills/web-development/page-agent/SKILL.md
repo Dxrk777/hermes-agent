@@ -5,7 +5,7 @@ version: 1.0.0
 author: Hermes Agent
 license: MIT
 metadata:
-  hermes:
+  dxrk:
     tags: [web, javascript, agent, browser, gui, alibaba, embed, copilot, saas]
     category: web-development
 ---

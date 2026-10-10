@@ -5,9 +5,9 @@ version: 1.2.0
 author: Hermes Agent
 license: MIT
 metadata:
-  hermes:
+  dxrk:
     tags: [Coding-Agent, OpenCode, Autonomous, Refactoring, Code-Review]
-    related_skills: [claude-code, codex, hermes-agent]
+    related_skills: [claude-code, codex, dxrk-agent]
 ---
 
 # OpenCode CLI

@@ -2317,7 +2317,7 @@ class DiscordAdapter(BasePlatformAdapter):
 
         # ── Auto-register any gateway-available commands not yet on the tree ──
         # This ensures new commands added to COMMAND_REGISTRY in
-        # hermes_cli/commands.py automatically appear as Discord slash
+        # dxrk_cli/commands.py automatically appear as Discord slash
         # commands without needing a manual entry here.
         def _build_auto_slash_command(_name: str, _description: str, _args_hint: str = ""):
             """Build a discord.app_commands.Command that proxies to _run_simple_slash."""
@@ -2353,7 +2353,7 @@ class DiscordAdapter(BasePlatformAdapter):
 
         already_registered: set[str] = set()
         try:
-            from hermes_cli.commands import COMMAND_REGISTRY, _is_gateway_available, _resolve_config_gates
+            from dxrk_cli.commands import COMMAND_REGISTRY, _is_gateway_available, _resolve_config_gates
 
             try:
                 already_registered = {cmd.name for cmd in tree.get_commands()}
@@ -2395,7 +2395,7 @@ class DiscordAdapter(BasePlatformAdapter):
         # autocomplete UX as for built-in commands. No per-platform plugin
         # API needed — plugin commands are platform-agnostic.
         try:
-            from hermes_cli.commands import _iter_plugin_command_entries
+            from dxrk_cli.commands import _iter_plugin_command_entries
 
             for plugin_name, plugin_desc, plugin_args_hint in _iter_plugin_command_entries():
                 discord_name = plugin_name.lower()[:32]
@@ -2443,7 +2443,7 @@ class DiscordAdapter(BasePlatformAdapter):
         skill name and its description.
         """
         try:
-            from hermes_cli.commands import discord_skill_commands_by_category
+            from dxrk_cli.commands import discord_skill_commands_by_category
 
             existing_names = set()
             try:
@@ -2901,7 +2901,7 @@ class DiscordAdapter(BasePlatformAdapter):
     ) -> SendResult:
         """Send an interactive button-based update prompt (Yes / No).
 
-        Used by the gateway ``/update`` watcher when ``hermes update --gateway``
+        Used by the gateway ``/update`` watcher when ``dxrk update --gateway``
         needs user input (stash restore, config migration).
         """
         if not self._client or not DISCORD_AVAILABLE:
@@ -2955,7 +2955,7 @@ class DiscordAdapter(BasePlatformAdapter):
                 channel = await self._client.fetch_channel(int(target_id))
 
             try:
-                from hermes_cli.providers import get_label
+                from dxrk_cli.providers import get_label
                 provider_label = get_label(current_provider)
             except Exception:
                 provider_label = current_provider
@@ -3629,7 +3629,7 @@ if DISCORD_AVAILABLE:
                 child.disabled = True
 
     class UpdatePromptView(discord.ui.View):
-        """Interactive Yes/No buttons for ``hermes update`` prompts.
+        """Interactive Yes/No buttons for ``dxrk update`` prompts.
 
         Clicking a button writes the answer to ``.update_response`` so the
         detached update process can pick it up.  Only authorized users can
@@ -3677,8 +3677,8 @@ if DISCORD_AVAILABLE:
 
             # Write response file
             try:
-                from hermes_constants import get_hermes_home
-                home = get_hermes_home()
+                from dxrk_constants import get_dxrk_home
+                home = get_dxrk_home()
                 response_path = home / ".update_response"
                 tmp = response_path.with_suffix(".tmp")
                 tmp.write_text(answer)
@@ -3896,7 +3896,7 @@ if DISCORD_AVAILABLE:
             self._build_provider_select()
 
             try:
-                from hermes_cli.providers import get_label
+                from dxrk_cli.providers import get_label
                 provider_label = get_label(self.current_provider)
             except Exception:
                 provider_label = self.current_provider

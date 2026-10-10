@@ -6,7 +6,7 @@ author: Hermes Agent
 license: MIT
 platforms: [macos]
 metadata:
-  hermes:
+  dxrk:
     tags: [Reminders, tasks, todo, macOS, Apple]
 prerequisites:
   commands: [remindctl]

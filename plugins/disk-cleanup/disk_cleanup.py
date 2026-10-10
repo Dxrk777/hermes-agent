@@ -15,8 +15,8 @@ Rules:
   - chrome-profile→ prompt after 14 days (deep only)
   - >500 MB files → prompt always (deep only)
 
-Scope: strictly HERMES_HOME and /tmp/hermes-*
-Never touches: ~/.hermes/logs/ or any system directory.
+Scope: strictly HERMES_HOME and /tmp/dxrk-*
+Never touches: ~/.dxrk/logs/ or any system directory.
 """
 
 from __future__ import annotations
@@ -29,13 +29,13 @@ from pathlib import Path
 from typing import Any, Dict, List, Optional, Tuple
 
 try:
-    from hermes_constants import get_hermes_home
+    from dxrk_constants import get_dxrk_home
 except Exception:  # pragma: no cover — plugin may load before constants resolves
     import os
 
-    def get_hermes_home() -> Path:  # type: ignore[no-redef]
+    def get_dxrk_home() -> Path:  # type: ignore[no-redef]
         val = (os.environ.get("HERMES_HOME") or "").strip()
-        return Path(val).resolve() if val else (Path.home() / ".hermes").resolve()
+        return Path(val).resolve() if val else (Path.home() / ".dxrk").resolve()
 
 
 logger = logging.getLogger(__name__)
@@ -47,7 +47,7 @@ logger = logging.getLogger(__name__)
 
 def get_state_dir() -> Path:
     """State dir — separate from ``$HERMES_HOME/logs/``."""
-    return get_hermes_home() / "disk-cleanup"
+    return get_dxrk_home() / "disk-cleanup"
 
 
 def get_tracked_file() -> Path:
@@ -64,19 +64,19 @@ def get_log_file() -> Path:
 # ---------------------------------------------------------------------------
 
 def is_safe_path(path: Path) -> bool:
-    """Accept only paths under HERMES_HOME or ``/tmp/hermes-*``.
+    """Accept only paths under HERMES_HOME or ``/tmp/dxrk-*``.
 
     Rejects Windows mounts (``/mnt/c`` etc.) and any system directory.
     """
-    hermes_home = get_hermes_home()
+    dxrk_home = get_dxrk_home()
     try:
-        path.resolve().relative_to(hermes_home)
+        path.resolve().relative_to(dxrk_home)
         return True
     except (ValueError, OSError):
         pass
-    # Allow /tmp/hermes-* explicitly
+    # Allow /tmp/dxrk-* explicitly
     parts = path.parts
-    if len(parts) >= 3 and parts[1] == "tmp" and parts[2].startswith("hermes-"):
+    if len(parts) >= 3 and parts[1] == "tmp" and parts[2].startswith("dxrk-"):
         return True
     return False
 
@@ -294,19 +294,19 @@ def quick() -> Dict[str, Any]:
     # Remove empty dirs under HERMES_HOME (but leave HERMES_HOME itself and
     # a short list of well-known top-level state dirs alone — a fresh install
     # has these empty, and deleting them would surprise the user).
-    hermes_home = get_hermes_home()
+    dxrk_home = get_dxrk_home()
     _PROTECTED_TOP_LEVEL = {
         "logs", "memories", "sessions", "cron", "cronjobs",
         "cache", "skills", "plugins", "disk-cleanup", "optional-skills",
-        "hermes-agent", "backups", "profiles", ".worktrees",
+        "dxrk-agent", "backups", "profiles", ".worktrees",
     }
     empty_removed = 0
     try:
-        for dirpath in sorted(hermes_home.rglob("*"), reverse=True):
-            if not dirpath.is_dir() or dirpath == hermes_home:
+        for dirpath in sorted(dxrk_home.rglob("*"), reverse=True):
+            if not dirpath.is_dir() or dirpath == dxrk_home:
                 continue
             try:
-                rel_parts = dirpath.relative_to(hermes_home).parts
+                rel_parts = dirpath.relative_to(dxrk_home).parts
             except ValueError:
                 continue
             # Skip the well-known top-level state dirs themselves.
@@ -470,14 +470,14 @@ def guess_category(path: Path) -> Optional[str]:
         return None
 
     # Skip the state dir itself, logs, memory files, sessions, config.
-    hermes_home = get_hermes_home()
+    dxrk_home = get_dxrk_home()
     try:
-        rel = path.resolve().relative_to(hermes_home)
+        rel = path.resolve().relative_to(dxrk_home)
         top = rel.parts[0] if rel.parts else ""
         if top in {
             "disk-cleanup", "logs", "memories", "sessions", "config.yaml",
             "skills", "plugins", ".env", "USER.md", "MEMORY.md", "SOUL.md",
-            "auth.json", "hermes-agent",
+            "auth.json", "dxrk-agent",
         }:
             return None
         if top == "cron" or top == "cronjobs":
@@ -485,7 +485,7 @@ def guess_category(path: Path) -> Optional[str]:
         if top == "cache":
             return "temp"
     except ValueError:
-        # Path isn't under HERMES_HOME (e.g. /tmp/hermes-*) — fall through.
+        # Path isn't under HERMES_HOME (e.g. /tmp/dxrk-*) — fall through.
         pass
 
     name = path.name

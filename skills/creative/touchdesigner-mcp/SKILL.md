@@ -5,9 +5,9 @@ version: 1.1.0
 author: kshitijk4poor
 license: MIT
 metadata:
-  hermes:
+  dxrk:
     tags: [TouchDesigner, MCP, twozero, creative-coding, real-time-visuals, generative-art, audio-reactive, VJ, installation, GLSL]
-    related_skills: [native-mcp, ascii-video, manim-video, hermes-video]
+    related_skills: [native-mcp, ascii-video, manim-video, dxrk-video]
 
 ---
 
@@ -36,7 +36,7 @@ Hub health check: `GET http://localhost:40404/mcp` returns JSON with instance PI
 Run the setup script to handle everything:
 
 ```bash
-bash "${HERMES_HOME:-$HOME/.hermes}/skills/creative/touchdesigner-mcp/scripts/setup.sh"
+bash "${HERMES_HOME:-$HOME/.dxrk}/skills/creative/touchdesigner-mcp/scripts/setup.sh"
 ```
 
 The script will:

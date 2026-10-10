@@ -69,7 +69,7 @@ class HonchoSessionManager:
     """
     Manages conversation sessions using Honcho.
 
-    Runs alongside hermes' existing SQLite state and file-based memory,
+    Runs alongside dxrk' existing SQLite state and file-based memory,
     adding persistent cross-session user modeling via Honcho's AI-native memory.
     """
 
@@ -309,7 +309,7 @@ class HonchoSessionManager:
             user_peer_id = self._sanitize_id(f"user-{channel}-{chat_id}")
 
         assistant_peer_id = self._sanitize_id(
-            self._config.ai_peer if self._config else "hermes-assistant"
+            self._config.ai_peer if self._config else "dxrk-assistant"
         )
 
         # All expensive I/O outside the lock — Honcho's persistence is source of truth
@@ -753,7 +753,7 @@ class HonchoSessionManager:
 
         Args:
             session_key: The session key to associate files with.
-            memory_dir: Path to the memories directory (~/.hermes/memories/).
+            memory_dir: Path to the memories directory (~/.dxrk/memories/).
 
         Returns:
             True if at least one file was uploaded, False otherwise.

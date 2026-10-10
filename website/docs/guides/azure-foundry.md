@@ -22,7 +22,7 @@ The setup wizard probes your endpoint and auto-detects which transport it uses, 
 ## Quick Start
 
 ```bash
-hermes model
+dxrk model
 # → Select "Azure Foundry"
 # → Enter your endpoint URL
 # → Enter your API key
@@ -52,7 +52,7 @@ model:
   context_length: 400000             # auto-detected
 ```
 
-And in `~/.hermes/.env`:
+And in `~/.dxrk/.env`:
 
 ```
 AZURE_FOUNDRY_API_KEY=<your-azure-key>
@@ -106,7 +106,7 @@ model:
   default: claude-sonnet-4-6
 ```
 
-With `AZURE_ANTHROPIC_KEY` set in `~/.hermes/.env`. Hermes detects `azure.com` in the base URL and short-circuits around the Claude Code OAuth token chain so the Azure key is used directly with `x-api-key` auth.
+With `AZURE_ANTHROPIC_KEY` set in `~/.dxrk/.env`. Hermes detects `azure.com` in the base URL and short-circuits around the Claude Code OAuth token chain so the Azure key is used directly with `x-api-key` auth.
 
 ## Model discovery
 
@@ -125,7 +125,7 @@ You can always type a deployment name directly — Hermes does not validate agai
 | Variable | Purpose |
 |----------|---------|
 | `AZURE_FOUNDRY_API_KEY` | Primary API key for Azure AI Foundry / Azure OpenAI |
-| `AZURE_FOUNDRY_BASE_URL` | Endpoint URL (set via `hermes model`; env var is used as a fallback) |
+| `AZURE_FOUNDRY_BASE_URL` | Endpoint URL (set via `dxrk model`; env var is used as a fallback) |
 | `AZURE_ANTHROPIC_KEY` | Used by `provider: anthropic` + Azure base URL (alternative to `ANTHROPIC_API_KEY`) |
 
 ## Troubleshooting
@@ -140,7 +140,7 @@ This is the malformed-URL bug from pre-fix Azure Anthropic setups. Upgrade Herme
 The endpoint rejected both the `/models` probe and the Anthropic Messages probe. This is normal for private endpoints behind a firewall or with an IP allow-list. Fall back to manual API mode selection and type your deployment name — everything still works, Hermes just can't prefill the picker.
 
 **Wrong transport picked.**
-Run `hermes model` again and the wizard will re-probe. If the probe still picks the wrong mode, you can edit `config.yaml` directly:
+Run `dxrk model` again and the wizard will re-probe. If the probe still picks the wrong mode, you can edit `config.yaml` directly:
 
 ```yaml
 model:

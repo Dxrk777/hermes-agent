@@ -29,8 +29,8 @@ RL training requires:
 
 ```bash
 # Set up API keys
-hermes config set TINKER_API_KEY your-tinker-key
-hermes config set WANDB_API_KEY your-wandb-key
+dxrk config set TINKER_API_KEY your-tinker-key
+dxrk config set WANDB_API_KEY your-wandb-key
 ```
 
 When both keys are present and Python >= 3.11 is available, the `rl` toolset is automatically enabled.
@@ -219,7 +219,7 @@ Training runs log to Weights & Biases with these key metrics:
 
 ## Log Files
 
-Each training run generates log files in `~/.hermes/logs/rl_training/`:
+Each training run generates log files in `~/.dxrk/logs/rl_training/`:
 
 ```
 logs/

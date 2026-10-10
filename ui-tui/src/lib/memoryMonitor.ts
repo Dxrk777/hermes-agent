@@ -1,4 +1,4 @@
-import { evictInkCaches } from '@hermes/ink'
+import { evictInkCaches } from '@dxrk/ink'
 
 import { type HeapDumpResult, performHeapDump } from './memory.js'
 

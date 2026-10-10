@@ -20,7 +20,7 @@ Delegate coding tasks to OpenAI Codex CLI agent. Use for building features, refa
 | Author | Hermes Agent |
 | License | MIT |
 | Tags | `Coding-Agent`, `Codex`, `OpenAI`, `Code-Review`, `Refactoring` |
-| Related skills | [`claude-code`](/docs/user-guide/skills/bundled/autonomous-ai-agents/autonomous-ai-agents-claude-code), [`hermes-agent`](/docs/user-guide/skills/bundled/autonomous-ai-agents/autonomous-ai-agents-hermes-agent) |
+| Related skills | [`claude-code`](/docs/user-guide/skills/bundled/autonomous-ai-agents/autonomous-ai-agents-claude-code), [`dxrk-agent`](/docs/user-guide/skills/bundled/autonomous-ai-agents/autonomous-ai-agents-dxrk-agent) |
 
 ## Reference: full SKILL.md
 

@@ -3,7 +3,7 @@
 Image Generation Tools Module
 
 Provides image generation via FAL.ai. Multiple FAL models are supported and
-selectable via ``hermes tools`` → Image Generation; the active model is
+selectable via ``dxrk tools`` → Image Generation; the active model is
 persisted to ``image_gen.model`` in ``config.yaml``.
 
 Architecture:
@@ -29,7 +29,20 @@ import uuid
 from typing import Any, Dict, Optional, Union
 from urllib.parse import urlencode
 
-import fal_client
+logger = logging.getLogger(__name__)
+
+# fal_client is optional: the tool still registers (for plugin providers)
+# but reports unavailable when neither the SDK nor a plugin backend exists.
+# try/except keeps `discover_builtin_tools()` from emitting a WARNING on
+# every startup when fal-client isn't installed.
+try:
+    import fal_client
+
+    _FAL_CLIENT_AVAILABLE = True
+except ImportError as exc:
+    fal_client = None  # type: ignore[assignment]
+    _FAL_CLIENT_AVAILABLE = False
+    logger.debug("fal_client not available (%s); FAL backend disabled", exc)
 
 from tools.debug_helpers import DebugSession
 from tools.managed_tool_gateway import resolve_managed_tool_gateway
@@ -38,8 +51,6 @@ from tools.tool_backend_helpers import (
     managed_nous_tools_enabled,
     prefers_gateway,
 )
-
-logger = logging.getLogger(__name__)
 
 
 # ---------------------------------------------------------------------------
@@ -81,8 +92,12 @@ FAL_MODELS: Dict[str, Dict[str, Any]] = {
             "enable_safety_checker": False,
         },
         "supports": {
-            "prompt", "image_size", "num_inference_steps", "seed",
-            "output_format", "enable_safety_checker",
+            "prompt",
+            "image_size",
+            "num_inference_steps",
+            "seed",
+            "output_format",
+            "enable_safety_checker",
         },
         "upscale": False,
     },
@@ -107,11 +122,18 @@ FAL_MODELS: Dict[str, Dict[str, Any]] = {
             "sync_mode": True,
         },
         "supports": {
-            "prompt", "image_size", "num_inference_steps", "guidance_scale",
-            "num_images", "output_format", "enable_safety_checker",
-            "safety_tolerance", "sync_mode", "seed",
+            "prompt",
+            "image_size",
+            "num_inference_steps",
+            "guidance_scale",
+            "num_images",
+            "output_format",
+            "enable_safety_checker",
+            "safety_tolerance",
+            "sync_mode",
+            "seed",
         },
-        "upscale": True,   # Backward-compat: current default behavior.
+        "upscale": True,  # Backward-compat: current default behavior.
     },
     "fal-ai/z-image/turbo": {
         "display": "Z-Image Turbo",
@@ -132,8 +154,13 @@ FAL_MODELS: Dict[str, Dict[str, Any]] = {
             "enable_prompt_expansion": False,  # avoid the extra per-request charge
         },
         "supports": {
-            "prompt", "image_size", "num_inference_steps", "num_images",
-            "seed", "output_format", "enable_safety_checker",
+            "prompt",
+            "image_size",
+            "num_inference_steps",
+            "num_images",
+            "seed",
+            "output_format",
+            "enable_safety_checker",
             "enable_prompt_expansion",
         },
         "upscale": False,
@@ -158,9 +185,16 @@ FAL_MODELS: Dict[str, Dict[str, Any]] = {
             "resolution": "1K",
         },
         "supports": {
-            "prompt", "aspect_ratio", "num_images", "output_format",
-            "safety_tolerance", "seed", "sync_mode", "resolution",
-            "enable_web_search", "limit_generations",
+            "prompt",
+            "aspect_ratio",
+            "num_images",
+            "output_format",
+            "safety_tolerance",
+            "seed",
+            "sync_mode",
+            "resolution",
+            "enable_web_search",
+            "limit_generations",
         },
         "upscale": False,
     },
@@ -183,8 +217,13 @@ FAL_MODELS: Dict[str, Dict[str, Any]] = {
             "output_format": "png",
         },
         "supports": {
-            "prompt", "image_size", "quality", "num_images", "output_format",
-            "background", "sync_mode",
+            "prompt",
+            "image_size",
+            "quality",
+            "num_images",
+            "output_format",
+            "background",
+            "sync_mode",
         },
         "upscale": False,
     },
@@ -200,9 +239,9 @@ FAL_MODELS: Dict[str, Dict[str, Any]] = {
         # three aspect ratios.
         "size_style": "image_size_preset",
         "sizes": {
-            "landscape": "landscape_4_3",   # 1024x768
-            "square": "square_hd",            # 1024x1024
-            "portrait": "portrait_4_3",       # 768x1024
+            "landscape": "landscape_4_3",  # 1024x768
+            "square": "square_hd",  # 1024x1024
+            "portrait": "portrait_4_3",  # 768x1024
         },
         "defaults": {
             # Same quality pinning as gpt-image-1.5: medium keeps Nous
@@ -213,7 +252,11 @@ FAL_MODELS: Dict[str, Dict[str, Any]] = {
             "output_format": "png",
         },
         "supports": {
-            "prompt", "image_size", "quality", "num_images", "output_format",
+            "prompt",
+            "image_size",
+            "quality",
+            "num_images",
+            "output_format",
             "sync_mode",
             # openai_api_key (BYOK) intentionally omitted — all users go
             # through the shared FAL billing path.
@@ -237,8 +280,12 @@ FAL_MODELS: Dict[str, Dict[str, Any]] = {
             "style": "AUTO",
         },
         "supports": {
-            "prompt", "image_size", "rendering_speed", "expand_prompt",
-            "style", "seed",
+            "prompt",
+            "image_size",
+            "rendering_speed",
+            "expand_prompt",
+            "style",
+            "seed",
         },
         "upscale": False,
     },
@@ -258,8 +305,11 @@ FAL_MODELS: Dict[str, Dict[str, Any]] = {
             "enable_safety_checker": False,
         },
         "supports": {
-            "prompt", "image_size", "enable_safety_checker",
-            "colors", "background_color",
+            "prompt",
+            "image_size",
+            "enable_safety_checker",
+            "colors",
+            "background_color",
         },
         "upscale": False,
     },
@@ -282,8 +332,15 @@ FAL_MODELS: Dict[str, Dict[str, Any]] = {
             "acceleration": "regular",
         },
         "supports": {
-            "prompt", "image_size", "num_inference_steps", "guidance_scale",
-            "num_images", "output_format", "acceleration", "seed", "sync_mode",
+            "prompt",
+            "image_size",
+            "num_inference_steps",
+            "guidance_scale",
+            "num_images",
+            "output_format",
+            "acceleration",
+            "seed",
+            "sync_mode",
         },
         "upscale": False,
     },
@@ -340,11 +397,15 @@ class _ManagedFalSyncClient:
     def __init__(self, *, key: str, queue_run_origin: str):
         sync_client_class = getattr(fal_client, "SyncClient", None)
         if sync_client_class is None:
-            raise RuntimeError("fal_client.SyncClient is required for managed FAL gateway mode")
+            raise RuntimeError(
+                "fal_client.SyncClient is required for managed FAL gateway mode"
+            )
 
         client_module = getattr(fal_client, "client", None)
         if client_module is None:
-            raise RuntimeError("fal_client.client is required for managed FAL gateway mode")
+            raise RuntimeError(
+                "fal_client.client is required for managed FAL gateway mode"
+            )
 
         self._queue_url_format = _normalize_fal_queue_url_format(queue_run_origin)
         self._sync_client = sync_client_class(key=key)
@@ -357,11 +418,17 @@ class _ManagedFalSyncClient:
         self._add_timeout_header = getattr(client_module, "add_timeout_header", None)
 
         if self._http_client is None:
-            raise RuntimeError("fal_client.SyncClient._client is required for managed FAL gateway mode")
+            raise RuntimeError(
+                "fal_client.SyncClient._client is required for managed FAL gateway mode"
+            )
         if self._maybe_retry_request is None or self._raise_for_status is None:
-            raise RuntimeError("fal_client.client request helpers are required for managed FAL gateway mode")
+            raise RuntimeError(
+                "fal_client.client request helpers are required for managed FAL gateway mode"
+            )
         if self._request_handle_class is None:
-            raise RuntimeError("fal_client.client.SyncRequestHandle is required for managed FAL gateway mode")
+            raise RuntimeError(
+                "fal_client.client.SyncRequestHandle is required for managed FAL gateway mode"
+            )
 
     def submit(
         self,
@@ -386,11 +453,15 @@ class _ManagedFalSyncClient:
             self._add_hint_header(hint, request_headers)
         if priority is not None:
             if self._add_priority_header is None:
-                raise RuntimeError("fal_client.client.add_priority_header is required for priority requests")
+                raise RuntimeError(
+                    "fal_client.client.add_priority_header is required for priority requests"
+                )
             self._add_priority_header(priority, request_headers)
         if start_timeout is not None:
             if self._add_timeout_header is None:
-                raise RuntimeError("fal_client.client.add_timeout_header is required for timeout requests")
+                raise RuntimeError(
+                    "fal_client.client.add_timeout_header is required for timeout requests"
+                )
             self._add_timeout_header(start_timeout, request_headers)
 
         response = self._maybe_retry_request(
@@ -422,7 +493,10 @@ def _get_managed_fal_client(managed_gateway):
         managed_gateway.nous_user_token,
     )
     with _managed_fal_client_lock:
-        if _managed_fal_client is not None and _managed_fal_client_config == client_config:
+        if (
+            _managed_fal_client is not None
+            and _managed_fal_client_config == client_config
+        ):
             return _managed_fal_client
 
         _managed_fal_client = _ManagedFalSyncClient(
@@ -438,6 +512,8 @@ def _submit_fal_request(model: str, arguments: Dict[str, Any]):
     request_headers = {"x-idempotency-key": str(uuid.uuid4())}
     managed_gateway = _resolve_managed_fal_gateway()
     if managed_gateway is None:
+        if fal_client is None:
+            raise RuntimeError("fal_client library not found — pip install fal-client")
         return fal_client.submit(model, arguments=arguments, headers=request_headers)
 
     managed_client = _get_managed_fal_client(managed_gateway)
@@ -459,7 +535,7 @@ def _submit_fal_request(model: str, arguments: Dict[str, Any]):
                 f"(HTTP {status}). This model may not yet be enabled on "
                 f"the Nous Portal's FAL proxy. Either:\n"
                 f"  • Set FAL_KEY in your environment to use FAL.ai directly, or\n"
-                f"  • Pick a different model via `hermes tools` → Image Generation."
+                f"  • Pick a different model via `dxrk tools` → Image Generation."
             ) from exc
         raise
 
@@ -493,7 +569,8 @@ def _resolve_fal_model() -> tuple:
     """
     model_id = ""
     try:
-        from hermes_cli.config import load_config
+        from dxrk_cli.config import load_config
+
         cfg = load_config()
         img_cfg = cfg.get("image_gen") if isinstance(cfg, dict) else None
         if isinstance(img_cfg, dict):
@@ -513,7 +590,8 @@ def _resolve_fal_model() -> tuple:
     if model_id not in FAL_MODELS:
         logger.warning(
             "Unknown FAL model '%s' in config; falling back to %s",
-            model_id, DEFAULT_MODEL,
+            model_id,
+            DEFAULT_MODEL,
         )
         return DEFAULT_MODEL, FAL_MODELS[DEFAULT_MODEL]
 
@@ -669,7 +747,8 @@ def image_generate_tool(
         if aspect_lc not in VALID_ASPECT_RATIOS:
             logger.warning(
                 "Invalid aspect_ratio '%s', defaulting to '%s'",
-                aspect_ratio, DEFAULT_ASPECT_RATIO,
+                aspect_ratio,
+                DEFAULT_ASPECT_RATIO,
             )
             aspect_lc = DEFAULT_ASPECT_RATIO
 
@@ -684,12 +763,18 @@ def image_generate_tool(
             overrides["output_format"] = output_format
 
         arguments = _build_fal_payload(
-            model_id, prompt, aspect_lc, seed=seed, overrides=overrides,
+            model_id,
+            prompt,
+            aspect_lc,
+            seed=seed,
+            overrides=overrides,
         )
 
         logger.info(
             "Generating image with %s (%s) — prompt: %s",
-            meta.get("display", model_id), model_id, prompt[:80],
+            meta.get("display", model_id),
+            model_id,
+            prompt[:80],
         )
 
         handler = _submit_fal_request(model_id, arguments=arguments)
@@ -732,7 +817,10 @@ def image_generate_tool(
         upscaled_count = sum(1 for img in formatted_images if img.get("upscaled"))
         logger.info(
             "Generated %s image(s) in %.1fs (%s upscaled) via %s",
-            len(formatted_images), generation_time, upscaled_count, model_id,
+            len(formatted_images),
+            generation_time,
+            upscaled_count,
+            model_id,
         )
 
         response_data = {
@@ -782,21 +870,17 @@ def check_image_generation_requirements() -> bool:
     2. Any plugin-registered provider whose ``is_available()`` returns True.
 
     Plugins win only when the in-tree FAL path is NOT ready, which matches
-    the historical behavior: shipping hermes with a FAL key configured
+    the historical behavior: shipping dxrk with a FAL key configured
     should still expose the tool. The active selection among ready
     providers is resolved per-call by ``image_gen.provider``.
     """
-    try:
-        if check_fal_api_key():
-            fal_client  # noqa: F401 — SDK presence check
-            return True
-    except ImportError:
-        pass
+    if check_fal_api_key() and fal_client is not None:
+        return True
 
     # Probe plugin providers. Discovery is idempotent and cheap.
     try:
         from agent.image_gen_registry import list_providers
-        from hermes_cli.plugins import _ensure_plugins_discovered
+        from dxrk_cli.plugins import _ensure_plugins_discovered
 
         _ensure_plugins_discovered()
         for provider in list_providers():
@@ -827,6 +911,7 @@ if __name__ == "__main__":
 
     try:
         import fal_client  # noqa: F401
+
         print("✅ fal_client library available")
     except ImportError:
         print("❌ fal_client library not found — pip install fal-client")
@@ -888,7 +973,8 @@ def _read_configured_image_provider():
     for other features but never asked for OpenAI image gen).
     """
     try:
-        from hermes_cli.config import load_config
+        from dxrk_cli.config import load_config
+
         cfg = load_config()
         section = cfg.get("image_gen") if isinstance(cfg, dict) else None
         if isinstance(section, dict):
@@ -919,7 +1005,7 @@ def _dispatch_to_plugin_provider(prompt: str, aspect_ratio: str):
         # Import locally so plugin discovery isn't triggered just by
         # importing this module (tests rely on that).
         from agent.image_gen_registry import get_provider
-        from hermes_cli.plugins import _ensure_plugins_discovered
+        from dxrk_cli.plugins import _ensure_plugins_discovered
 
         _ensure_plugins_discovered()
         provider = get_provider(configured)
@@ -938,37 +1024,44 @@ def _dispatch_to_plugin_provider(prompt: str, aspect_ratio: str):
             logger.debug("image_gen plugin force-refresh skipped: %s", exc)
 
     if provider is None:
-        return json.dumps({
-            "success": False,
-            "image": None,
-            "error": (
-                f"image_gen.provider='{configured}' is set but no plugin "
-                f"registered that name. Run `hermes plugins list` to see "
-                f"available image gen backends."
-            ),
-            "error_type": "provider_not_registered",
-        })
+        return json.dumps(
+            {
+                "success": False,
+                "image": None,
+                "error": (
+                    f"image_gen.provider='{configured}' is set but no plugin "
+                    f"registered that name. Run `dxrk plugins list` to see "
+                    f"available image gen backends."
+                ),
+                "error_type": "provider_not_registered",
+            }
+        )
 
     try:
         result = provider.generate(prompt=prompt, aspect_ratio=aspect_ratio)
     except Exception as exc:
         logger.warning(
             "Image gen provider '%s' raised: %s",
-            getattr(provider, "name", "?"), exc,
+            getattr(provider, "name", "?"),
+            exc,
         )
-        return json.dumps({
-            "success": False,
-            "image": None,
-            "error": f"Provider '{getattr(provider, 'name', '?')}' error: {exc}",
-            "error_type": "provider_exception",
-        })
+        return json.dumps(
+            {
+                "success": False,
+                "image": None,
+                "error": f"Provider '{getattr(provider, 'name', '?')}' error: {exc}",
+                "error_type": "provider_exception",
+            }
+        )
     if not isinstance(result, dict):
-        return json.dumps({
-            "success": False,
-            "image": None,
-            "error": "Provider returned a non-dict result",
-            "error_type": "provider_contract",
-        })
+        return json.dumps(
+            {
+                "success": False,
+                "image": None,
+                "error": "Provider returned a non-dict result",
+                "error_type": "provider_contract",
+            }
+        )
     return json.dumps(result)
 
 
@@ -997,6 +1090,6 @@ registry.register(
     handler=_handle_image_generate,
     check_fn=check_image_generation_requirements,
     requires_env=[],
-    is_async=False,   # sync fal_client API to avoid "Event loop is closed" in gateway
+    is_async=False,  # sync fal_client API to avoid "Event loop is closed" in gateway
     emoji="🎨",
 )

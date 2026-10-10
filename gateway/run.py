@@ -88,16 +88,16 @@ _ensure_ssl_certs()
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 # Resolve Hermes home directory (respects HERMES_HOME override)
-from hermes_constants import get_hermes_home
+from dxrk_constants import get_dxrk_home
 from utils import atomic_yaml_write, base_url_host_matches, is_truthy_value
-_hermes_home = get_hermes_home()
+_dxrk_home = get_dxrk_home()
 
-# Load environment variables from ~/.hermes/.env first.
+# Load environment variables from ~/.dxrk/.env first.
 # User-managed env files should override stale shell exports on restart.
 from dotenv import load_dotenv  # backward-compat for tests that monkeypatch this symbol
-from hermes_cli.env_loader import load_hermes_dotenv
-_env_path = _hermes_home / '.env'
-load_hermes_dotenv(hermes_home=_hermes_home, project_env=Path(__file__).resolve().parents[1] / '.env')
+from dxrk_cli.env_loader import load_dxrk_dotenv
+_env_path = _dxrk_home / '.env'
+load_dxrk_dotenv(dxrk_home=_dxrk_home, project_env=Path(__file__).resolve().parents[1] / '.env')
 
 
 _DOCKER_VOLUME_SPEC_RE = re.compile(r"^(?P<host>.+):(?P<container>/[^:]+?)(?::(?P<options>[^:]+))?$")
@@ -105,14 +105,14 @@ _DOCKER_MEDIA_OUTPUT_CONTAINER_PATHS = {"/output", "/outputs"}
 
 # Bridge config.yaml values into the environment so os.getenv() picks them up.
 # config.yaml is authoritative for terminal settings — overrides .env.
-_config_path = _hermes_home / 'config.yaml'
+_config_path = _dxrk_home / 'config.yaml'
 if _config_path.exists():
     try:
         import yaml as _yaml
         with open(_config_path, encoding="utf-8") as _f:
             _cfg = _yaml.safe_load(_f) or {}
         # Expand ${ENV_VAR} references before bridging to env vars.
-        from hermes_cli.config import _expand_env_vars
+        from dxrk_cli.config import _expand_env_vars
         _cfg = _expand_env_vars(_cfg)
         # Top-level simple values (fallback only — don't override .env)
         for _key, _val in _cfg.items():
@@ -233,7 +233,7 @@ if _config_path.exists():
 
 # Apply IPv4 preference if configured (before any HTTP clients are created).
 try:
-    from hermes_constants import apply_ipv4_preference
+    from dxrk_constants import apply_ipv4_preference
     _network_cfg = (_cfg if '_cfg' in dir() else {}).get("network", {})
     if isinstance(_network_cfg, dict) and _network_cfg.get("force_ipv4"):
         apply_ipv4_preference(force=True)
@@ -242,14 +242,14 @@ except Exception:
 
 # Validate config structure early — log warnings so gateway operators see problems
 try:
-    from hermes_cli.config import print_config_warnings
+    from dxrk_cli.config import print_config_warnings
     print_config_warnings()
 except Exception:
     pass
 
 # Warn if user has deprecated MESSAGING_CWD / TERMINAL_CWD in .env
 try:
-    from hermes_cli.config import warn_deprecated_cwd_env_vars
+    from dxrk_cli.config import warn_deprecated_cwd_env_vars
     warn_deprecated_cwd_env_vars()
 except Exception:
     pass
@@ -322,11 +322,11 @@ def _resolve_runtime_agent_kwargs() -> dict:
     resolve credentials using the fallback provider chain from config.yaml
     before giving up.
     """
-    from hermes_cli.runtime_provider import (
+    from dxrk_cli.runtime_provider import (
         resolve_runtime_provider,
         format_runtime_provider_error,
     )
-    from hermes_cli.auth import AuthError
+    from dxrk_cli.auth import AuthError
 
     try:
         runtime = resolve_runtime_provider(
@@ -356,10 +356,10 @@ def _resolve_runtime_agent_kwargs() -> dict:
 
 def _try_resolve_fallback_provider() -> dict | None:
     """Attempt to resolve credentials from the fallback_model/fallback_providers config."""
-    from hermes_cli.runtime_provider import resolve_runtime_provider
+    from dxrk_cli.runtime_provider import resolve_runtime_provider
     try:
         import yaml as _y
-        cfg_path = _hermes_home / "config.yaml"
+        cfg_path = _dxrk_home / "config.yaml"
         if not cfg_path.exists():
             return None
         with open(cfg_path, encoding="utf-8") as _f:
@@ -479,11 +479,11 @@ def _check_unavailable_skill(command_name: str) -> str | None:
                 if name == normalized and name in disabled:
                     return (
                         f"The **{command_name}** skill is installed but disabled.\n"
-                        f"Enable it with: `hermes skills config`"
+                        f"Enable it with: `dxrk skills config`"
                     )
 
         # Check optional skills (shipped with repo but not installed)
-        from hermes_constants import get_optional_skills_dir
+        from dxrk_constants import get_optional_skills_dir
         repo_root = Path(__file__).resolve().parent.parent
         optional_dir = get_optional_skills_dir(repo_root / "optional-skills")
         if optional_dir.exists():
@@ -496,7 +496,7 @@ def _check_unavailable_skill(command_name: str) -> str | None:
                     install_path = f"official/{'/'.join(parts)}"
                     return (
                         f"The **{command_name}** skill is available but not installed.\n"
-                        f"Install it with: `hermes skills install {install_path}`"
+                        f"Install it with: `dxrk skills install {install_path}`"
                     )
     except Exception:
         pass
@@ -509,15 +509,15 @@ def _platform_config_key(platform: "Platform") -> str:
 
 
 def _load_gateway_config() -> dict:
-    """Load and parse ~/.hermes/config.yaml, returning {} on any error."""
+    """Load and parse ~/.dxrk/config.yaml, returning {} on any error."""
     try:
-        config_path = _hermes_home / 'config.yaml'
+        config_path = _dxrk_home / 'config.yaml'
         if config_path.exists():
             import yaml
             with open(config_path, 'r', encoding='utf-8') as f:
                 return yaml.safe_load(f) or {}
     except Exception:
-        logger.debug("Could not load gateway config from %s", _hermes_home / 'config.yaml')
+        logger.debug("Could not load gateway config from %s", _dxrk_home / 'config.yaml')
     return {}
 
 
@@ -537,27 +537,27 @@ def _resolve_gateway_model(config: dict | None = None) -> str:
     return ""
 
 
-def _resolve_hermes_bin() -> Optional[list[str]]:
+def _resolve_dxrk_bin() -> Optional[list[str]]:
     """Resolve the Hermes update command as argv parts.
 
     Tries in order:
-    1. ``shutil.which("hermes")`` — standard PATH lookup
-    2. ``sys.executable -m hermes_cli.main`` — fallback when Hermes is running
-       from a venv/module invocation and the ``hermes`` shim is not on PATH
+    1. ``shutil.which("dxrk")`` — standard PATH lookup
+    2. ``sys.executable -m dxrk_cli.main`` — fallback when Hermes is running
+       from a venv/module invocation and the ``dxrk`` shim is not on PATH
 
     Returns argv parts ready for quoting/joining, or ``None`` if neither works.
     """
     import shutil
 
-    hermes_bin = shutil.which("hermes")
-    if hermes_bin:
-        return [hermes_bin]
+    dxrk_bin = shutil.which("dxrk")
+    if dxrk_bin:
+        return [dxrk_bin]
 
     try:
         import importlib.util
 
-        if importlib.util.find_spec("hermes_cli") is not None:
-            return [sys.executable, "-m", "hermes_cli.main"]
+        if importlib.util.find_spec("dxrk_cli") is not None:
+            return [sys.executable, "-m", "dxrk_cli.main"]
     except Exception:
         pass
 
@@ -743,7 +743,7 @@ class GatewayRunner:
         # Initialize session database for session_search tool support
         self._session_db = None
         try:
-            from hermes_state import SessionDB
+            from dxrk_state import SessionDB
             self._session_db = SessionDB()
         except Exception as e:
             logger.debug("SQLite session store not available: %s", e)
@@ -756,7 +756,7 @@ class GatewayRunner:
         # but never raised.
         if self._session_db is not None:
             try:
-                from hermes_cli.config import load_config as _load_full_config
+                from dxrk_cli.config import load_config as _load_full_config
                 _sess_cfg = (_load_full_config().get("sessions") or {})
                 if _sess_cfg.get("auto_prune", False):
                     self._session_db.maybe_auto_prune_and_vacuum(
@@ -769,10 +769,10 @@ class GatewayRunner:
                 logger.debug("state.db auto-maintenance skipped: %s", exc)
 
         # Opportunistic shadow-repo cleanup — deletes orphan/stale
-        # checkpoint repos under ~/.hermes/checkpoints/.  Opt-in via
+        # checkpoint repos under ~/.dxrk/checkpoints/.  Opt-in via
         # checkpoints.auto_prune, idempotent via .last_prune marker.
         try:
-            from hermes_cli.config import load_config as _load_full_config
+            from dxrk_cli.config import load_config as _load_full_config
             _ckpt_cfg = (_load_full_config().get("checkpoints") or {})
             if _ckpt_cfg.get("auto_prune", False):
                 from tools.checkpoint_manager import maybe_auto_prune_checkpoints
@@ -841,7 +841,7 @@ class GatewayRunner:
 
         logger.warning(
             "Docker backend is enabled for the messaging gateway but no explicit host-visible "
-            "output mount (for example '/home/user/.hermes/cache/documents:/output') is configured. "
+            "output mount (for example '/home/user/.dxrk/cache/documents:/output') is configured. "
             "This is fine if the model already emits host-visible paths, but MEDIA file delivery can fail "
             "for container-local paths like '/workspace/...' or '/output/...'."
         )
@@ -851,16 +851,16 @@ class GatewayRunner:
     # -- Setup skill availability ----------------------------------------
 
     def _has_setup_skill(self) -> bool:
-        """Check if the hermes-agent-setup skill is installed."""
+        """Check if the dxrk-agent-setup skill is installed."""
         try:
             from tools.skill_manager_tool import _find_skill
-            return _find_skill("hermes-agent-setup") is not None
+            return _find_skill("dxrk-agent-setup") is not None
         except Exception:
             return False
 
     # -- Voice mode persistence ------------------------------------------
 
-    _VOICE_MODE_PATH = _hermes_home / "gateway_voice_mode.json"
+    _VOICE_MODE_PATH = _dxrk_home / "gateway_voice_mode.json"
 
     def _voice_key(self, platform: Platform, chat_id: str) -> str:
         """Return a platform-namespaced key for voice mode state."""
@@ -951,9 +951,9 @@ class GatewayRunner:
             return
 
         # Push the global voice.auto_tts default (config.yaml) onto the adapter.
-        # Lazy import to avoid adding a module-level dep from gateway → hermes_cli.
+        # Lazy import to avoid adding a module-level dep from gateway → dxrk_cli.
         try:
-            from hermes_cli.config import load_config as _load_full_config
+            from dxrk_cli.config import load_config as _load_full_config
             _full_cfg = _load_full_config()
             _auto_tts_default = bool(
                 (_full_cfg.get("voice") or {}).get("auto_tts", False)
@@ -1086,12 +1086,12 @@ class GatewayRunner:
             )
 
         # When the config has no model.default but a provider was resolved
-        # (e.g. user ran `hermes auth add openai-codex` without `hermes model`),
+        # (e.g. user ran `dxrk auth add openai-codex` without `dxrk model`),
         # fall back to the provider's first catalog model so the API call
         # doesn't fail with "model must be a non-empty string".
         if not model and runtime_kwargs.get("provider"):
             try:
-                from hermes_cli.models import get_default_model_for_provider
+                from dxrk_cli.models import get_default_model_for_provider
                 model = get_default_model_for_provider(runtime_kwargs["provider"])
                 if model:
                     logger.info(
@@ -1111,7 +1111,7 @@ class GatewayRunner:
         mode, attach `request_overrides` so the API call is marked
         accordingly.
         """
-        from hermes_cli.models import resolve_fast_mode_overrides
+        from dxrk_cli.models import resolve_fast_mode_overrides
 
         runtime = {
             "api_key": runtime_kwargs.get("api_key"),
@@ -1340,14 +1340,14 @@ class GatewayRunner:
         """Load ephemeral prefill messages from config or env var.
         
         Checks HERMES_PREFILL_MESSAGES_FILE env var first, then falls back to
-        the prefill_messages_file key in ~/.hermes/config.yaml.
-        Relative paths are resolved from ~/.hermes/.
+        the prefill_messages_file key in ~/.dxrk/config.yaml.
+        Relative paths are resolved from ~/.dxrk/.
         """
         file_path = os.getenv("HERMES_PREFILL_MESSAGES_FILE", "")
         if not file_path:
             try:
                 import yaml as _y
-                cfg_path = _hermes_home / "config.yaml"
+                cfg_path = _dxrk_home / "config.yaml"
                 if cfg_path.exists():
                     with open(cfg_path, encoding="utf-8") as _f:
                         cfg = _y.safe_load(_f) or {}
@@ -1358,7 +1358,7 @@ class GatewayRunner:
             return []
         path = Path(file_path).expanduser()
         if not path.is_absolute():
-            path = _hermes_home / path
+            path = _dxrk_home / path
         if not path.exists():
             logger.warning("Prefill messages file not found: %s", path)
             return []
@@ -1378,14 +1378,14 @@ class GatewayRunner:
         """Load ephemeral system prompt from config or env var.
         
         Checks HERMES_EPHEMERAL_SYSTEM_PROMPT env var first, then falls back to
-        agent.system_prompt in ~/.hermes/config.yaml.
+        agent.system_prompt in ~/.dxrk/config.yaml.
         """
         prompt = os.getenv("HERMES_EPHEMERAL_SYSTEM_PROMPT", "")
         if prompt:
             return prompt
         try:
             import yaml as _y
-            cfg_path = _hermes_home / "config.yaml"
+            cfg_path = _dxrk_home / "config.yaml"
             if cfg_path.exists():
                 with open(cfg_path, encoding="utf-8") as _f:
                     cfg = _y.safe_load(_f) or {}
@@ -1402,11 +1402,11 @@ class GatewayRunner:
         "minimal", "low", "medium", "high", "xhigh". Returns None to use
         default (medium).
         """
-        from hermes_constants import parse_reasoning_effort
+        from dxrk_constants import parse_reasoning_effort
         effort = ""
         try:
             import yaml as _y
-            cfg_path = _hermes_home / "config.yaml"
+            cfg_path = _dxrk_home / "config.yaml"
             if cfg_path.exists():
                 with open(cfg_path, encoding="utf-8") as _f:
                     cfg = _y.safe_load(_f) or {}
@@ -1489,7 +1489,7 @@ class GatewayRunner:
         raw = ""
         try:
             import yaml as _y
-            cfg_path = _hermes_home / "config.yaml"
+            cfg_path = _dxrk_home / "config.yaml"
             if cfg_path.exists():
                 with open(cfg_path, encoding="utf-8") as _f:
                     cfg = _y.safe_load(_f) or {}
@@ -1510,7 +1510,7 @@ class GatewayRunner:
         """Load show_reasoning toggle from config.yaml display section."""
         try:
             import yaml as _y
-            cfg_path = _hermes_home / "config.yaml"
+            cfg_path = _dxrk_home / "config.yaml"
             if cfg_path.exists():
                 with open(cfg_path, encoding="utf-8") as _f:
                     cfg = _y.safe_load(_f) or {}
@@ -1526,7 +1526,7 @@ class GatewayRunner:
         if not mode:
             try:
                 import yaml as _y
-                cfg_path = _hermes_home / "config.yaml"
+                cfg_path = _dxrk_home / "config.yaml"
                 if cfg_path.exists():
                     with open(cfg_path, encoding="utf-8") as _f:
                         cfg = _y.safe_load(_f) or {}
@@ -1546,7 +1546,7 @@ class GatewayRunner:
         if not raw:
             try:
                 import yaml as _y
-                cfg_path = _hermes_home / "config.yaml"
+                cfg_path = _dxrk_home / "config.yaml"
                 if cfg_path.exists():
                     with open(cfg_path, encoding="utf-8") as _f:
                         cfg = _y.safe_load(_f) or {}
@@ -1579,7 +1579,7 @@ class GatewayRunner:
         if not mode:
             try:
                 import yaml as _y
-                cfg_path = _hermes_home / "config.yaml"
+                cfg_path = _dxrk_home / "config.yaml"
                 if cfg_path.exists():
                     with open(cfg_path, encoding="utf-8") as _f:
                         cfg = _y.safe_load(_f) or {}
@@ -1605,7 +1605,7 @@ class GatewayRunner:
         """Load OpenRouter provider routing preferences from config.yaml."""
         try:
             import yaml as _y
-            cfg_path = _hermes_home / "config.yaml"
+            cfg_path = _dxrk_home / "config.yaml"
             if cfg_path.exists():
                 with open(cfg_path, encoding="utf-8") as _f:
                     cfg = _y.safe_load(_f) or {}
@@ -1624,7 +1624,7 @@ class GatewayRunner:
         """
         try:
             import yaml as _y
-            cfg_path = _hermes_home / "config.yaml"
+            cfg_path = _dxrk_home / "config.yaml"
             if cfg_path.exists():
                 with open(cfg_path, encoding="utf-8") as _f:
                     cfg = _y.safe_load(_f) or {}
@@ -1790,7 +1790,7 @@ class GatewayRunner:
                     f"{message}\n\n"
                     f"{busy_input_hint_gateway(_hint_mode)}"
                 )
-                mark_seen(_hermes_home / "config.yaml", BUSY_INPUT_FLAG)
+                mark_seen(_dxrk_home / "config.yaml", BUSY_INPUT_FLAG)
         except Exception as _onb_err:
             logger.debug("Failed to apply busy-input onboarding hint: %s", _onb_err)
 
@@ -1927,7 +1927,7 @@ class GatewayRunner:
     def _finalize_shutdown_agents(self, active_agents: Dict[str, Any]) -> None:
         for agent in active_agents.values():
             try:
-                from hermes_cli.plugins import invoke_hook as _invoke_hook
+                from dxrk_cli.plugins import invoke_hook as _invoke_hook
                 _invoke_hook(
                     "on_session_finalize",
                     session_id=getattr(agent, "session_id", None),
@@ -1990,7 +1990,7 @@ class GatewayRunner:
         """
         import json
 
-        path = _hermes_home / self._STUCK_LOOP_FILE
+        path = _dxrk_home / self._STUCK_LOOP_FILE
         try:
             counts = json.loads(path.read_text()) if path.exists() else {}
         except Exception:
@@ -2017,7 +2017,7 @@ class GatewayRunner:
         """
         import json
 
-        path = _hermes_home / self._STUCK_LOOP_FILE
+        path = _dxrk_home / self._STUCK_LOOP_FILE
         if not path.exists():
             return 0
 
@@ -2064,7 +2064,7 @@ class GatewayRunner:
         """
         import json
 
-        path = _hermes_home / self._STUCK_LOOP_FILE
+        path = _dxrk_home / self._STUCK_LOOP_FILE
         if not path.exists():
             return
         try:
@@ -2082,13 +2082,13 @@ class GatewayRunner:
         import shutil
         import subprocess
 
-        hermes_cmd = _resolve_hermes_bin()
-        if not hermes_cmd:
-            logger.error("Could not locate hermes binary for detached /restart")
+        dxrk_cmd = _resolve_dxrk_bin()
+        if not dxrk_cmd:
+            logger.error("Could not locate dxrk binary for detached /restart")
             return
 
         current_pid = os.getpid()
-        cmd = " ".join(shlex.quote(part) for part in hermes_cmd)
+        cmd = " ".join(shlex.quote(part) for part in dxrk_cmd)
         shell_cmd = (
             f"while kill -0 {current_pid} 2>/dev/null; do sleep 0.2; done; "
             f"{cmd} gateway restart"
@@ -2135,7 +2135,7 @@ class GatewayRunner:
         logger.info("Starting Hermes Gateway...")
         logger.info("Session storage: %s", self.config.sessions_dir)
         try:
-            from hermes_cli.profiles import get_active_profile_name
+            from dxrk_cli.profiles import get_active_profile_name
             _profile = get_active_profile_name()
             if _profile and _profile != "default":
                 logger.info("Active profile: %s", _profile)
@@ -2183,18 +2183,18 @@ class GatewayRunner:
         if not _any_allowlist and not _allow_all:
             logger.warning(
                 "No user allowlists configured. All unauthorized users will be denied. "
-                "Set GATEWAY_ALLOW_ALL_USERS=true in ~/.hermes/.env to allow open access, "
+                "Set GATEWAY_ALLOW_ALL_USERS=true in ~/.dxrk/.env to allow open access, "
                 "or configure platform allowlists (e.g., TELEGRAM_ALLOWED_USERS=your_id)."
             )
         
         # Discover Python plugins before shell hooks so plugin block
         # decisions take precedence in tie cases.  The CLI startup path
-        # does this via an explicit call in hermes_cli/main.py; the
+        # does this via an explicit call in dxrk_cli/main.py; the
         # gateway lazily imports run_agent inside per-request handlers,
         # so the discover_plugins() side-effect in model_tools.py is NOT
         # guaranteed to have run by the time we reach this point.
         try:
-            from hermes_cli.plugins import discover_plugins
+            from dxrk_cli.plugins import discover_plugins
             discover_plugins()
         except Exception:
             logger.debug(
@@ -2211,7 +2211,7 @@ class GatewayRunner:
         # hooks_auto_accept here would just duplicate that lookup.
         # Failures are logged but must never block gateway startup.
         try:
-            from hermes_cli.config import load_config
+            from dxrk_cli.config import load_config
             from agent.shell_hooks import register_from_config
             register_from_config(load_config(), accept_hooks=False)
         except Exception:
@@ -2239,9 +2239,9 @@ class GatewayRunner:
         #
         # SKIP suspension after a clean (graceful) shutdown — the previous
         # process already drained active agents, so sessions aren't stuck.
-        # This prevents unwanted auto-resets after `hermes update`,
-        # `hermes gateway restart`, or `/restart`.
-        _clean_marker = _hermes_home / ".clean_shutdown"
+        # This prevents unwanted auto-resets after `dxrk update`,
+        # `dxrk gateway restart`, or `/restart`.
+        _clean_marker = _dxrk_home / ".clean_shutdown"
         if _clean_marker.exists():
             logger.info("Previous gateway exited cleanly — skipping session suspension")
             try:
@@ -2434,8 +2434,8 @@ class GatewayRunner:
         if not notified and any(
             path.exists()
             for path in (
-                _hermes_home / ".update_pending.json",
-                _hermes_home / ".update_pending.claimed.json",
+                _dxrk_home / ".update_pending.json",
+                _dxrk_home / ".update_pending.claimed.json",
             )
         ):
             self._schedule_update_notification_watch()
@@ -2512,7 +2512,7 @@ class GatewayRunner:
                 for key, entry in _expired_entries:
                     try:
                         try:
-                            from hermes_cli.plugins import invoke_hook as _invoke_hook
+                            from dxrk_cli.plugins import invoke_hook as _invoke_hook
                             _parts = key.split(":")
                             _platform = _parts[2] if len(_parts) > 2 else ""
                             _invoke_hook(
@@ -2981,7 +2981,7 @@ class GatewayRunner:
             # of resuming a half-finished tool loop.
             if not timed_out:
                 try:
-                    (_hermes_home / ".clean_shutdown").touch()
+                    (_dxrk_home / ".clean_shutdown").touch()
                 except Exception:
                     pass
             else:
@@ -3054,7 +3054,7 @@ class GatewayRunner:
         elif platform == Platform.SLACK:
             from gateway.platforms.slack import SlackAdapter, check_slack_requirements
             if not check_slack_requirements():
-                logger.warning("Slack: slack-bolt not installed. Run: pip install 'hermes-agent[slack]'")
+                logger.warning("Slack: slack-bolt not installed. Run: pip install 'dxrk-agent[slack]'")
                 return None
             return SlackAdapter(config)
 
@@ -3408,7 +3408,7 @@ class GatewayRunner:
         # (e.g. customer handover ingest) without triggering the pairing flow.
         if not is_internal:
             try:
-                from hermes_cli.plugins import invoke_hook as _invoke_hook
+                from dxrk_cli.plugins import invoke_hook as _invoke_hook
                 _hook_results = _invoke_hook(
                     "pre_gateway_dispatch",
                     event=event,
@@ -3470,7 +3470,7 @@ class GatewayRunner:
                             f"Hi~ I don't recognize you yet!\n\n"
                             f"Here's your pairing code: `{code}`\n\n"
                             f"Ask the bot owner to run:\n"
-                            f"`hermes pairing approve {platform_name} {code}`"
+                            f"`dxrk pairing approve {platform_name} {code}`"
                         )
                 else:
                     adapter = self.adapters.get(source.platform)
@@ -3506,7 +3506,7 @@ class GatewayRunner:
                 _recognized_cmd = None
                 if cmd:
                     try:
-                        from hermes_cli.commands import resolve_command as _resolve_update_cmd
+                        from dxrk_cli.commands import resolve_command as _resolve_update_cmd
                     except Exception:
                         _resolve_update_cmd = None
                     if _resolve_update_cmd is not None:
@@ -3520,7 +3520,7 @@ class GatewayRunner:
                 else:
                     response_text = raw
             if response_text:
-                response_path = _hermes_home / ".update_response"
+                response_path = _dxrk_home / ".update_response"
                 try:
                     tmp = response_path.with_suffix(".tmp")
                     tmp.write_text(response_text)
@@ -3538,7 +3538,7 @@ class GatewayRunner:
             # blocking on stdin until the 30-minute watcher timeout.
             # The slash command then falls through to normal dispatch.
             if _recognized_cmd:
-                response_path = _hermes_home / ".update_response"
+                response_path = _dxrk_home / ".update_response"
                 try:
                     tmp = response_path.with_suffix(".tmp")
                     tmp.write_text("")
@@ -3621,7 +3621,7 @@ class GatewayRunner:
                 return await self._handle_status_command(event)
 
             # Resolve the command once for all early-intercept checks below.
-            from hermes_cli.commands import (
+            from dxrk_cli.commands import (
                 ACTIVE_SESSION_BYPASS_COMMANDS as _DEDICATED_HANDLERS,
                 resolve_command as _resolve_cmd_inner,
             )
@@ -3892,7 +3892,7 @@ class GatewayRunner:
         # Check for commands
         command = event.get_command()
 
-        from hermes_cli.commands import (
+        from dxrk_cli.commands import (
             GATEWAY_KNOWN_COMMANDS,
             is_gateway_known_command,
             resolve_command as _resolve_cmd,
@@ -4114,10 +4114,10 @@ class GatewayRunner:
         # Plugin-registered slash commands
         if command:
             try:
-                from hermes_cli.plugins import get_plugin_command_handler
+                from dxrk_cli.plugins import get_plugin_command_handler
                 # Normalize underscores to hyphens so Telegram's underscored
                 # autocomplete form matches plugin commands registered with
-                # hyphens. See hermes_cli/commands.py:_build_telegram_menu.
+                # hyphens. See dxrk_cli/commands.py:_build_telegram_menu.
                 plugin_handler = get_plugin_command_handler(command.replace("_", "-"))
                 if plugin_handler:
                     user_args = event.get_command_args().strip()
@@ -4153,7 +4153,7 @@ class GatewayRunner:
                         if _skill_name in _get_plat_disabled(platform=_plat):
                             return (
                                 f"The **{_skill_name}** skill is disabled for {_plat}.\n"
-                                f"Enable it with: `hermes skills config`"
+                                f"Enable it with: `dxrk skills config`"
                             )
                     user_instruction = event.get_command_args().strip()
                     msg = build_skill_invocation_message(
@@ -4312,7 +4312,7 @@ class GatewayRunner:
                                 "then /restart the gateway."
                             )
                             if self._has_setup_skill():
-                                _stt_msg += "\n\nFor full setup instructions, type: `/skill hermes-agent-setup`"
+                                _stt_msg += "\n\nFor full setup instructions, type: `/skill dxrk-agent-setup`"
                             await _stt_adapter.send(
                                 source.chat_id,
                                 _stt_msg,
@@ -4597,7 +4597,7 @@ class GatewayRunner:
             _hyg_api_key = None
             _hyg_data = {}
             try:
-                _hyg_cfg_path = _hermes_home / "config.yaml"
+                _hyg_cfg_path = _dxrk_home / "config.yaml"
                 if _hyg_cfg_path.exists():
                     import yaml as _hyg_yaml
                     with open(_hyg_cfg_path, encoding="utf-8") as _hyg_f:
@@ -4648,7 +4648,7 @@ class GatewayRunner:
                 if _hyg_config_context_length is None and _hyg_base_url:
                     try:
                         try:
-                            from hermes_cli.config import get_compatible_custom_providers as _gw_gcp
+                            from dxrk_cli.config import get_compatible_custom_providers as _gw_gcp
                             _hyg_custom_providers = _gw_gcp(_hyg_data)
                         except Exception:
                             _hyg_custom_providers = _hyg_data.get("custom_providers")
@@ -4853,10 +4853,10 @@ class GatewayRunner:
                 adapter = self.adapters.get(source.platform)
                 if adapter:
                     # Slack dispatches all Hermes commands through a single
-                    # parent slash command `/hermes`; bare `/sethome` is not
+                    # parent slash command `/dxrk`; bare `/sethome` is not
                     # registered and would fail with "app did not respond".
                     sethome_cmd = (
-                        "/hermes sethome"
+                        "/dxrk sethome"
                         if source.platform == Platform.SLACK
                         else "/sethome"
                     )
@@ -5307,7 +5307,7 @@ class GatewayRunner:
         custom_provs = None
 
         try:
-            cfg_path = _hermes_home / "config.yaml"
+            cfg_path = _dxrk_home / "config.yaml"
             if cfg_path.exists():
                 import yaml as _info_yaml
                 with open(cfg_path, encoding="utf-8") as f:
@@ -5323,7 +5323,7 @@ class GatewayRunner:
                     provider = model_cfg.get("provider") or None
                     base_url = model_cfg.get("base_url") or None
                 try:
-                    from hermes_cli.config import get_compatible_custom_providers
+                    from dxrk_cli.config import get_compatible_custom_providers
                     custom_provs = get_compatible_custom_providers(data)
                 except Exception:
                     custom_provs = data.get("custom_providers")
@@ -5436,7 +5436,7 @@ class GatewayRunner:
 
         # Fire plugin on_session_finalize hook (session boundary)
         try:
-            from hermes_cli.plugins import invoke_hook as _invoke_hook
+            from dxrk_cli.plugins import invoke_hook as _invoke_hook
             _old_sid = old_entry.session_id if old_entry else None
             _invoke_hook("on_session_finalize", session_id=_old_sid,
                          platform=source.platform.value if source.platform else "")
@@ -5472,7 +5472,7 @@ class GatewayRunner:
 
         # Fire plugin on_session_reset hook (new session guaranteed to exist)
         try:
-            from hermes_cli.plugins import invoke_hook as _invoke_hook
+            from dxrk_cli.plugins import invoke_hook as _invoke_hook
             _new_sid = new_entry.session_id if new_entry else None
             _invoke_hook("on_session_reset", session_id=_new_sid,
                          platform=source.platform.value if source.platform else "")
@@ -5481,7 +5481,7 @@ class GatewayRunner:
 
         # Append a random tip to the reset message
         try:
-            from hermes_cli.tips import get_random_tip
+            from dxrk_cli.tips import get_random_tip
             _tip_line = f"\n✦ Tip: {get_random_tip()}"
         except Exception:
             _tip_line = ""
@@ -5492,10 +5492,10 @@ class GatewayRunner:
     
     async def _handle_profile_command(self, event: MessageEvent) -> str:
         """Handle /profile — show active profile name and home directory."""
-        from hermes_constants import display_hermes_home
-        from hermes_cli.profiles import get_active_profile_name
+        from dxrk_constants import display_dxrk_home
+        from dxrk_cli.profiles import get_active_profile_name
 
-        display = display_hermes_home()
+        display = display_dxrk_home()
         profile_name = get_active_profile_name()
 
         lines = [
@@ -5715,7 +5715,7 @@ class GatewayRunner:
             }
             if event.source.thread_id:
                 notify_data["thread_id"] = event.source.thread_id
-            (_hermes_home / ".restart_notify.json").write_text(
+            (_dxrk_home / ".restart_notify.json").write_text(
                 json.dumps(notify_data)
             )
         except Exception as e:
@@ -5733,7 +5733,7 @@ class GatewayRunner:
             }
             if event.platform_update_id is not None:
                 dedup_data["update_id"] = event.platform_update_id
-            (_hermes_home / ".restart_last_processed.json").write_text(
+            (_dxrk_home / ".restart_last_processed.json").write_text(
                 json.dumps(dedup_data)
             )
         except Exception as e:
@@ -5752,7 +5752,7 @@ class GatewayRunner:
             self.request_restart(detached=True, via_service=False)
         if active_agents:
             return f"⏳ Draining {active_agents} active agent(s) before restart..."
-        return "♻ Restarting gateway. If you aren't notified within 60 seconds, restart from the console with `hermes gateway restart`."
+        return "♻ Restarting gateway. If you aren't notified within 60 seconds, restart from the console with `dxrk gateway restart`."
 
     def _is_stale_restart_redelivery(self, event: MessageEvent) -> bool:
         """Return True if this /restart is a Telegram re-delivery we already handled.
@@ -5782,7 +5782,7 @@ class GatewayRunner:
             return False
 
         try:
-            marker_path = _hermes_home / ".restart_last_processed.json"
+            marker_path = _dxrk_home / ".restart_last_processed.json"
             if not marker_path.exists():
                 return False
             data = json.loads(marker_path.read_text())
@@ -5806,7 +5806,7 @@ class GatewayRunner:
 
     async def _handle_help_command(self, event: MessageEvent) -> str:
         """Handle /help command - list available commands."""
-        from hermes_cli.commands import gateway_help_lines
+        from dxrk_cli.commands import gateway_help_lines
         lines = [
             "📖 **Hermes Commands**\n",
             *gateway_help_lines(),
@@ -5828,7 +5828,7 @@ class GatewayRunner:
 
     async def _handle_commands_command(self, event: MessageEvent) -> str:
         """Handle /commands [page] - paginated list of all commands and skills."""
-        from hermes_cli.commands import gateway_help_lines
+        from dxrk_cli.commands import gateway_help_lines
 
         raw_args = event.get_command_args().strip()
         if raw_args:
@@ -5890,11 +5890,11 @@ class GatewayRunner:
           /model --provider <provider>        — switch to provider, auto-detect model
         """
         import yaml
-        from hermes_cli.model_switch import (
+        from dxrk_cli.model_switch import (
             switch_model as _switch_model, parse_model_flags,
             list_authenticated_providers,
         )
-        from hermes_cli.providers import get_label
+        from dxrk_cli.providers import get_label
 
         raw_args = event.get_command_args().strip()
 
@@ -5908,7 +5908,7 @@ class GatewayRunner:
         current_api_key = ""
         user_provs = None
         custom_provs = None
-        config_path = _hermes_home / "config.yaml"
+        config_path = _dxrk_home / "config.yaml"
         try:
             if config_path.exists():
                 with open(config_path, encoding="utf-8") as f:
@@ -5920,7 +5920,7 @@ class GatewayRunner:
                     current_base_url = model_cfg.get("base_url", "")
                 user_provs = cfg.get("providers")
                 try:
-                    from hermes_cli.config import get_compatible_custom_providers
+                    from dxrk_cli.config import get_compatible_custom_providers
                     custom_provs = get_compatible_custom_providers(cfg)
                 except Exception:
                     custom_provs = cfg.get("custom_providers")
@@ -6031,7 +6031,7 @@ class GatewayRunner:
                         lines = [f"Model switched to `{result.new_model}`"]
                         lines.append(f"Provider: {plabel}")
                         mi = result.model_info
-                        from hermes_cli.model_switch import resolve_display_context_length
+                        from dxrk_cli.model_switch import resolve_display_context_length
                         ctx = resolve_display_context_length(
                             result.new_model,
                             result.target_provider,
@@ -6166,7 +6166,7 @@ class GatewayRunner:
                 model_cfg["provider"] = result.target_provider
                 if result.base_url:
                     model_cfg["base_url"] = result.base_url
-                from hermes_cli.config import save_config
+                from dxrk_cli.config import save_config
                 save_config(cfg)
             except Exception as e:
                 logger.warning("Failed to persist model switch: %s", e)
@@ -6179,7 +6179,7 @@ class GatewayRunner:
         # Context: always resolve via the provider-aware chain so Codex OAuth,
         # Copilot, and Nous-enforced caps win over the raw models.dev entry.
         mi = result.model_info
-        from hermes_cli.model_switch import resolve_display_context_length
+        from dxrk_cli.model_switch import resolve_display_context_length
         ctx = resolve_display_context_length(
             result.new_model,
             result.target_provider,
@@ -6218,10 +6218,10 @@ class GatewayRunner:
     async def _handle_personality_command(self, event: MessageEvent) -> str:
         """Handle /personality command - list or set a personality."""
         import yaml
-        from hermes_constants import display_hermes_home
+        from dxrk_constants import display_dxrk_home
 
         args = event.get_command_args().strip().lower()
-        config_path = _hermes_home / 'config.yaml'
+        config_path = _dxrk_home / 'config.yaml'
 
         try:
             if config_path.exists():
@@ -6236,7 +6236,7 @@ class GatewayRunner:
             personalities = {}
 
         if not personalities:
-            return f"No personalities configured in `{display_hermes_home()}/config.yaml`"
+            return f"No personalities configured in `{display_dxrk_home()}/config.yaml`"
 
         if not args:
             lines = ["🎭 **Available Personalities**\n"]
@@ -6363,7 +6363,7 @@ class GatewayRunner:
         # Save to config.yaml
         try:
             import yaml
-            config_path = _hermes_home / 'config.yaml'
+            config_path = _dxrk_home / 'config.yaml'
             user_config = {}
             if config_path.exists():
                 with open(config_path, encoding="utf-8") as f:
@@ -6683,7 +6683,7 @@ class GatewayRunner:
             # Use .mp3 extension so edge-tts conversion to opus works correctly.
             # The TTS tool may convert to .ogg — use file_path from result.
             audio_path = os.path.join(
-                tempfile.gettempdir(), "hermes_voice",
+                tempfile.gettempdir(), "dxrk_voice",
                 f"tts_reply_{_uuid.uuid4().hex[:12]}.mp3",
             )
             os.makedirs(os.path.dirname(audio_path), exist_ok=True)
@@ -6810,7 +6810,7 @@ class GatewayRunner:
         cp_cfg = {}
         try:
             import yaml as _y
-            _cfg_path = _hermes_home / "config.yaml"
+            _cfg_path = _dxrk_home / "config.yaml"
             if _cfg_path.exists():
                 with open(_cfg_path, encoding="utf-8") as _f:
                     _data = _y.safe_load(_f) or {}
@@ -6919,7 +6919,7 @@ class GatewayRunner:
 
             platform_key = _platform_config_key(source.platform)
 
-            from hermes_cli.tools_config import _get_platform_tools
+            from dxrk_cli.tools_config import _get_platform_tools
             enabled_toolsets = sorted(_get_platform_tools(user_config, platform_key))
 
             pr = self._provider_routing
@@ -7048,7 +7048,7 @@ class GatewayRunner:
 
         raw_args = event.get_command_args().strip()
         args, persist_global = self._parse_reasoning_command_args(raw_args)
-        config_path = _hermes_home / "config.yaml"
+        config_path = _dxrk_home / "config.yaml"
         session_key = self._session_key_for_source(event.source)
         self._show_reasoning = self._load_show_reasoning()
         self._reasoning_config = self._resolve_session_reasoning_config(
@@ -7149,10 +7149,10 @@ class GatewayRunner:
     async def _handle_fast_command(self, event: MessageEvent) -> str:
         """Handle /fast — mirror the CLI Priority Processing toggle in gateway chats."""
         import yaml
-        from hermes_cli.models import model_supports_fast_mode
+        from dxrk_cli.models import model_supports_fast_mode
 
         args = event.get_command_args().strip().lower()
-        config_path = _hermes_home / "config.yaml"
+        config_path = _dxrk_home / "config.yaml"
         self._service_tier = self._load_service_tier()
 
         user_config = _load_gateway_config()
@@ -7234,7 +7234,7 @@ class GatewayRunner:
         """
         import yaml
 
-        config_path = _hermes_home / "config.yaml"
+        config_path = _dxrk_home / "config.yaml"
         platform_key = _platform_config_key(event.source.platform)
 
         # --- check config gate ------------------------------------------------
@@ -7778,7 +7778,7 @@ class GatewayRunner:
                     i += 1
 
         try:
-            from hermes_state import SessionDB
+            from dxrk_state import SessionDB
             from agent.insights import InsightsEngine
 
             loop = asyncio.get_running_loop()
@@ -7981,10 +7981,10 @@ class GatewayRunner:
 
         Gateway uploads ONLY the summary report (system info + log tails),
         NOT full log files, to protect conversation privacy.  Users who need
-        full log uploads should use ``hermes debug share`` from the CLI.
+        full log uploads should use ``dxrk debug share`` from the CLI.
         """
         import asyncio
-        from hermes_cli.debug import (
+        from dxrk_cli.debug import (
             _capture_dump, collect_debug_report,
             upload_to_pastebin, _schedule_auto_delete,
             _GATEWAY_PRIVACY_NOTICE, _best_effort_sweep_expired_pastes,
@@ -8014,7 +8014,7 @@ class GatewayRunner:
 
             lines.append("")
             lines.append("⏱ Pastes will auto-delete in 6 hours.")
-            lines.append("For full log uploads, use `hermes debug share` from the CLI.")
+            lines.append("For full log uploads, use `dxrk debug share` from the CLI.")
             lines.append("Share these links with the Hermes team for support.")
             return "\n".join(lines)
 
@@ -8023,8 +8023,8 @@ class GatewayRunner:
     async def _handle_update_command(self, event: MessageEvent) -> str:
         """Handle /update command — update Hermes Agent to the latest version.
 
-        Spawns ``hermes update`` in a detached session (via ``setsid``) so it
-        survives the gateway restart that ``hermes update`` may trigger. Marker
+        Spawns ``dxrk update`` in a detached session (via ``setsid``) so it
+        survives the gateway restart that ``dxrk update`` may trigger. Marker
         files are written so either the current gateway process or the next one
         can notify the user when the update finishes.
         """
@@ -8032,12 +8032,12 @@ class GatewayRunner:
         import shutil
         import subprocess
         from datetime import datetime
-        from hermes_cli.config import is_managed, format_managed_message
+        from dxrk_cli.config import is_managed, format_managed_message
 
         # Block non-messaging platforms (API server, webhooks, ACP)
         platform = event.source.platform
         if platform not in self._UPDATE_ALLOWED_PLATFORMS:
-            return "✗ /update is only available from messaging platforms. Run `hermes update` from the terminal."
+            return "✗ /update is only available from messaging platforms. Run `dxrk update` from the terminal."
 
         if is_managed():
             return f"✗ {format_managed_message('update Hermes Agent')}"
@@ -8048,18 +8048,18 @@ class GatewayRunner:
         if not git_dir.exists():
             return "✗ Not a git repository — cannot update."
 
-        hermes_cmd = _resolve_hermes_bin()
-        if not hermes_cmd:
+        dxrk_cmd = _resolve_dxrk_bin()
+        if not dxrk_cmd:
             return (
-                "✗ Could not locate the `hermes` command. "
+                "✗ Could not locate the `dxrk` command. "
                 "Hermes is running, but the update command could not find the "
                 "executable on PATH or via the current Python interpreter. "
-                "Try running `hermes update` manually in your terminal."
+                "Try running `dxrk update` manually in your terminal."
             )
 
-        pending_path = _hermes_home / ".update_pending.json"
-        output_path = _hermes_home / ".update_output.txt"
-        exit_code_path = _hermes_home / ".update_exit_code"
+        pending_path = _dxrk_home / ".update_pending.json"
+        output_path = _dxrk_home / ".update_output.txt"
+        exit_code_path = _dxrk_home / ".update_exit_code"
         session_key = self._session_key_for_source(event.source)
         pending = {
             "platform": event.source.platform.value,
@@ -8073,7 +8073,7 @@ class GatewayRunner:
         _tmp_pending.replace(pending_path)
         exit_code_path.unlink(missing_ok=True)
 
-        # Spawn `hermes update --gateway` detached so it survives gateway restart.
+        # Spawn `dxrk update --gateway` detached so it survives gateway restart.
         # --gateway enables file-based IPC for interactive prompts (stash
         # restore, config migration) so the gateway can forward them to the
         # user instead of silently skipping them.
@@ -8081,9 +8081,9 @@ class GatewayRunner:
         # where systemd-run --user fails due to missing D-Bus session).
         # PYTHONUNBUFFERED ensures output is flushed line-by-line so the
         # gateway can stream it to the messenger in near-real-time.
-        hermes_cmd_str = " ".join(shlex.quote(part) for part in hermes_cmd)
+        dxrk_cmd_str = " ".join(shlex.quote(part) for part in dxrk_cmd)
         update_cmd = (
-            f"PYTHONUNBUFFERED=1 {hermes_cmd_str} update --gateway"
+            f"PYTHONUNBUFFERED=1 {dxrk_cmd_str} update --gateway"
             f" > {shlex.quote(str(output_path))} 2>&1; "
             f"status=$?; printf '%s' \"$status\" > {shlex.quote(str(exit_code_path))}"
         )
@@ -8132,7 +8132,7 @@ class GatewayRunner:
         stream_interval: float = 4.0,
         timeout: float = 1800.0,
     ) -> None:
-        """Watch ``hermes update --gateway``, streaming output + forwarding prompts.
+        """Watch ``dxrk update --gateway``, streaming output + forwarding prompts.
 
         Polls ``.update_output.txt`` for new content and sends chunks to the
         user periodically.  Detects ``.update_prompt.json`` (written by the
@@ -8140,11 +8140,11 @@ class GatewayRunner:
         the messenger.  The user's next message is intercepted by
         ``_handle_message`` and written to ``.update_response``.
         """
-        pending_path = _hermes_home / ".update_pending.json"
-        claimed_path = _hermes_home / ".update_pending.claimed.json"
-        output_path = _hermes_home / ".update_output.txt"
-        exit_code_path = _hermes_home / ".update_exit_code"
-        prompt_path = _hermes_home / ".update_prompt.json"
+        pending_path = _dxrk_home / ".update_pending.json"
+        claimed_path = _dxrk_home / ".update_pending.claimed.json"
+        output_path = _dxrk_home / ".update_output.txt"
+        exit_code_path = _dxrk_home / ".update_exit_code"
+        prompt_path = _dxrk_home / ".update_prompt.json"
 
         loop = asyncio.get_running_loop()
         deadline = loop.time() + timeout
@@ -8241,7 +8241,7 @@ class GatewayRunner:
                 for p in (pending_path, claimed_path, output_path,
                           exit_code_path, prompt_path):
                     p.unlink(missing_ok=True)
-                (_hermes_home / ".update_response").unlink(missing_ok=True)
+                (_dxrk_home / ".update_response").unlink(missing_ok=True)
                 self._update_prompt_pending.pop(session_key, None)
                 return
 
@@ -8319,7 +8319,7 @@ class GatewayRunner:
             for p in (pending_path, claimed_path, output_path,
                       exit_code_path, prompt_path):
                 p.unlink(missing_ok=True)
-            (_hermes_home / ".update_response").unlink(missing_ok=True)
+            (_dxrk_home / ".update_response").unlink(missing_ok=True)
             self._update_prompt_pending.pop(session_key, None)
 
     async def _send_update_notification(self) -> bool:
@@ -8332,10 +8332,10 @@ class GatewayRunner:
         cannot resolve the adapter (e.g. after a gateway restart where the
         platform hasn't reconnected yet).
         """
-        pending_path = _hermes_home / ".update_pending.json"
-        claimed_path = _hermes_home / ".update_pending.claimed.json"
-        output_path = _hermes_home / ".update_output.txt"
-        exit_code_path = _hermes_home / ".update_exit_code"
+        pending_path = _dxrk_home / ".update_pending.json"
+        claimed_path = _dxrk_home / ".update_pending.claimed.json"
+        output_path = _dxrk_home / ".update_output.txt"
+        exit_code_path = _dxrk_home / ".update_exit_code"
 
         if not pending_path.exists() and not claimed_path.exists():
             return False
@@ -8389,7 +8389,7 @@ class GatewayRunner:
                     if exit_code == 0:
                         msg = "✅ Hermes update finished successfully."
                     else:
-                        msg = "❌ Hermes update failed. Check the gateway logs or run `hermes update` manually for details."
+                        msg = "❌ Hermes update failed. Check the gateway logs or run `dxrk update` manually for details."
                 await adapter.send(chat_id, msg)
                 logger.info(
                     "Sent post-update notification to %s:%s (exit=%s)",
@@ -8410,7 +8410,7 @@ class GatewayRunner:
 
     async def _send_restart_notification(self) -> None:
         """Notify the chat that initiated /restart that the gateway is back."""
-        notify_path = _hermes_home / ".restart_notify.json"
+        notify_path = _dxrk_home / ".restart_notify.json"
         if not notify_path.exists():
             return
 
@@ -8492,7 +8492,7 @@ class GatewayRunner:
         try:
             from agent.image_routing import decide_image_input_mode
             from agent.auxiliary_client import _read_main_model, _read_main_provider
-            from hermes_cli.config import load_config
+            from dxrk_cli.config import load_config
 
             cfg = load_config()
             provider = _read_main_provider()
@@ -8591,7 +8591,7 @@ class GatewayRunner:
             disabled_note = "[The user sent voice message(s), but transcription is disabled in config."
             if self._has_setup_skill():
                 disabled_note += (
-                    " You have a skill called hermes-agent-setup that can help "
+                    " You have a skill called dxrk-agent-setup that can help "
                     "users configure Hermes features including voice, tools, and more."
                 )
             disabled_note += "]"
@@ -8626,7 +8626,7 @@ class GatewayRunner:
                         )
                         if self._has_setup_skill():
                             _no_stt_note += (
-                                " You have a skill called hermes-agent-setup "
+                                " You have a skill called dxrk-agent-setup "
                                 "that can help users configure Hermes features "
                                 "including voice, tools, and more."
                             )
@@ -9089,7 +9089,7 @@ class GatewayRunner:
         try:
             interrupt_event = getattr(adapter, "_active_sessions", {}).get(session_key)
             if interrupt_event is not None:
-                setattr(interrupt_event, "_hermes_run_generation", int(generation))
+                setattr(interrupt_event, "_dxrk_run_generation", int(generation))
         except Exception:
             pass
 
@@ -9391,7 +9391,7 @@ class GatewayRunner:
             headers["X-Hermes-Session-Id"] = session_id
 
         body = {
-            "model": "hermes-agent",
+            "model": "dxrk-agent",
             "messages": api_messages,
             "stream": True,
         }
@@ -9434,7 +9434,7 @@ class GatewayRunner:
                     # Fresh-final applies to Telegram only — other
                     # platforms either edit in place cheaply (Discord,
                     # Slack) or don't have the timestamp-on-edit
-                    # problem.  (Ported from openclaw/openclaw#72038.)
+                    # problem.  (Ported from dxrk/dxrk#72038.)
                     _fresh_final_secs = (
                         float(getattr(_scfg, "fresh_final_after_seconds", 0.0) or 0.0)
                         if source.platform == Platform.TELEGRAM
@@ -9645,7 +9645,7 @@ class GatewayRunner:
         user_config = _load_gateway_config()
         platform_key = _platform_config_key(source.platform)
 
-        from hermes_cli.tools_config import _get_platform_tools
+        from dxrk_cli.tools_config import _get_platform_tools
         enabled_toolsets = sorted(_get_platform_tools(user_config, platform_key))
 
         display_config = user_config.get("display", {})
@@ -9723,7 +9723,7 @@ class GatewayRunner:
                         if gate_on and not is_seen(_cfg, TOOL_PROGRESS_FLAG):
                             long_tool_hint_fired[0] = True
                             progress_queue.put(tool_progress_hint_gateway())
-                            mark_seen(_hermes_home / "config.yaml", TOOL_PROGRESS_FLAG)
+                            mark_seen(_dxrk_home / "config.yaml", TOOL_PROGRESS_FLAG)
                 except Exception as _hint_err:
                     logger.debug("tool-progress onboarding hint failed: %s", _hint_err)
                 return
@@ -10132,7 +10132,7 @@ class GatewayRunner:
                         # Fresh-final applies to Telegram only — other
                         # platforms either edit in place cheaply or don't
                         # have the edit-timestamp-stays-stale problem.
-                        # (Ported from openclaw/openclaw#72038.)
+                        # (Ported from dxrk/dxrk#72038.)
                         _fresh_final_secs = (
                             float(getattr(_scfg, "fresh_final_after_seconds", 0.0) or 0.0)
                             if source.platform == Platform.TELEGRAM
@@ -11072,7 +11072,7 @@ class GatewayRunner:
                 _pending_cmd_word = _pending_parts[0][1:].lower() if _pending_parts else ""
                 if _pending_cmd_word:
                     try:
-                        from hermes_cli.commands import resolve_command as _rc_pending
+                        from dxrk_cli.commands import resolve_command as _rc_pending
                         if _rc_pending(_pending_cmd_word):
                             logger.info(
                                 "Discarding command '/%s' from pending queue — "
@@ -11305,18 +11305,18 @@ def _start_cron_ticker(stop_event: threading.Event, adapters=None, loop=None, in
     Background thread that ticks the cron scheduler at a regular interval.
     
     Runs inside the gateway process so cronjobs fire automatically without
-    needing a separate `hermes cron daemon` or system cron entry.
+    needing a separate `dxrk cron daemon` or system cron entry.
 
     When ``adapters`` and ``loop`` are provided, passes them through to the
     cron delivery path so live adapters can be used for E2EE rooms.
 
     Also refreshes the channel directory every 5 minutes and prunes the
-    image/audio/document cache + expired ``hermes debug share`` pastes
+    image/audio/document cache + expired ``dxrk debug share`` pastes
     once per hour.
     """
     from cron.scheduler import tick as cron_tick
     from gateway.platforms.base import cleanup_image_cache, cleanup_document_cache
-    from hermes_cli.debug import _sweep_expired_pastes
+    from dxrk_cli.debug import _sweep_expired_pastes
 
     IMAGE_CACHE_EVERY = 60   # ticks — once per hour at default 60s interval
     CHANNEL_DIR_EVERY = 5    # ticks — every 5 minutes
@@ -11460,7 +11460,7 @@ async def start_gateway(config: Optional[GatewayConfig] = None, replace: bool = 
             # remove_pid_file() is a no-op when the PID doesn't match.
             # Force-unlink to cover the old-process-crashed case.
             try:
-                (get_hermes_home() / "gateway.pid").unlink(missing_ok=True)
+                (get_dxrk_home() / "gateway.pid").unlink(missing_ok=True)
             except Exception:
                 pass
             # Clean up any takeover marker the old process didn't consume
@@ -11484,17 +11484,17 @@ async def start_gateway(config: Optional[GatewayConfig] = None, replace: bool = 
             except Exception:
                 pass
         else:
-            hermes_home = str(get_hermes_home())
+            dxrk_home = str(get_dxrk_home())
             logger.error(
                 "Another gateway instance is already running (PID %d, HERMES_HOME=%s). "
-                "Use 'hermes gateway restart' to replace it, or 'hermes gateway stop' first.",
-                existing_pid, hermes_home,
+                "Use 'dxrk gateway restart' to replace it, or 'dxrk gateway stop' first.",
+                existing_pid, dxrk_home,
             )
             print(
                 f"\n❌ Gateway already running (PID {existing_pid}).\n"
-                f"   Use 'hermes gateway restart' to replace it,\n"
-                f"   or 'hermes gateway stop' to kill it first.\n"
-                f"   Or use 'hermes gateway run --replace' to auto-replace.\n"
+                f"   Use 'dxrk gateway restart' to replace it,\n"
+                f"   or 'dxrk gateway stop' to kill it first.\n"
+                f"   Or use 'dxrk gateway run --replace' to auto-replace.\n"
             )
             return False
 
@@ -11508,8 +11508,8 @@ async def start_gateway(config: Optional[GatewayConfig] = None, replace: bool = 
     # Centralized logging — agent.log (INFO+), errors.log (WARNING+),
     # and gateway.log (INFO+, gateway-component records only).
     # Idempotent, so repeated calls from AIAgent.__init__ won't duplicate.
-    from hermes_logging import setup_logging
-    setup_logging(hermes_home=_hermes_home, mode="gateway")
+    from dxrk_logging import setup_logging
+    setup_logging(dxrk_home=_dxrk_home, mode="gateway")
 
     # Optional stderr handler — level driven by -v/-q flags on the CLI.
     # verbosity=None (-q/--quiet): no stderr output
@@ -11545,7 +11545,7 @@ async def start_gateway(config: Optional[GatewayConfig] = None, replace: bool = 
         # before sending SIGTERM. If present, treat the signal as a
         # planned shutdown and exit 0 so systemd's Restart=on-failure
         # doesn't revive us (which would flap-fight the replacer when
-        # both services are enabled, e.g. hermes.service + hermes-
+        # both services are enabled, e.g. dxrk.service + dxrk-
         # gateway.service from pre-rename installs).
         planned_takeover = False
         try:
@@ -11561,8 +11561,8 @@ async def start_gateway(config: Optional[GatewayConfig] = None, replace: bool = 
         else:
             _signal_initiated_shutdown = True
             logger.info("Received SIGTERM/SIGINT — initiating shutdown")
-        # Diagnostic: log all hermes-related processes so we can identify
-        # what triggered the signal (hermes update, hermes gateway restart,
+        # Diagnostic: log all dxrk-related processes so we can identify
+        # what triggered the signal (dxrk update, dxrk gateway restart,
         # a stale detached subprocess, etc.).
         try:
             import subprocess as _sp
@@ -11570,18 +11570,18 @@ async def start_gateway(config: Optional[GatewayConfig] = None, replace: bool = 
                 ["ps", "aux"],
                 capture_output=True, text=True, timeout=3,
             )
-            _hermes_procs = [
+            _dxrk_procs = [
                 line for line in _ps.stdout.splitlines()
-                if ("hermes" in line.lower() or "gateway" in line.lower())
+                if ("dxrk" in line.lower() or "gateway" in line.lower())
                 and str(os.getpid()) not in line.split()[1:2]  # exclude self
             ]
-            if _hermes_procs:
+            if _dxrk_procs:
                 logger.warning(
-                    "Shutdown diagnostic — other hermes processes running:\n  %s",
-                    "\n  ".join(_hermes_procs),
+                    "Shutdown diagnostic — other dxrk processes running:\n  %s",
+                    "\n  ".join(_dxrk_procs),
                 )
             else:
-                logger.info("Shutdown diagnostic — no other hermes processes found")
+                logger.info("Shutdown diagnostic — no other dxrk processes found")
         except Exception:
             pass
         asyncio.create_task(runner.stop())
@@ -11681,7 +11681,7 @@ async def start_gateway(config: Optional[GatewayConfig] = None, replace: bool = 
     # When a signal (SIGTERM/SIGINT) caused the shutdown and it wasn't a
     # planned restart (/restart, /update, SIGUSR1), exit non-zero so
     # systemd's Restart=on-failure revives the process.  This covers:
-    #   - hermes update killing the gateway mid-work
+    #   - dxrk update killing the gateway mid-work
     #   - External kill commands
     #   - WSL2/container runtime sending unexpected signals
     # systemctl stop is safe: systemd tracks "stop requested" state

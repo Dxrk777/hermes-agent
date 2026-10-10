@@ -19,7 +19,7 @@ ACP is a good fit when you want Hermes to behave like an editor-native coding ag
 
 ## What Hermes exposes in ACP mode
 
-Hermes runs with a curated `hermes-acp` toolset designed for editor workflows. It includes:
+Hermes runs with a curated `dxrk-acp` toolset designed for editor workflows. It includes:
 
 - file tools: `read_file`, `write_file`, `patch`, `search_files`
 - terminal tools: `terminal`, `process`
@@ -41,8 +41,8 @@ pip install -e '.[acp]'
 
 This installs the `agent-client-protocol` dependency and enables:
 
-- `hermes acp`
-- `hermes-acp`
+- `dxrk acp`
+- `dxrk-acp`
 - `python -m acp_adapter`
 
 ## Launching the ACP server
@@ -50,11 +50,11 @@ This installs the `agent-client-protocol` dependency and enables:
 Any of the following starts Hermes in ACP mode:
 
 ```bash
-hermes acp
+dxrk acp
 ```
 
 ```bash
-hermes-acp
+dxrk-acp
 ```
 
 ```bash
@@ -75,8 +75,8 @@ Example settings snippet:
 {
   "acpClient.agents": [
     {
-      "name": "hermes-agent",
-      "registryDir": "/path/to/hermes-agent/acp_registry"
+      "name": "dxrk-agent",
+      "registryDir": "/path/to/dxrk-agent/acp_registry"
     }
   ]
 }
@@ -89,9 +89,9 @@ Example settings snippet:
 ```json
 {
   "agent_servers": {
-    "hermes-agent": {
+    "dxrk-agent": {
       "type": "custom",
-      "command": "hermes",
+      "command": "dxrk",
       "args": ["acp"],
     },
   },
@@ -103,7 +103,7 @@ Example settings snippet:
 Use an ACP-compatible plugin and point it at:
 
 ```text
-/path/to/hermes-agent/acp_registry
+/path/to/dxrk-agent/acp_registry
 ```
 
 ## Registry manifest
@@ -117,17 +117,17 @@ acp_registry/agent.json
 It advertises a command-based agent whose launch command is:
 
 ```text
-hermes acp
+dxrk acp
 ```
 
 ## Configuration and credentials
 
 ACP mode uses the same Hermes configuration as the CLI:
 
-- `~/.hermes/.env`
-- `~/.hermes/config.yaml`
-- `~/.hermes/skills/`
-- `~/.hermes/state.db`
+- `~/.dxrk/.env`
+- `~/.dxrk/config.yaml`
+- `~/.dxrk/skills/`
+- `~/.dxrk/state.db`
 
 Provider resolution uses Hermes' normal runtime resolver, so ACP inherits the currently configured provider and credentials.
 
@@ -174,9 +174,9 @@ Check:
 Try these checks:
 
 ```bash
-hermes doctor
-hermes status
-hermes acp
+dxrk doctor
+dxrk status
+dxrk acp
 ```
 
 ### Missing credentials
@@ -184,10 +184,10 @@ hermes acp
 ACP mode does not have its own login flow. It uses Hermes' existing provider setup. Configure credentials with:
 
 ```bash
-hermes model
+dxrk model
 ```
 
-or by editing `~/.hermes/.env`.
+or by editing `~/.dxrk/.env`.
 
 ## See also
 

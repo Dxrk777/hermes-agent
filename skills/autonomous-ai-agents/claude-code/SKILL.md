@@ -5,9 +5,9 @@ version: 2.2.0
 author: Hermes Agent + Teknium
 license: MIT
 metadata:
-  hermes:
+  dxrk:
     tags: [Coding-Agent, Claude, Anthropic, Code-Review, Refactoring, PTY, Automation]
-    related_skills: [codex, hermes-agent, opencode]
+    related_skills: [codex, dxrk-agent, opencode]
 ---
 
 # Claude Code — Hermes Orchestration Guide

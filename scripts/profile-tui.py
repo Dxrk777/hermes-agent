@@ -5,17 +5,17 @@ Usage:
   scripts/profile-tui.py [--session SID] [--hold KEY] [--seconds N] [--rate HZ]
 
 Defaults: picks the session with the most messages, holds PageUp for 8s at
-~30 Hz (matching xterm key-repeat), summarizes ~/.hermes/perf.log on exit.
+~30 Hz (matching xterm key-repeat), summarizes ~/.dxrk/perf.log on exit.
 
 The --tui build must exist (run `npm run build` in ui-tui first). This script
 launches `node dist/entry.js` directly with HERMES_TUI_RESUME set so it
-bypasses the hermes_cli wrapper — we want repeatable timing, not the CLI's
+bypasses the dxrk_cli wrapper — we want repeatable timing, not the CLI's
 session-picker flow.
 
 Environment overrides:
-  HERMES_PERF_LOG     (default ~/.hermes/perf.log)
+  HERMES_PERF_LOG     (default ~/.dxrk/perf.log)
   HERMES_PERF_NODE    (default node from $PATH)
-  HERMES_TUI_DIR      (default /home/bb/hermes-agent/ui-tui)
+  HERMES_TUI_DIR      (default /home/bb/dxrk-agent/ui-tui)
 
 Exit code is 0 if the harness ran and parsed results, 2 if the TUI crashed
 or produced no perf data (suggests HERMES_DEV_PERF wiring is broken).
@@ -36,9 +36,9 @@ from pathlib import Path
 from typing import Any
 
 
-DEFAULT_TUI_DIR = Path(os.environ.get("HERMES_TUI_DIR", "/home/bb/hermes-agent/ui-tui"))
-DEFAULT_LOG = Path(os.environ.get("HERMES_PERF_LOG", str(Path.home() / ".hermes" / "perf.log")))
-DEFAULT_STATE_DB = Path.home() / ".hermes" / "state.db"
+DEFAULT_TUI_DIR = Path(os.environ.get("HERMES_TUI_DIR", "/home/bb/dxrk-agent/ui-tui"))
+DEFAULT_LOG = Path(os.environ.get("HERMES_PERF_LOG", str(Path.home() / ".dxrk" / "perf.log")))
+DEFAULT_STATE_DB = Path.home() / ".dxrk" / "state.db"
 
 # Keystroke escape sequences.  Matches what xterm/VT220 send when the
 # terminal has bracketed-paste disabled and the key-repeat handler fires.
@@ -525,7 +525,7 @@ def loop_mode(args: argparse.Namespace) -> int:
 
     tui_dir = Path(args.tui_dir).resolve()
     src_root = tui_dir / "src"
-    pkg_root = tui_dir / "packages" / "hermes-ink" / "src"
+    pkg_root = tui_dir / "packages" / "dxrk-ink" / "src"
 
     def collect_mtimes() -> dict[str, float]:
         mtimes: dict[str, float] = {}

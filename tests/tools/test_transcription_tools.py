@@ -733,7 +733,7 @@ class TestLoadSttConfig:
 
     def test_real_load_returns_dict(self):
         """_load_stt_config should always return a dict, even on import error."""
-        with patch.dict("sys.modules", {"hermes_cli": None, "hermes_cli.config": None}):
+        with patch.dict("sys.modules", {"dxrk_cli": None, "dxrk_cli.config": None}):
             from tools.transcription_tools import _load_stt_config
             result = _load_stt_config()
         assert isinstance(result, dict)
@@ -1101,7 +1101,7 @@ class TestTranscribeAudioMistralDispatch:
 def mock_xai_http_module():
     """Inject a fake tools.xai_http module for testing."""
     fake_module = MagicMock()
-    fake_module.hermes_xai_user_agent = MagicMock(return_value="hermes-xai/test")
+    fake_module.dxrk_xai_user_agent = MagicMock(return_value="dxrk-xai/test")
     with patch.dict("sys.modules", {"tools.xai_http": fake_module}):
         yield fake_module
 

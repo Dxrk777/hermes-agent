@@ -28,10 +28,10 @@ _STATE_FILENAME = "nous.json"
 def _state_path() -> str:
     """Return the path to the Nous rate limit state file."""
     try:
-        from hermes_constants import get_hermes_home
-        base = get_hermes_home()
+        from dxrk_constants import get_dxrk_home
+        base = get_dxrk_home()
     except ImportError:
-        base = os.path.join(os.path.expanduser("~"), ".hermes")
+        base = os.path.join(os.path.expanduser("~"), ".dxrk")
     return os.path.join(base, _STATE_SUBDIR, _STATE_FILENAME)
 
 

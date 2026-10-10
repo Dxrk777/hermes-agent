@@ -1,13 +1,13 @@
 ---
-name: hermes-agent
+name: dxrk-agent
 description: "Configure, extend, or contribute to Hermes Agent."
 version: 2.0.0
 author: Hermes Agent + Teknium
 license: MIT
 metadata:
-  hermes:
-    tags: [hermes, setup, configuration, multi-agent, spawning, cli, gateway, development]
-    homepage: https://github.com/NousResearch/hermes-agent
+  dxrk:
+    tags: [dxrk, setup, configuration, multi-agent, spawning, cli, gateway, development]
+    homepage: https://github.com/NousResearch/dxrk-agent
     related_skills: [claude-code, codex, opencode]
 ---
 
@@ -28,28 +28,28 @@ People use Hermes for software development, research, system administration, dat
 
 **This skill helps you work with Hermes Agent effectively** — setting it up, configuring features, spawning additional agent instances, troubleshooting issues, finding the right commands and settings, and understanding how the system works when you need to extend or contribute to it.
 
-**Docs:** https://hermes-agent.nousresearch.com/docs/
+**Docs:** https://dxrk-agent.nousresearch.com/docs/
 
 ## Quick Start
 
 ```bash
 # Install
-curl -fsSL https://raw.githubusercontent.com/NousResearch/hermes-agent/main/scripts/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/NousResearch/dxrk-agent/main/scripts/install.sh | bash
 
 # Interactive chat (default)
-hermes
+dxrk
 
 # Single query
-hermes chat -q "What is the capital of France?"
+dxrk chat -q "What is the capital of France?"
 
 # Setup wizard
-hermes setup
+dxrk setup
 
 # Change model/provider
-hermes model
+dxrk model
 
 # Check health
-hermes doctor
+dxrk doctor
 ```
 
 ---
@@ -59,7 +59,7 @@ hermes doctor
 ### Global Flags
 
 ```
-hermes [flags] [command]
+dxrk [flags] [command]
 
   --version, -V             Show version
   --resume, -r SESSION      Resume session by ID or title
@@ -76,7 +76,7 @@ No subcommand defaults to `chat`.
 ### Chat
 
 ```
-hermes chat [flags]
+dxrk chat [flags]
   -q, --query TEXT          Single query, non-interactive
   -m, --model MODEL         Model (e.g. anthropic/claude-sonnet-4)
   -t, --toolsets LIST       Comma-separated toolsets
@@ -90,137 +90,137 @@ hermes chat [flags]
 ### Configuration
 
 ```
-hermes setup [section]      Interactive wizard (model|terminal|gateway|tools|agent)
-hermes model                Interactive model/provider picker
-hermes config               View current config
-hermes config edit          Open config.yaml in $EDITOR
-hermes config set KEY VAL   Set a config value
-hermes config path          Print config.yaml path
-hermes config env-path      Print .env path
-hermes config check         Check for missing/outdated config
-hermes config migrate       Update config with new options
-hermes login [--provider P] OAuth login (nous, openai-codex)
-hermes logout               Clear stored auth
-hermes doctor [--fix]       Check dependencies and config
-hermes status [--all]       Show component status
+dxrk setup [section]      Interactive wizard (model|terminal|gateway|tools|agent)
+dxrk model                Interactive model/provider picker
+dxrk config               View current config
+dxrk config edit          Open config.yaml in $EDITOR
+dxrk config set KEY VAL   Set a config value
+dxrk config path          Print config.yaml path
+dxrk config env-path      Print .env path
+dxrk config check         Check for missing/outdated config
+dxrk config migrate       Update config with new options
+dxrk login [--provider P] OAuth login (nous, openai-codex)
+dxrk logout               Clear stored auth
+dxrk doctor [--fix]       Check dependencies and config
+dxrk status [--all]       Show component status
 ```
 
 ### Tools & Skills
 
 ```
-hermes tools                Interactive tool enable/disable (curses UI)
-hermes tools list           Show all tools and status
-hermes tools enable NAME    Enable a toolset
-hermes tools disable NAME   Disable a toolset
+dxrk tools                Interactive tool enable/disable (curses UI)
+dxrk tools list           Show all tools and status
+dxrk tools enable NAME    Enable a toolset
+dxrk tools disable NAME   Disable a toolset
 
-hermes skills list          List installed skills
-hermes skills search QUERY  Search the skills hub
-hermes skills install ID    Install a skill (ID can be a hub identifier OR a direct https://…/SKILL.md URL; pass --name to override when frontmatter has no name)
-hermes skills inspect ID    Preview without installing
-hermes skills config        Enable/disable skills per platform
-hermes skills check         Check for updates
-hermes skills update        Update outdated skills
-hermes skills uninstall N   Remove a hub skill
-hermes skills publish PATH  Publish to registry
-hermes skills browse        Browse all available skills
-hermes skills tap add REPO  Add a GitHub repo as skill source
+dxrk skills list          List installed skills
+dxrk skills search QUERY  Search the skills hub
+dxrk skills install ID    Install a skill (ID can be a hub identifier OR a direct https://…/SKILL.md URL; pass --name to override when frontmatter has no name)
+dxrk skills inspect ID    Preview without installing
+dxrk skills config        Enable/disable skills per platform
+dxrk skills check         Check for updates
+dxrk skills update        Update outdated skills
+dxrk skills uninstall N   Remove a hub skill
+dxrk skills publish PATH  Publish to registry
+dxrk skills browse        Browse all available skills
+dxrk skills tap add REPO  Add a GitHub repo as skill source
 ```
 
 ### MCP Servers
 
 ```
-hermes mcp serve            Run Hermes as an MCP server
-hermes mcp add NAME         Add an MCP server (--url or --command)
-hermes mcp remove NAME      Remove an MCP server
-hermes mcp list             List configured servers
-hermes mcp test NAME        Test connection
-hermes mcp configure NAME   Toggle tool selection
+dxrk mcp serve            Run Hermes as an MCP server
+dxrk mcp add NAME         Add an MCP server (--url or --command)
+dxrk mcp remove NAME      Remove an MCP server
+dxrk mcp list             List configured servers
+dxrk mcp test NAME        Test connection
+dxrk mcp configure NAME   Toggle tool selection
 ```
 
 ### Gateway (Messaging Platforms)
 
 ```
-hermes gateway run          Start gateway foreground
-hermes gateway install      Install as background service
-hermes gateway start/stop   Control the service
-hermes gateway restart      Restart the service
-hermes gateway status       Check status
-hermes gateway setup        Configure platforms
+dxrk gateway run          Start gateway foreground
+dxrk gateway install      Install as background service
+dxrk gateway start/stop   Control the service
+dxrk gateway restart      Restart the service
+dxrk gateway status       Check status
+dxrk gateway setup        Configure platforms
 ```
 
 Supported platforms: Telegram, Discord, Slack, WhatsApp, Signal, Email, SMS, Matrix, Mattermost, Home Assistant, DingTalk, Feishu, WeCom, BlueBubbles (iMessage), Weixin (WeChat), API Server, Webhooks. Open WebUI connects via the API Server adapter.
 
-Platform docs: https://hermes-agent.nousresearch.com/docs/user-guide/messaging/
+Platform docs: https://dxrk-agent.nousresearch.com/docs/user-guide/messaging/
 
 ### Sessions
 
 ```
-hermes sessions list        List recent sessions
-hermes sessions browse      Interactive picker
-hermes sessions export OUT  Export to JSONL
-hermes sessions rename ID T Rename a session
-hermes sessions delete ID   Delete a session
-hermes sessions prune       Clean up old sessions (--older-than N days)
-hermes sessions stats       Session store statistics
+dxrk sessions list        List recent sessions
+dxrk sessions browse      Interactive picker
+dxrk sessions export OUT  Export to JSONL
+dxrk sessions rename ID T Rename a session
+dxrk sessions delete ID   Delete a session
+dxrk sessions prune       Clean up old sessions (--older-than N days)
+dxrk sessions stats       Session store statistics
 ```
 
 ### Cron Jobs
 
 ```
-hermes cron list            List jobs (--all for disabled)
-hermes cron create SCHED    Create: '30m', 'every 2h', '0 9 * * *'
-hermes cron edit ID         Edit schedule, prompt, delivery
-hermes cron pause/resume ID Control job state
-hermes cron run ID          Trigger on next tick
-hermes cron remove ID       Delete a job
-hermes cron status          Scheduler status
+dxrk cron list            List jobs (--all for disabled)
+dxrk cron create SCHED    Create: '30m', 'every 2h', '0 9 * * *'
+dxrk cron edit ID         Edit schedule, prompt, delivery
+dxrk cron pause/resume ID Control job state
+dxrk cron run ID          Trigger on next tick
+dxrk cron remove ID       Delete a job
+dxrk cron status          Scheduler status
 ```
 
 ### Webhooks
 
 ```
-hermes webhook subscribe N  Create route at /webhooks/<name>
-hermes webhook list         List subscriptions
-hermes webhook remove NAME  Remove a subscription
-hermes webhook test NAME    Send a test POST
+dxrk webhook subscribe N  Create route at /webhooks/<name>
+dxrk webhook list         List subscriptions
+dxrk webhook remove NAME  Remove a subscription
+dxrk webhook test NAME    Send a test POST
 ```
 
 ### Profiles
 
 ```
-hermes profile list         List all profiles
-hermes profile create NAME  Create (--clone, --clone-all, --clone-from)
-hermes profile use NAME     Set sticky default
-hermes profile delete NAME  Delete a profile
-hermes profile show NAME    Show details
-hermes profile alias NAME   Manage wrapper scripts
-hermes profile rename A B   Rename a profile
-hermes profile export NAME  Export to tar.gz
-hermes profile import FILE  Import from archive
+dxrk profile list         List all profiles
+dxrk profile create NAME  Create (--clone, --clone-all, --clone-from)
+dxrk profile use NAME     Set sticky default
+dxrk profile delete NAME  Delete a profile
+dxrk profile show NAME    Show details
+dxrk profile alias NAME   Manage wrapper scripts
+dxrk profile rename A B   Rename a profile
+dxrk profile export NAME  Export to tar.gz
+dxrk profile import FILE  Import from archive
 ```
 
 ### Credential Pools
 
 ```
-hermes auth add             Interactive credential wizard
-hermes auth list [PROVIDER] List pooled credentials
-hermes auth remove P INDEX  Remove by provider + index
-hermes auth reset PROVIDER  Clear exhaustion status
+dxrk auth add             Interactive credential wizard
+dxrk auth list [PROVIDER] List pooled credentials
+dxrk auth remove P INDEX  Remove by provider + index
+dxrk auth reset PROVIDER  Clear exhaustion status
 ```
 
 ### Other
 
 ```
-hermes insights [--days N]  Usage analytics
-hermes update               Update to latest version
-hermes pairing list/approve/revoke  DM authorization
-hermes plugins list/install/remove  Plugin management
-hermes honcho setup/status  Honcho memory integration (requires honcho plugin)
-hermes memory setup/status/off  Memory provider config
-hermes completion bash|zsh  Shell completions
-hermes acp                  ACP server (IDE integration)
-hermes claw migrate         Migrate from OpenClaw
-hermes uninstall            Uninstall Hermes
+dxrk insights [--days N]  Usage analytics
+dxrk update               Update to latest version
+dxrk pairing list/approve/revoke  DM authorization
+dxrk plugins list/install/remove  Plugin management
+dxrk honcho setup/status  Honcho memory integration (requires honcho plugin)
+dxrk memory setup/status/off  Memory provider config
+dxrk completion bash|zsh  Shell completions
+dxrk acp                  ACP server (IDE integration)
+dxrk claw migrate         Migrate from OpenClaw
+dxrk uninstall            Uninstall Hermes
 ```
 
 ---
@@ -309,20 +309,20 @@ Type these during an interactive chat session.
 ## Key Paths & Config
 
 ```
-~/.hermes/config.yaml       Main configuration
-~/.hermes/.env              API keys and secrets
+~/.dxrk/config.yaml       Main configuration
+~/.dxrk/.env              API keys and secrets
 $HERMES_HOME/skills/        Installed skills
-~/.hermes/sessions/         Session transcripts
-~/.hermes/logs/             Gateway and error logs
-~/.hermes/auth.json         OAuth tokens and credential pools
-~/.hermes/hermes-agent/     Source code (if git-installed)
+~/.dxrk/sessions/         Session transcripts
+~/.dxrk/logs/             Gateway and error logs
+~/.dxrk/auth.json         OAuth tokens and credential pools
+~/.dxrk/dxrk-agent/     Source code (if git-installed)
 ```
 
-Profiles use `~/.hermes/profiles/<name>/` with the same layout.
+Profiles use `~/.dxrk/profiles/<name>/` with the same layout.
 
 ### Config Sections
 
-Edit with `hermes config edit` or `hermes config set section.key value`.
+Edit with `dxrk config edit` or `dxrk config set section.key value`.
 
 | Section | Key options |
 |---------|-------------|
@@ -338,18 +338,18 @@ Edit with `hermes config edit` or `hermes config set section.key value`.
 | `delegation` | `model`, `provider`, `base_url`, `api_key`, `max_iterations` (50), `reasoning_effort` |
 | `checkpoints` | `enabled`, `max_snapshots` (50) |
 
-Full config reference: https://hermes-agent.nousresearch.com/docs/user-guide/configuration
+Full config reference: https://dxrk-agent.nousresearch.com/docs/user-guide/configuration
 
 ### Providers
 
-20+ providers supported. Set via `hermes model` or `hermes setup`.
+20+ providers supported. Set via `dxrk model` or `dxrk setup`.
 
 | Provider | Auth | Key env var |
 |----------|------|-------------|
 | OpenRouter | API key | `OPENROUTER_API_KEY` |
 | Anthropic | API key | `ANTHROPIC_API_KEY` |
-| Nous Portal | OAuth | `hermes auth` |
-| OpenAI Codex | OAuth | `hermes auth` |
+| Nous Portal | OAuth | `dxrk auth` |
+| OpenAI Codex | OAuth | `dxrk auth` |
 | GitHub Copilot | Token | `COPILOT_GITHUB_TOKEN` |
 | Google Gemini | API key | `GOOGLE_API_KEY` or `GEMINI_API_KEY` |
 | DeepSeek | API key | `DEEPSEEK_API_KEY` |
@@ -365,15 +365,15 @@ Full config reference: https://hermes-agent.nousresearch.com/docs/user-guide/con
 | AI Gateway (Vercel) | API key | `AI_GATEWAY_API_KEY` |
 | OpenCode Zen | API key | `OPENCODE_ZEN_API_KEY` |
 | OpenCode Go | API key | `OPENCODE_GO_API_KEY` |
-| Qwen OAuth | OAuth | `hermes login --provider qwen-oauth` |
+| Qwen OAuth | OAuth | `dxrk login --provider qwen-oauth` |
 | Custom endpoint | Config | `model.base_url` + `model.api_key` in config.yaml |
 | GitHub Copilot ACP | External | `COPILOT_CLI_PATH` or Copilot CLI |
 
-Full provider docs: https://hermes-agent.nousresearch.com/docs/integrations/providers
+Full provider docs: https://dxrk-agent.nousresearch.com/docs/integrations/providers
 
 ### Toolsets
 
-Enable/disable via `hermes tools` (interactive) or `hermes tools enable/disable NAME`.
+Enable/disable via `dxrk tools` (interactive) or `dxrk tools enable/disable NAME`.
 
 | Toolset | What it provides |
 |---------|-----------------|
@@ -404,21 +404,21 @@ Tool changes take effect on `/reset` (new session). They do NOT apply mid-conver
 
 ## Security & Privacy Toggles
 
-Common "why is Hermes doing X to my output / tool calls / commands?" toggles — and the exact commands to change them. Most of these need a fresh session (`/reset` in chat, or start a new `hermes` invocation) because they're read once at startup.
+Common "why is Hermes doing X to my output / tool calls / commands?" toggles — and the exact commands to change them. Most of these need a fresh session (`/reset` in chat, or start a new `dxrk` invocation) because they're read once at startup.
 
 ### Secret redaction in tool output
 
 Hermes auto-redacts strings that look like API keys, tokens, and secrets in all tool output (terminal stdout, `read_file`, web content, subagent summaries, etc.) so the model never sees raw credentials. If the user is intentionally working with mock tokens, share-management tokens, or their own secrets and the redaction is getting in the way:
 
 ```bash
-hermes config set security.redact_secrets false      # disable globally
+dxrk config set security.redact_secrets false      # disable globally
 ```
 
-**Restart required.** `security.redact_secrets` is snapshotted at import time — setting it mid-session (e.g. via `export HERMES_REDACT_SECRETS=false` from a tool call) will NOT take effect for the running process. Tell the user to run `hermes config set security.redact_secrets false` in a terminal, then start a new session. This is deliberate — it prevents an LLM from turning off redaction on itself mid-task.
+**Restart required.** `security.redact_secrets` is snapshotted at import time — setting it mid-session (e.g. via `export HERMES_REDACT_SECRETS=false` from a tool call) will NOT take effect for the running process. Tell the user to run `dxrk config set security.redact_secrets false` in a terminal, then start a new session. This is deliberate — it prevents an LLM from turning off redaction on itself mid-task.
 
 Re-enable with:
 ```bash
-hermes config set security.redact_secrets true
+dxrk config set security.redact_secrets true
 ```
 
 ### PII redaction in gateway messages
@@ -426,8 +426,8 @@ hermes config set security.redact_secrets true
 Separate from secret redaction. When enabled, the gateway hashes user IDs and strips phone numbers from the session context before it reaches the model:
 
 ```bash
-hermes config set privacy.redact_pii true    # enable
-hermes config set privacy.redact_pii false   # disable (default)
+dxrk config set privacy.redact_pii true    # enable
+dxrk config set privacy.redact_pii false   # disable (default)
 ```
 
 ### Command approval prompts
@@ -439,23 +439,23 @@ By default (`approvals.mode: manual`), Hermes prompts the user before running sh
 - `off` — skip all approval prompts (equivalent to `--yolo`)
 
 ```bash
-hermes config set approvals.mode smart       # recommended middle ground
-hermes config set approvals.mode off         # bypass everything (not recommended)
+dxrk config set approvals.mode smart       # recommended middle ground
+dxrk config set approvals.mode off         # bypass everything (not recommended)
 ```
 
 Per-invocation bypass without changing config:
-- `hermes --yolo …`
+- `dxrk --yolo …`
 - `export HERMES_YOLO_MODE=1`
 
 Note: YOLO / `approvals.mode: off` does NOT turn off secret redaction. They are independent.
 
 ### Shell hooks allowlist
 
-Some shell-hook integrations require explicit allowlisting before they fire. Managed via `~/.hermes/shell-hooks-allowlist.json` — prompted interactively the first time a hook wants to run.
+Some shell-hook integrations require explicit allowlisting before they fire. Managed via `~/.dxrk/shell-hooks-allowlist.json` — prompted interactively the first time a hook wants to run.
 
 ### Disabling the web/browser/image-gen tools
 
-To keep the model away from network or media tools entirely, open `hermes tools` and toggle per-platform. Takes effect on next session (`/reset`). See the Tools & Skills section above.
+To keep the model away from network or media tools entirely, open `dxrk tools` and toggle per-platform. Takes effect on next session (`/reset`). See the Tools & Skills section above.
 
 ---
 
@@ -501,7 +501,7 @@ Run additional Hermes processes as fully independent subprocesses — separate s
 
 ### When to Use This vs delegate_task
 
-| | `delegate_task` | Spawning `hermes` process |
+| | `delegate_task` | Spawning `dxrk` process |
 |-|-----------------|--------------------------|
 | Isolation | Separate conversation, shared process | Fully independent process |
 | Duration | Minutes (bounded by parent loop) | Hours/days |
@@ -512,10 +512,10 @@ Run additional Hermes processes as fully independent subprocesses — separate s
 ### One-Shot Mode
 
 ```
-terminal(command="hermes chat -q 'Research GRPO papers and write summary to ~/research/grpo.md'", timeout=300)
+terminal(command="dxrk chat -q 'Research GRPO papers and write summary to ~/research/grpo.md'", timeout=300)
 
 # Background for long tasks:
-terminal(command="hermes chat -q 'Set up CI/CD for ~/myapp'", background=true)
+terminal(command="dxrk chat -q 'Set up CI/CD for ~/myapp'", background=true)
 ```
 
 ### Interactive PTY Mode (via tmux)
@@ -524,7 +524,7 @@ Hermes uses prompt_toolkit, which requires a real terminal. Use tmux for interac
 
 ```
 # Start
-terminal(command="tmux new-session -d -s agent1 -x 120 -y 40 'hermes'", timeout=10)
+terminal(command="tmux new-session -d -s agent1 -x 120 -y 40 'dxrk'", timeout=10)
 
 # Wait for startup, then send a message
 terminal(command="sleep 8 && tmux send-keys -t agent1 'Build a FastAPI auth service' Enter", timeout=15)
@@ -543,11 +543,11 @@ terminal(command="tmux send-keys -t agent1 '/exit' Enter && sleep 2 && tmux kill
 
 ```
 # Agent A: backend
-terminal(command="tmux new-session -d -s backend -x 120 -y 40 'hermes -w'", timeout=10)
+terminal(command="tmux new-session -d -s backend -x 120 -y 40 'dxrk -w'", timeout=10)
 terminal(command="sleep 8 && tmux send-keys -t backend 'Build REST API for user management' Enter", timeout=15)
 
 # Agent B: frontend
-terminal(command="tmux new-session -d -s frontend -x 120 -y 40 'hermes -w'", timeout=10)
+terminal(command="tmux new-session -d -s frontend -x 120 -y 40 'dxrk -w'", timeout=10)
 terminal(command="sleep 8 && tmux send-keys -t frontend 'Build React dashboard for user management' Enter", timeout=15)
 
 # Check progress, relay context between them
@@ -559,10 +559,10 @@ terminal(command="tmux send-keys -t frontend 'Here is the API schema from the ba
 
 ```
 # Resume most recent session
-terminal(command="tmux new-session -d -s resumed 'hermes --continue'", timeout=10)
+terminal(command="tmux new-session -d -s resumed 'dxrk --continue'", timeout=10)
 
 # Resume specific session
-terminal(command="tmux new-session -d -s resumed 'hermes --resume 20260225_143052_a1b2c3'", timeout=10)
+terminal(command="tmux new-session -d -s resumed 'dxrk --resume 20260225_143052_a1b2c3'", timeout=10)
 ```
 
 ### Tips
@@ -570,7 +570,7 @@ terminal(command="tmux new-session -d -s resumed 'hermes --resume 20260225_14305
 - **Prefer `delegate_task` for quick subtasks** — less overhead than spawning a full process
 - **Use `-w` (worktree mode)** when spawning agents that edit code — prevents git conflicts
 - **Set timeouts** for one-shot mode — complex tasks can take 5-10 minutes
-- **Use `hermes chat -q` for fire-and-forget** — no PTY needed
+- **Use `dxrk chat -q` for fire-and-forget** — no PTY needed
 - **Use tmux for interactive sessions** — raw PTY mode has `\r` vs `\n` issues with prompt_toolkit
 - **For scheduled tasks**, use the `cronjob` tool instead of spawning — handles delivery and retry
 
@@ -584,15 +584,15 @@ terminal(command="tmux new-session -d -s resumed 'hermes --resume 20260225_14305
 3. In gateway: `/restart`. In CLI: exit and relaunch.
 
 ### Tool not available
-1. `hermes tools` — check if toolset is enabled for your platform
+1. `dxrk tools` — check if toolset is enabled for your platform
 2. Some tools need env vars (check `.env`)
 3. `/reset` after enabling tools
 
 ### Model/provider issues
-1. `hermes doctor` — check config and dependencies
-2. `hermes login` — re-authenticate OAuth providers
+1. `dxrk doctor` — check config and dependencies
+2. `dxrk login` — re-authenticate OAuth providers
 3. Check `.env` has the right API key
-4. **Copilot 403**: `gh auth login` tokens do NOT work for Copilot API. You must use the Copilot-specific OAuth device code flow via `hermes model` → GitHub Copilot.
+4. **Copilot 403**: `gh auth login` tokens do NOT work for Copilot API. You must use the Copilot-specific OAuth device code flow via `dxrk model` → GitHub Copilot.
 
 ### Changes not taking effect
 - **Tools/skills:** `/reset` starts a new session with updated toolset
@@ -600,20 +600,20 @@ terminal(command="tmux new-session -d -s resumed 'hermes --resume 20260225_14305
 - **Code changes:** Restart the CLI or gateway process
 
 ### Skills not showing
-1. `hermes skills list` — verify installed
-2. `hermes skills config` — check platform enablement
-3. Load explicitly: `/skill name` or `hermes -s name`
+1. `dxrk skills list` — verify installed
+2. `dxrk skills config` — check platform enablement
+3. Load explicitly: `/skill name` or `dxrk -s name`
 
 ### Gateway issues
 Check logs first:
 ```bash
-grep -i "failed to send\|error" ~/.hermes/logs/gateway.log | tail -20
+grep -i "failed to send\|error" ~/.dxrk/logs/gateway.log | tail -20
 ```
 
 Common gateway problems:
 - **Gateway dies on SSH logout**: Enable linger: `sudo loginctl enable-linger $USER`
 - **Gateway dies on WSL2 close**: WSL2 requires `systemd=true` in `/etc/wsl.conf` for systemd services to work. Without it, gateway falls back to `nohup` (dies when session closes).
-- **Gateway crash loop**: Reset the failed state: `systemctl --user reset-failed hermes-gateway`
+- **Gateway crash loop**: Reset the failed state: `systemctl --user reset-failed dxrk-gateway`
 
 ### Platform-specific issues
 - **Discord bot silent**: Must enable **Message Content Intent** in Bot → Privileged Gateway Intents.
@@ -623,8 +623,8 @@ Common gateway problems:
 ### Auxiliary models not working
 If `auxiliary` tasks (vision, compression, session_search) fail silently, the `auto` provider can't find a backend. Either set `OPENROUTER_API_KEY` or `GOOGLE_API_KEY`, or explicitly configure each auxiliary task's provider:
 ```bash
-hermes config set auxiliary.vision.provider <your_provider>
-hermes config set auxiliary.vision.model <model_name>
+dxrk config set auxiliary.vision.provider <your_provider>
+dxrk config set auxiliary.vision.model <model_name>
 ```
 
 ---
@@ -633,39 +633,39 @@ hermes config set auxiliary.vision.model <model_name>
 
 | Looking for... | Location |
 |----------------|----------|
-| Config options | `hermes config edit` or [Configuration docs](https://hermes-agent.nousresearch.com/docs/user-guide/configuration) |
-| Available tools | `hermes tools list` or [Tools reference](https://hermes-agent.nousresearch.com/docs/reference/tools-reference) |
-| Slash commands | `/help` in session or [Slash commands reference](https://hermes-agent.nousresearch.com/docs/reference/slash-commands) |
-| Skills catalog | `hermes skills browse` or [Skills catalog](https://hermes-agent.nousresearch.com/docs/reference/skills-catalog) |
-| Provider setup | `hermes model` or [Providers guide](https://hermes-agent.nousresearch.com/docs/integrations/providers) |
-| Platform setup | `hermes gateway setup` or [Messaging docs](https://hermes-agent.nousresearch.com/docs/user-guide/messaging/) |
-| MCP servers | `hermes mcp list` or [MCP guide](https://hermes-agent.nousresearch.com/docs/user-guide/features/mcp) |
-| Profiles | `hermes profile list` or [Profiles docs](https://hermes-agent.nousresearch.com/docs/user-guide/profiles) |
-| Cron jobs | `hermes cron list` or [Cron docs](https://hermes-agent.nousresearch.com/docs/user-guide/features/cron) |
-| Memory | `hermes memory status` or [Memory docs](https://hermes-agent.nousresearch.com/docs/user-guide/features/memory) |
-| Env variables | `hermes config env-path` or [Env vars reference](https://hermes-agent.nousresearch.com/docs/reference/environment-variables) |
-| CLI commands | `hermes --help` or [CLI reference](https://hermes-agent.nousresearch.com/docs/reference/cli-commands) |
-| Gateway logs | `~/.hermes/logs/gateway.log` |
-| Session files | `~/.hermes/sessions/` or `hermes sessions browse` |
-| Source code | `~/.hermes/hermes-agent/` |
+| Config options | `dxrk config edit` or [Configuration docs](https://dxrk-agent.nousresearch.com/docs/user-guide/configuration) |
+| Available tools | `dxrk tools list` or [Tools reference](https://dxrk-agent.nousresearch.com/docs/reference/tools-reference) |
+| Slash commands | `/help` in session or [Slash commands reference](https://dxrk-agent.nousresearch.com/docs/reference/slash-commands) |
+| Skills catalog | `dxrk skills browse` or [Skills catalog](https://dxrk-agent.nousresearch.com/docs/reference/skills-catalog) |
+| Provider setup | `dxrk model` or [Providers guide](https://dxrk-agent.nousresearch.com/docs/integrations/providers) |
+| Platform setup | `dxrk gateway setup` or [Messaging docs](https://dxrk-agent.nousresearch.com/docs/user-guide/messaging/) |
+| MCP servers | `dxrk mcp list` or [MCP guide](https://dxrk-agent.nousresearch.com/docs/user-guide/features/mcp) |
+| Profiles | `dxrk profile list` or [Profiles docs](https://dxrk-agent.nousresearch.com/docs/user-guide/profiles) |
+| Cron jobs | `dxrk cron list` or [Cron docs](https://dxrk-agent.nousresearch.com/docs/user-guide/features/cron) |
+| Memory | `dxrk memory status` or [Memory docs](https://dxrk-agent.nousresearch.com/docs/user-guide/features/memory) |
+| Env variables | `dxrk config env-path` or [Env vars reference](https://dxrk-agent.nousresearch.com/docs/reference/environment-variables) |
+| CLI commands | `dxrk --help` or [CLI reference](https://dxrk-agent.nousresearch.com/docs/reference/cli-commands) |
+| Gateway logs | `~/.dxrk/logs/gateway.log` |
+| Session files | `~/.dxrk/sessions/` or `dxrk sessions browse` |
+| Source code | `~/.dxrk/dxrk-agent/` |
 
 ---
 
 ## Contributor Quick Reference
 
-For occasional contributors and PR authors. Full developer docs: https://hermes-agent.nousresearch.com/docs/developer-guide/
+For occasional contributors and PR authors. Full developer docs: https://dxrk-agent.nousresearch.com/docs/developer-guide/
 
 ### Project Layout
 
 ```
-hermes-agent/
+dxrk-agent/
 ├── run_agent.py          # AIAgent — core conversation loop
 ├── model_tools.py        # Tool discovery and dispatch
 ├── toolsets.py           # Toolset definitions
 ├── cli.py                # Interactive CLI (HermesCLI)
-├── hermes_state.py       # SQLite session store
+├── dxrk_state.py       # SQLite session store
 ├── agent/                # Prompt builder, context compression, memory, model routing, credential pooling, skill dispatch
-├── hermes_cli/           # CLI subcommands, config, setup, commands
+├── dxrk_cli/           # CLI subcommands, config, setup, commands
 │   ├── commands.py       # Slash command registry (CommandDef)
 │   ├── config.py         # DEFAULT_CONFIG, env var definitions
 │   └── main.py           # CLI entry point and argparse
@@ -678,7 +678,7 @@ hermes-agent/
 └── website/              # Docusaurus docs site
 ```
 
-Config: `~/.hermes/config.yaml` (settings), `~/.hermes/.env` (API keys).
+Config: `~/.dxrk/config.yaml` (settings), `~/.dxrk/.env` (API keys).
 
 ### Adding a Tool (3 files)
 
@@ -708,11 +708,11 @@ registry.register(
 
 Auto-discovery: any `tools/*.py` file with a top-level `registry.register()` call is imported automatically — no manual list needed.
 
-All handlers must return JSON strings. Use `get_hermes_home()` for paths, never hardcode `~/.hermes`.
+All handlers must return JSON strings. Use `get_dxrk_home()` for paths, never hardcode `~/.dxrk`.
 
 ### Adding a Slash Command
 
-1. Add `CommandDef` to `COMMAND_REGISTRY` in `hermes_cli/commands.py`
+1. Add `CommandDef` to `COMMAND_REGISTRY` in `dxrk_cli/commands.py`
 2. Add handler in `cli.py` → `process_command()`
 3. (Optional) Add gateway handler in `gateway/run.py`
 
@@ -737,7 +737,7 @@ python -m pytest tests/ -o 'addopts=' -q   # Full suite
 python -m pytest tests/tools/ -q            # Specific area
 ```
 
-- Tests auto-redirect `HERMES_HOME` to temp dirs — never touch real `~/.hermes/`
+- Tests auto-redirect `HERMES_HOME` to temp dirs — never touch real `~/.dxrk/`
 - Run full suite before pushing any change
 - Use `-o 'addopts='` to clear any baked-in pytest flags
 
@@ -755,6 +755,6 @@ Types: `fix:`, `feat:`, `refactor:`, `docs:`, `chore:`
 
 - **Never break prompt caching** — don't change context, tools, or system prompt mid-conversation
 - **Message role alternation** — never two assistant or two user messages in a row
-- Use `get_hermes_home()` from `hermes_constants` for all paths (profile-safe)
+- Use `get_dxrk_home()` from `dxrk_constants` for all paths (profile-safe)
 - Config values go in `config.yaml`, secrets go in `.env`
 - New tools need a `check_fn` so they only appear when requirements are met

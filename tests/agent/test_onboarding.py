@@ -11,10 +11,10 @@ from agent.onboarding import (
     TOOL_PROGRESS_FLAG,
     busy_input_hint_cli,
     busy_input_hint_gateway,
-    detect_openclaw_residue,
+    detect_dxrk_residue,
     is_seen,
     mark_seen,
-    openclaw_residue_hint_cli,
+    dxrk_residue_hint_cli,
     tool_progress_hint_cli,
     tool_progress_hint_gateway,
 )
@@ -187,31 +187,31 @@ class TestRoundTrip:
 
 
 class TestDetectOpenclawResidue:
-    def test_returns_true_when_openclaw_dir_present(self, tmp_path):
-        (tmp_path / ".openclaw").mkdir()
-        assert detect_openclaw_residue(home=tmp_path) is True
+    def test_returns_true_when_dxrk_dir_present(self, tmp_path):
+        (tmp_path / ".dxrk").mkdir()
+        assert detect_dxrk_residue(home=tmp_path) is True
 
     def test_returns_false_when_absent(self, tmp_path):
-        assert detect_openclaw_residue(home=tmp_path) is False
+        assert detect_dxrk_residue(home=tmp_path) is False
 
     def test_returns_false_when_path_is_a_file(self, tmp_path):
-        # A stray file named ``.openclaw`` is NOT a workspace — skip the banner.
-        (tmp_path / ".openclaw").write_text("oops")
-        assert detect_openclaw_residue(home=tmp_path) is False
+        # A stray file named ``.dxrk`` is NOT a workspace — skip the banner.
+        (tmp_path / ".dxrk").write_text("oops")
+        assert detect_dxrk_residue(home=tmp_path) is False
 
     def test_default_home_does_not_crash(self):
         # Smoke: real $HOME lookup must not raise regardless of state.
-        assert isinstance(detect_openclaw_residue(), bool)
+        assert isinstance(detect_dxrk_residue(), bool)
 
 
 class TestOpenclawResidueHint:
     def test_hint_mentions_cleanup_command(self):
-        msg = openclaw_residue_hint_cli()
-        assert "hermes claw cleanup" in msg
-        assert "~/.openclaw" in msg
+        msg = dxrk_residue_hint_cli()
+        assert "dxrk claw cleanup" in msg
+        assert "~/.dxrk" in msg
 
     def test_hint_not_empty(self):
-        assert openclaw_residue_hint_cli().strip()
+        assert dxrk_residue_hint_cli().strip()
 
 
 class TestOpenclawResidueSeenFlag:
