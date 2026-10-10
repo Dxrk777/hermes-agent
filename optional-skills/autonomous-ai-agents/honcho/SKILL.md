@@ -5,10 +5,10 @@ version: 2.0.0
 author: Hermes Agent
 license: MIT
 metadata:
-  hermes:
+  dxrk:
     tags: [Honcho, Memory, Profiles, Observation, Dialectic, User-Modeling, Session-Summary]
     homepage: https://docs.honcho.dev
-    related_skills: [hermes-agent]
+    related_skills: [dxrk-agent]
 prerequisites:
   pip: [honcho-ai]
 ---
@@ -31,23 +31,23 @@ Honcho provides AI-native cross-session user modeling. It learns who the user is
 ### Cloud (app.honcho.dev)
 
 ```bash
-hermes honcho setup
+dxrk honcho setup
 # select "cloud", paste API key from https://app.honcho.dev
 ```
 
 ### Self-hosted
 
 ```bash
-hermes honcho setup
+dxrk honcho setup
 # select "local", enter base URL (e.g. http://localhost:8000)
 ```
 
-See: https://docs.honcho.dev/v3/guides/integrations/hermes#running-honcho-locally-with-hermes
+See: https://docs.honcho.dev/v3/guides/integrations/dxrk#running-honcho-locally-with-dxrk
 
 ### Verify
 
 ```bash
-hermes honcho status    # shows resolved config, connection test, peer info
+dxrk honcho status    # shows resolved config, connection test, peer info
 ```
 
 ## Architecture
@@ -122,7 +122,7 @@ Honcho sessions scope where messages and observations land. Strategy options:
 | `per-session` | New Honcho session each Hermes run |
 | `global` | Single session across all directories |
 
-Manual override: `hermes honcho map my-project-name`
+Manual override: `dxrk honcho map my-project-name`
 
 ### Recall Modes
 
@@ -204,12 +204,12 @@ Each Hermes profile gets its own Honcho AI peer while sharing the same workspace
 ### Create a profile with Honcho peer
 
 ```bash
-hermes profile create coder --clone
-# creates host block hermes.coder, AI peer "coder", inherits config from default
+dxrk profile create coder --clone
+# creates host block dxrk.coder, AI peer "coder", inherits config from default
 ```
 
 What `--clone` does for Honcho:
-1. Creates a `hermes.coder` host block in `honcho.json`
+1. Creates a `dxrk.coder` host block in `honcho.json`
 2. Sets `aiPeer: "coder"` (the profile name)
 3. Inherits `workspace`, `peerName`, `writeFrequency`, `recallMode`, etc. from default
 4. Eagerly creates the peer in Honcho so it exists before first message
@@ -217,7 +217,7 @@ What `--clone` does for Honcho:
 ### Backfill existing profiles
 
 ```bash
-hermes honcho sync    # creates host blocks for all profiles that don't have one yet
+dxrk honcho sync    # creates host blocks for all profiles that don't have one yet
 ```
 
 ### Per-profile config
@@ -227,7 +227,7 @@ Override any setting in the host block:
 ```json
 {
   "hosts": {
-    "hermes.coder": {
+    "dxrk.coder": {
       "aiPeer": "coder",
       "recallMode": "tools",
       "dialecticDepth": 2,
@@ -388,13 +388,13 @@ This fix addresses edge cases where raw user conclusions containing markup or sp
 ## Troubleshooting
 
 ### "Honcho not configured"
-Run `hermes honcho setup`. Ensure `memory.provider: honcho` is in `~/.hermes/config.yaml`.
+Run `dxrk honcho setup`. Ensure `memory.provider: honcho` is in `~/.dxrk/config.yaml`.
 
 ### Memory not persisting across sessions
-Check `hermes honcho status` -- verify `saveMessages: true` and `writeFrequency` isn't `session` (which only writes on exit).
+Check `dxrk honcho status` -- verify `saveMessages: true` and `writeFrequency` isn't `session` (which only writes on exit).
 
 ### Profile not getting its own peer
-Use `--clone` when creating: `hermes profile create <name> --clone`. For existing profiles: `hermes honcho sync`.
+Use `--clone` when creating: `dxrk profile create <name> --clone`. For existing profiles: `dxrk honcho sync`.
 
 ### Observation changes in dashboard not reflected
 Observation config is synced from the server on each session init. Start a new session after changing settings in the Honcho UI.
@@ -412,19 +412,19 @@ Session summary requires at least one prior turn in the current Honcho session. 
 
 | Command | Description |
 |---------|-------------|
-| `hermes honcho setup` | Interactive setup wizard (cloud/local, identity, observation, recall, sessions) |
-| `hermes honcho status` | Show resolved config, connection test, peer info for active profile |
-| `hermes honcho enable` | Enable Honcho for the active profile (creates host block if needed) |
-| `hermes honcho disable` | Disable Honcho for the active profile |
-| `hermes honcho peer` | Show or update peer names (`--user <name>`, `--ai <name>`, `--reasoning <level>`) |
-| `hermes honcho peers` | Show peer identities across all profiles |
-| `hermes honcho mode` | Show or set recall mode (`hybrid`, `context`, `tools`) |
-| `hermes honcho tokens` | Show or set token budgets (`--context <N>`, `--dialectic <N>`) |
-| `hermes honcho sessions` | List known directory-to-session-name mappings |
-| `hermes honcho map <name>` | Map current working directory to a Honcho session name |
-| `hermes honcho identity` | Seed AI peer identity or show both peer representations |
-| `hermes honcho sync` | Create host blocks for all Hermes profiles that don't have one yet |
-| `hermes honcho migrate` | Step-by-step migration guide from OpenClaw native memory to Hermes + Honcho |
-| `hermes memory setup` | Generic memory provider picker (selecting "honcho" runs the same wizard) |
-| `hermes memory status` | Show active memory provider and config |
-| `hermes memory off` | Disable external memory provider |
+| `dxrk honcho setup` | Interactive setup wizard (cloud/local, identity, observation, recall, sessions) |
+| `dxrk honcho status` | Show resolved config, connection test, peer info for active profile |
+| `dxrk honcho enable` | Enable Honcho for the active profile (creates host block if needed) |
+| `dxrk honcho disable` | Disable Honcho for the active profile |
+| `dxrk honcho peer` | Show or update peer names (`--user <name>`, `--ai <name>`, `--reasoning <level>`) |
+| `dxrk honcho peers` | Show peer identities across all profiles |
+| `dxrk honcho mode` | Show or set recall mode (`hybrid`, `context`, `tools`) |
+| `dxrk honcho tokens` | Show or set token budgets (`--context <N>`, `--dialectic <N>`) |
+| `dxrk honcho sessions` | List known directory-to-session-name mappings |
+| `dxrk honcho map <name>` | Map current working directory to a Honcho session name |
+| `dxrk honcho identity` | Seed AI peer identity or show both peer representations |
+| `dxrk honcho sync` | Create host blocks for all Hermes profiles that don't have one yet |
+| `dxrk honcho migrate` | Step-by-step migration guide from OpenClaw native memory to Hermes + Honcho |
+| `dxrk memory setup` | Generic memory provider picker (selecting "honcho" runs the same wizard) |
+| `dxrk memory status` | Show active memory provider and config |
+| `dxrk memory off` | Disable external memory provider |

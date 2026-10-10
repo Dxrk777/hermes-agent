@@ -9,7 +9,7 @@ This is NOT a tool — the LLM never sees it.  It's transparent infrastructure
 controlled by the ``checkpoints`` config flag or ``--checkpoints`` CLI flag.
 
 Architecture:
-    ~/.hermes/checkpoints/{sha256(abs_dir)[:16]}/   — shadow git repo
+    ~/.dxrk/checkpoints/{sha256(abs_dir)[:16]}/   — shadow git repo
         HEAD, refs/, objects/                        — standard git internals
         HERMES_WORKDIR                               — original dir path
         info/exclude                                 — default excludes
@@ -25,7 +25,7 @@ import re
 import shutil
 import subprocess
 from pathlib import Path
-from hermes_constants import get_hermes_home
+from dxrk_constants import get_dxrk_home
 from typing import Dict, List, Optional, Set
 
 logger = logging.getLogger(__name__)
@@ -34,7 +34,7 @@ logger = logging.getLogger(__name__)
 # Constants
 # ---------------------------------------------------------------------------
 
-CHECKPOINT_BASE = get_hermes_home() / "checkpoints"
+CHECKPOINT_BASE = get_dxrk_home() / "checkpoints"
 
 DEFAULT_EXCLUDES = [
     "node_modules/",
@@ -231,7 +231,7 @@ def _init_shadow_repo(shadow_repo: Path, working_dir: str) -> Optional[str]:
     if not ok:
         return f"Shadow repo init failed: {err}"
 
-    _run_git(["config", "user.email", "hermes@local"], shadow_repo, working_dir)
+    _run_git(["config", "user.email", "dxrk@local"], shadow_repo, working_dir)
     _run_git(["config", "user.name", "Hermes Checkpoint"], shadow_repo, working_dir)
     # Explicitly disable commit/tag signing in the shadow repo.  _git_env
     # already isolates from the user's global config, but writing these into
@@ -796,7 +796,7 @@ def maybe_auto_prune_checkpoints(
     Writes ``CHECKPOINT_BASE/.last_prune`` on completion so subsequent
     calls within ``min_interval_hours`` short-circuit.  Designed to be
     called once per CLI/gateway process startup; the marker keeps costs
-    bounded regardless of how many times hermes is invoked per day.
+    bounded regardless of how many times dxrk is invoked per day.
 
     Returns ``{"skipped": bool, "result": prune_checkpoints-dict,
     "error": optional str}``.

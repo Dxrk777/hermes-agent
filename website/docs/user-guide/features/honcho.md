@@ -33,19 +33,19 @@ Honcho is integrated into the [Memory Providers](./memory-providers.md) system. 
 ## Setup
 
 ```bash
-hermes memory setup    # select "honcho" from the provider list
+dxrk memory setup    # select "honcho" from the provider list
 ```
 
 Or configure manually:
 
 ```yaml
-# ~/.hermes/config.yaml
+# ~/.dxrk/config.yaml
 memory:
   provider: honcho
 ```
 
 ```bash
-echo "HONCHO_API_KEY=*** >> ~/.hermes/.env
+echo "HONCHO_API_KEY=*** >> ~/.dxrk/.env
 ```
 
 Get an API key at [honcho.dev](https://honcho.dev).
@@ -127,7 +127,7 @@ Honcho is configured in `~/.honcho/config.json` (global) or `$HERMES_HOME/honcho
 | `sessionStrategy` | `'per-directory'` | `per-directory`, `per-repo`, `per-session`, or `global` |
 
 **Session strategy** controls how Honcho sessions map to your work:
-- `per-session` — each `hermes` run gets a fresh session. Clean starts, memory via tools. Recommended for new users.
+- `per-session` — each `dxrk` run gets a fresh session. Clean starts, memory via tools. Recommended for new users.
 - `per-directory` — one Honcho session per working directory. Context accumulates across runs.
 - `per-repo` — one session per git repository.
 - `global` — single session across all directories.
@@ -200,27 +200,27 @@ When Honcho is active as the memory provider, five tools become available:
 ## CLI Commands
 
 ```bash
-hermes honcho status          # Connection status, config, and key settings
-hermes honcho setup           # Interactive setup wizard
-hermes honcho strategy        # Show or set session strategy
-hermes honcho peer            # Update peer names for multi-agent setups
-hermes honcho mode            # Show or set recall mode
-hermes honcho tokens          # Show or set context token budget
-hermes honcho identity        # Show Honcho peer identity
-hermes honcho sync            # Sync host blocks for all profiles
-hermes honcho enable          # Enable Honcho
-hermes honcho disable         # Disable Honcho
+dxrk honcho status          # Connection status, config, and key settings
+dxrk honcho setup           # Interactive setup wizard
+dxrk honcho strategy        # Show or set session strategy
+dxrk honcho peer            # Update peer names for multi-agent setups
+dxrk honcho mode            # Show or set recall mode
+dxrk honcho tokens          # Show or set context token budget
+dxrk honcho identity        # Show Honcho peer identity
+dxrk honcho sync            # Sync host blocks for all profiles
+dxrk honcho enable          # Enable Honcho
+dxrk honcho disable         # Disable Honcho
 ```
 
-## Migrating from `hermes honcho`
+## Migrating from `dxrk honcho`
 
-If you previously used the standalone `hermes honcho setup`:
+If you previously used the standalone `dxrk honcho setup`:
 
 1. Your existing configuration (`honcho.json` or `~/.honcho/config.json`) is preserved
 2. Your server-side data (memories, conclusions, user profiles) is intact
 3. Set `memory.provider: honcho` in config.yaml to reactivate
 
-No re-login or re-setup needed. Run `hermes memory setup` and select "honcho" — the wizard detects your existing config.
+No re-login or re-setup needed. Run `dxrk memory setup` and select "honcho" — the wizard detects your existing config.
 
 ## Full Documentation
 

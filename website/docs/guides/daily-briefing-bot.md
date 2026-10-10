@@ -29,16 +29,16 @@ Before starting, make sure you have:
 - **Hermes Agent installed** — see the [Installation guide](/docs/getting-started/installation)
 - **Gateway running** — the gateway daemon handles cron execution:
   ```bash
-  hermes gateway install   # Install as a user service
-  sudo hermes gateway install --system   # Linux servers: boot-time system service
+  dxrk gateway install   # Install as a user service
+  sudo dxrk gateway install --system   # Linux servers: boot-time system service
   # or
-  hermes gateway           # Run in foreground
+  dxrk gateway           # Run in foreground
   ```
 - **Firecrawl API key** — set `FIRECRAWL_API_KEY` in your environment for web search
 - **Messaging configured** (optional but recommended) — [Telegram](/docs/user-guide/messaging/telegram) or Discord set up with a home channel
 
 :::tip No messaging? No problem
-You can still follow this tutorial using `deliver: "local"`. Briefings will be saved to `~/.hermes/cron/output/` and you can read them anytime.
+You can still follow this tutorial using `deliver: "local"`. Briefings will be saved to `~/.dxrk/cron/output/` and you can read them anytime.
 :::
 
 ## Step 1: Test the Workflow Manually
@@ -46,7 +46,7 @@ You can still follow this tutorial using `deliver: "local"`. Briefings will be s
 Before automating anything, let's make sure the briefing works. Start a chat session:
 
 ```bash
-hermes
+dxrk
 ```
 
 Then enter this prompt:
@@ -211,7 +211,7 @@ In chat:
 
 Or from the terminal:
 ```bash
-hermes cron list
+dxrk cron list
 ```
 
 You'll see output like:
@@ -242,15 +242,15 @@ Hermes will use `cronjob(action="list")` to find it and `cronjob(action="remove"
 Make sure the scheduler is actually running:
 
 ```bash
-hermes cron status
+dxrk cron status
 ```
 
 If the gateway isn't running, your jobs won't execute. Install it as a background service for reliability:
 
 ```bash
-hermes gateway install
+dxrk gateway install
 # or on Linux servers
-sudo hermes gateway install --system
+sudo dxrk gateway install --system
 ```
 
 ## Going Further

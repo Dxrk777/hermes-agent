@@ -13,7 +13,7 @@ Get Hermes Agent up and running in under two minutes with the one-line installer
 ### Linux / macOS / WSL2
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/NousResearch/hermes-agent/main/scripts/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/NousResearch/dxrk-agent/main/scripts/install.sh | bash
 ```
 
 ### Android / Termux
@@ -21,7 +21,7 @@ curl -fsSL https://raw.githubusercontent.com/NousResearch/hermes-agent/main/scri
 Hermes now ships a Termux-aware installer path too:
 
 ```bash
-curl -fsSL https://raw.githubusercontent.com/NousResearch/hermes-agent/main/scripts/install.sh | bash
+curl -fsSL https://raw.githubusercontent.com/NousResearch/dxrk-agent/main/scripts/install.sh | bash
 ```
 
 The installer detects Termux automatically and switches to a tested Android flow:
@@ -39,7 +39,7 @@ Native Windows is **not supported**. Please install [WSL2](https://learn.microso
 
 ### What the Installer Does
 
-The installer handles everything automatically — all dependencies (Python, Node.js, ripgrep, ffmpeg), the repo clone, virtual environment, global `hermes` command setup, and LLM provider configuration. By the end, you're ready to chat.
+The installer handles everything automatically — all dependencies (Python, Node.js, ripgrep, ffmpeg), the repo clone, virtual environment, global `dxrk` command setup, and LLM provider configuration. By the end, you're ready to chat.
 
 ### After Installation
 
@@ -47,17 +47,17 @@ Reload your shell and start chatting:
 
 ```bash
 source ~/.bashrc   # or: source ~/.zshrc
-hermes             # Start chatting!
+dxrk             # Start chatting!
 ```
 
 To reconfigure individual settings later, use the dedicated commands:
 
 ```bash
-hermes model          # Choose your LLM provider and model
-hermes tools          # Configure which tools are enabled
-hermes gateway setup  # Set up messaging platforms
-hermes config set     # Set individual config values
-hermes setup          # Or run the full setup wizard to configure everything at once
+dxrk model          # Choose your LLM provider and model
+dxrk tools          # Configure which tools are enabled
+dxrk gateway setup  # Set up messaging platforms
+dxrk config set     # Set individual config values
+dxrk setup          # Or run the full setup wizard to configure everything at once
 ```
 
 ---
@@ -92,8 +92,8 @@ If you want to clone the repo and install from source — for contributing, runn
 
 | Problem | Solution |
 |---------|----------|
-| `hermes: command not found` | Reload your shell (`source ~/.bashrc`) or check PATH |
-| `API key not set` | Run `hermes model` to configure your provider, or `hermes config set OPENROUTER_API_KEY your_key` |
-| Missing config after update | Run `hermes config check` then `hermes config migrate` |
+| `dxrk: command not found` | Reload your shell (`source ~/.bashrc`) or check PATH |
+| `API key not set` | Run `dxrk model` to configure your provider, or `dxrk config set OPENROUTER_API_KEY your_key` |
+| Missing config after update | Run `dxrk config check` then `dxrk config migrate` |
 
-For more diagnostics, run `hermes doctor` — it will tell you exactly what's missing and how to fix it.
+For more diagnostics, run `dxrk doctor` — it will tell you exactly what's missing and how to fix it.

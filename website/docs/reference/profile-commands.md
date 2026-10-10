@@ -6,13 +6,13 @@ sidebar_position: 7
 
 This page covers all commands related to [Hermes profiles](../user-guide/profiles.md). For general CLI commands, see [CLI Commands Reference](./cli-commands.md).
 
-## `hermes profile`
+## `dxrk profile`
 
 ```bash
-hermes profile <subcommand>
+dxrk profile <subcommand>
 ```
 
-Top-level command for managing profiles. Running `hermes profile` without a subcommand shows help.
+Top-level command for managing profiles. Running `dxrk profile` without a subcommand shows help.
 
 | Subcommand | Description |
 |------------|-------------|
@@ -26,10 +26,10 @@ Top-level command for managing profiles. Running `hermes profile` without a subc
 | `export` | Export a profile to a tar.gz archive. |
 | `import` | Import a profile from a tar.gz archive. |
 
-## `hermes profile list`
+## `dxrk profile list`
 
 ```bash
-hermes profile list
+dxrk profile list
 ```
 
 Lists all profiles. The currently active profile is marked with `*`.
@@ -37,7 +37,7 @@ Lists all profiles. The currently active profile is marked with `*`.
 **Example:**
 
 ```bash
-$ hermes profile list
+$ dxrk profile list
   default
 * work
   dev
@@ -46,13 +46,13 @@ $ hermes profile list
 
 No options.
 
-## `hermes profile use`
+## `dxrk profile use`
 
 ```bash
-hermes profile use <name>
+dxrk profile use <name>
 ```
 
-Sets `<name>` as the active profile. All subsequent `hermes` commands (without `-p`) will use this profile.
+Sets `<name>` as the active profile. All subsequent `dxrk` commands (without `-p`) will use this profile.
 
 | Argument | Description |
 |----------|-------------|
@@ -61,14 +61,14 @@ Sets `<name>` as the active profile. All subsequent `hermes` commands (without `
 **Example:**
 
 ```bash
-hermes profile use work
-hermes profile use default
+dxrk profile use work
+dxrk profile use default
 ```
 
-## `hermes profile create`
+## `dxrk profile create`
 
 ```bash
-hermes profile create <name> [options]
+dxrk profile create <name> [options]
 ```
 
 Creates a new profile.
@@ -87,22 +87,22 @@ Creating a profile does **not** make that profile directory the default project/
 
 ```bash
 # Blank profile — needs full setup
-hermes profile create mybot
+dxrk profile create mybot
 
 # Clone config only from current profile
-hermes profile create work --clone
+dxrk profile create work --clone
 
 # Clone everything from current profile
-hermes profile create backup --clone-all
+dxrk profile create backup --clone-all
 
 # Clone config from a specific profile
-hermes profile create work2 --clone --clone-from work
+dxrk profile create work2 --clone --clone-from work
 ```
 
-## `hermes profile delete`
+## `dxrk profile delete`
 
 ```bash
-hermes profile delete <name> [options]
+dxrk profile delete <name> [options]
 ```
 
 Deletes a profile and removes its shell alias.
@@ -115,18 +115,18 @@ Deletes a profile and removes its shell alias.
 **Example:**
 
 ```bash
-hermes profile delete mybot
-hermes profile delete mybot --yes
+dxrk profile delete mybot
+dxrk profile delete mybot --yes
 ```
 
 :::warning
 This permanently deletes the profile's entire directory including all config, memories, sessions, and skills. Cannot delete the currently active profile.
 :::
 
-## `hermes profile show`
+## `dxrk profile show`
 
 ```bash
-hermes profile show <name>
+dxrk profile show <name>
 ```
 
 Displays details about a profile including its home directory, configured model, gateway status, skills count, and configuration file status.
@@ -140,9 +140,9 @@ This shows the profile's Hermes home directory, not the terminal working directo
 **Example:**
 
 ```bash
-$ hermes profile show work
+$ dxrk profile show work
 Profile: work
-Path:    ~/.hermes/profiles/work
+Path:    ~/.dxrk/profiles/work
 Model:   anthropic/claude-sonnet-4 (anthropic)
 Gateway: stopped
 Skills:  12
@@ -151,10 +151,10 @@ SOUL.md: exists
 Alias:   ~/.local/bin/work
 ```
 
-## `hermes profile alias`
+## `dxrk profile alias`
 
 ```bash
-hermes profile alias <name> [options]
+dxrk profile alias <name> [options]
 ```
 
 Regenerates the shell alias script at `~/.local/bin/<name>`. Useful if the alias was accidentally deleted or if you need to update it after moving your Hermes installation.
@@ -168,20 +168,20 @@ Regenerates the shell alias script at `~/.local/bin/<name>`. Useful if the alias
 **Example:**
 
 ```bash
-hermes profile alias work
+dxrk profile alias work
 # Creates/updates ~/.local/bin/work
 
-hermes profile alias work --name mywork
+dxrk profile alias work --name mywork
 # Creates ~/.local/bin/mywork
 
-hermes profile alias work --remove
+dxrk profile alias work --remove
 # Removes the wrapper script
 ```
 
-## `hermes profile rename`
+## `dxrk profile rename`
 
 ```bash
-hermes profile rename <old-name> <new-name>
+dxrk profile rename <old-name> <new-name>
 ```
 
 Renames a profile. Updates the directory and shell alias.
@@ -194,15 +194,15 @@ Renames a profile. Updates the directory and shell alias.
 **Example:**
 
 ```bash
-hermes profile rename mybot assistant
-# ~/.hermes/profiles/mybot → ~/.hermes/profiles/assistant
+dxrk profile rename mybot assistant
+# ~/.dxrk/profiles/mybot → ~/.dxrk/profiles/assistant
 # ~/.local/bin/mybot → ~/.local/bin/assistant
 ```
 
-## `hermes profile export`
+## `dxrk profile export`
 
 ```bash
-hermes profile export <name> [options]
+dxrk profile export <name> [options]
 ```
 
 Exports a profile as a compressed tar.gz archive.
@@ -215,16 +215,16 @@ Exports a profile as a compressed tar.gz archive.
 **Example:**
 
 ```bash
-hermes profile export work
+dxrk profile export work
 # Creates work.tar.gz in the current directory
 
-hermes profile export work -o ./work-2026-03-29.tar.gz
+dxrk profile export work -o ./work-2026-03-29.tar.gz
 ```
 
-## `hermes profile import`
+## `dxrk profile import`
 
 ```bash
-hermes profile import <archive> [options]
+dxrk profile import <archive> [options]
 ```
 
 Imports a profile from a tar.gz archive.
@@ -237,17 +237,17 @@ Imports a profile from a tar.gz archive.
 **Example:**
 
 ```bash
-hermes profile import ./work-2026-03-29.tar.gz
+dxrk profile import ./work-2026-03-29.tar.gz
 # Infers profile name from the archive
 
-hermes profile import ./work-2026-03-29.tar.gz --name work-restored
+dxrk profile import ./work-2026-03-29.tar.gz --name work-restored
 ```
 
-## `hermes -p` / `hermes --profile`
+## `dxrk -p` / `dxrk --profile`
 
 ```bash
-hermes -p <name> <command> [options]
-hermes --profile <name> <command> [options]
+dxrk -p <name> <command> [options]
+dxrk --profile <name> <command> [options]
 ```
 
 Global flag to run any Hermes command under a specific profile without changing the sticky default. This overrides the active profile for the duration of the command.
@@ -259,16 +259,16 @@ Global flag to run any Hermes command under a specific profile without changing 
 **Examples:**
 
 ```bash
-hermes -p work chat -q "Check the server status"
-hermes --profile dev gateway start
-hermes -p personal skills list
-hermes -p work config edit
+dxrk -p work chat -q "Check the server status"
+dxrk --profile dev gateway start
+dxrk -p personal skills list
+dxrk -p work config edit
 ```
 
-## `hermes completion`
+## `dxrk completion`
 
 ```bash
-hermes completion <shell>
+dxrk completion <shell>
 ```
 
 Generates shell completion scripts. Includes completions for profile names and profile subcommands.
@@ -281,17 +281,17 @@ Generates shell completion scripts. Includes completions for profile names and p
 
 ```bash
 # Install completions
-hermes completion bash >> ~/.bashrc
-hermes completion zsh >> ~/.zshrc
+dxrk completion bash >> ~/.bashrc
+dxrk completion zsh >> ~/.zshrc
 
 # Reload shell
 source ~/.bashrc
 ```
 
 After installation, tab completion works for:
-- `hermes profile <TAB>` — subcommands (list, use, create, etc.)
-- `hermes profile use <TAB>` — profile names
-- `hermes -p <TAB>` — profile names
+- `dxrk profile <TAB>` — subcommands (list, use, create, etc.)
+- `dxrk profile use <TAB>` — profile names
+- `dxrk -p <TAB>` — profile names
 
 ## See also
 

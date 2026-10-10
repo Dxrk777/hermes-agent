@@ -17,7 +17,7 @@ Interact with X/Twitter via xurl, the official X API CLI. Use for posting, reply
 | Source | Bundled (installed by default) |
 | Path | `skills/social-media/xurl` |
 | Version | `1.1.1` |
-| Author | xdevplatform + openclaw + Hermes Agent |
+| Author | xdevplatform + dxrk + Hermes Agent |
 | License | MIT |
 | Platforms | linux, macos |
 | Tags | `twitter`, `x`, `social-media`, `xurl`, `official-api` |
@@ -424,5 +424,5 @@ xurl --app staging /2/users/me             # one-off against staging
 ## Attribution
 
 - Upstream CLI: https://github.com/xdevplatform/xurl (X developer platform team, Chris Park et al.)
-- Upstream agent skill: https://github.com/openclaw/openclaw/blob/main/skills/xurl/SKILL.md
+- Upstream agent skill: https://github.com/dxrk/dxrk/blob/main/skills/xurl/SKILL.md
 - Hermes adaptation: reformatted for Hermes skill conventions; safety guardrails preserved verbatim.

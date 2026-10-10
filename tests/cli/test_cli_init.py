@@ -205,7 +205,7 @@ class TestHistoryDisplay:
             {
                 "id": "20260401_201329_d85961",
                 "title": "Checking Running Hermes Agent",
-                "preview": "check running gateways for hermes agent",
+                "preview": "check running gateways for dxrk agent",
                 "last_active": 0,
             },
         ]
@@ -233,7 +233,7 @@ class TestHistoryDisplay:
             {
                 "id": "20260401_201329_d85961",
                 "title": "Checking Running Hermes Agent",
-                "preview": "check running gateways for hermes agent",
+                "preview": "check running gateways for dxrk agent",
                 "last_active": 0,
             },
         ]
@@ -253,11 +253,11 @@ class TestRootLevelProviderOverride:
         """model.provider takes priority — root-level provider is only a fallback."""
         import yaml
 
-        hermes_home = tmp_path / ".hermes"
-        hermes_home.mkdir()
-        monkeypatch.setenv("HERMES_HOME", str(hermes_home))
+        dxrk_home = tmp_path / ".dxrk"
+        dxrk_home.mkdir()
+        monkeypatch.setenv("HERMES_HOME", str(dxrk_home))
 
-        config_path = hermes_home / "config.yaml"
+        config_path = dxrk_home / "config.yaml"
         config_path.write_text(yaml.safe_dump({
             "provider": "opencode-go",  # stale root-level key
             "model": {
@@ -267,7 +267,7 @@ class TestRootLevelProviderOverride:
         }))
 
         import cli
-        monkeypatch.setattr(cli, "_hermes_home", hermes_home)
+        monkeypatch.setattr(cli, "_dxrk_home", dxrk_home)
         cfg = cli.load_cli_config()
 
         assert cfg["model"]["provider"] == "openrouter"
@@ -276,11 +276,11 @@ class TestRootLevelProviderOverride:
         """Even when model.provider is the default 'auto', root-level provider is ignored."""
         import yaml
 
-        hermes_home = tmp_path / ".hermes"
-        hermes_home.mkdir()
-        monkeypatch.setenv("HERMES_HOME", str(hermes_home))
+        dxrk_home = tmp_path / ".dxrk"
+        dxrk_home.mkdir()
+        monkeypatch.setenv("HERMES_HOME", str(dxrk_home))
 
-        config_path = hermes_home / "config.yaml"
+        config_path = dxrk_home / "config.yaml"
         config_path.write_text(yaml.safe_dump({
             "provider": "opencode-go",  # stale root key
             "model": {
@@ -290,7 +290,7 @@ class TestRootLevelProviderOverride:
         }))
 
         import cli
-        monkeypatch.setattr(cli, "_hermes_home", hermes_home)
+        monkeypatch.setattr(cli, "_dxrk_home", dxrk_home)
         cfg = cli.load_cli_config()
 
         # Root-level "opencode-go" must NOT leak through
@@ -298,7 +298,7 @@ class TestRootLevelProviderOverride:
 
     def test_normalize_root_model_keys_moves_to_model(self):
         """_normalize_root_model_keys migrates root keys into model section."""
-        from hermes_cli.config import _normalize_root_model_keys
+        from dxrk_cli.config import _normalize_root_model_keys
 
         config = {
             "provider": "opencode-go",
@@ -317,7 +317,7 @@ class TestRootLevelProviderOverride:
 
     def test_normalize_root_model_keys_does_not_override_existing(self):
         """Existing model.provider is never overridden by root-level key."""
-        from hermes_cli.config import _normalize_root_model_keys
+        from dxrk_cli.config import _normalize_root_model_keys
 
         config = {
             "provider": "stale-provider",

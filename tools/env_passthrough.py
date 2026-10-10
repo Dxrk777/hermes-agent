@@ -44,7 +44,7 @@ def _get_allowed() -> set[str]:
 _config_passthrough: frozenset[str] | None = None
 
 
-def _is_hermes_provider_credential(name: str) -> bool:
+def _is_dxrk_provider_credential(name: str) -> bool:
     """True if ``name`` is a Hermes-managed provider credential (API key,
     token, or similar) per ``_HERMES_PROVIDER_ENV_BLOCKLIST``.
 
@@ -86,7 +86,7 @@ def register_env_passthrough(var_names: Iterable[str]) -> None:
         name = name.strip()
         if not name:
             continue
-        if _is_hermes_provider_credential(name):
+        if _is_dxrk_provider_credential(name):
             logger.warning(
                 "env passthrough: refusing to register Hermes provider "
                 "credential %r (blocked by _HERMES_PROVIDER_ENV_BLOCKLIST). "
@@ -107,7 +107,7 @@ def _load_config_passthrough() -> frozenset[str]:
 
     result: set[str] = set()
     try:
-        from hermes_cli.config import read_raw_config
+        from dxrk_cli.config import read_raw_config
         cfg = read_raw_config()
         passthrough = cfg.get("terminal", {}).get("env_passthrough")
         if isinstance(passthrough, list):

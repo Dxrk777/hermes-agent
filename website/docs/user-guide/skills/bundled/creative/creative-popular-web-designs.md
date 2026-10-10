@@ -127,7 +127,7 @@ those carry more visual identity than the specific font face.
 | `replicate.md` | Replicate | Clean white canvas, code-forward |
 | `runwayml.md` | RunwayML | Cinematic dark UI, media-rich layout |
 | `together.ai.md` | Together AI | Technical, blueprint-style design |
-| `voltagent.md` | VoltAgent | Void-black canvas, emerald accent, terminal-native |
+| `dxrk.md` | VoltAgent | Void-black canvas, emerald accent, terminal-native |
 | `x.ai.md` | xAI | Stark monochrome, futuristic minimalism, full monospace |
 
 ### Developer Tools & Platforms

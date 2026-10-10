@@ -45,7 +45,7 @@ from atroposlib.envs.server_handling.server_manager import APIServerConfig
 from atroposlib.type_definitions import Item
 
 from environments.agent_loop import AgentResult
-from environments.hermes_base_env import HermesAgentBaseEnv, HermesAgentEnvConfig
+from environments.dxrk_base_env import HermesAgentBaseEnv, HermesAgentEnvConfig
 from environments.tool_context import ToolContext
 
 logger = logging.getLogger(__name__)
@@ -112,7 +112,7 @@ class TerminalTestEnv(HermesAgentBaseEnv):
         Default configuration for the terminal test environment.
 
         Uses Modal terminal backend for cloud isolation and OpenRouter with
-        Claude for inference. API keys loaded from ~/hermes-agent/.env.
+        Claude for inference. API keys loaded from ~/dxrk-agent/.env.
         """
         env_config = TerminalTestEnvConfig(
             # Terminal + file tools only
@@ -133,7 +133,7 @@ class TerminalTestEnv(HermesAgentBaseEnv):
             # Atropos settings
             group_size=3,              # 3 rollouts per group
             tokenizer_name="NousResearch/q-30b-t-h45-e1",
-            tool_call_parser="hermes",
+            tool_call_parser="dxrk",
             steps_per_eval=3,          # Eval after all 3 steps
             total_steps=3,             # 3 groups total (1 group per step)
             use_wandb=True,

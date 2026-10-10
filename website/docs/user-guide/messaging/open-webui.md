@@ -13,7 +13,7 @@ description: "Connect Open WebUI to Hermes Agent via the OpenAI-compatible API s
 ```mermaid
 flowchart LR
     A["Open WebUI<br/>browser UI<br/>port 3000"]
-    B["hermes-agent<br/>gateway API server<br/>port 8642"]
+    B["dxrk-agent<br/>gateway API server<br/>port 8642"]
     A -->|POST /v1/chat/completions| B
     B -->|SSE streaming response| A
 ```
@@ -26,7 +26,7 @@ Open WebUI talks to Hermes server-to-server, so you do not need `API_SERVER_CORS
 
 ### 1. Enable the API server
 
-Add to `~/.hermes/.env`:
+Add to `~/.dxrk/.env`:
 
 ```bash
 API_SERVER_ENABLED=true
@@ -36,7 +36,7 @@ API_SERVER_KEY=your-secret-key
 ### 2. Start Hermes Agent gateway
 
 ```bash
-hermes gateway
+dxrk gateway
 ```
 
 You should see:
@@ -60,7 +60,7 @@ docker run -d -p 3000:8080 \
 
 ### 4. Open the UI
 
-Go to **http://localhost:3000**. Create your admin account (the first user becomes admin). You should see your agent in the model dropdown (named after your profile, or **hermes-agent** for the default profile). Start chatting!
+Go to **http://localhost:3000**. Create your admin account (the first user becomes admin). You should see your agent in the model dropdown (named after your profile, or **dxrk-agent** for the default profile). Start chatting!
 
 ## Docker Compose Setup
 
@@ -106,7 +106,7 @@ If you prefer to configure the connection through the UI instead of environment 
 7. Click the **checkmark** to verify the connection
 8. **Save**
 
-Your agent model should now appear in the model dropdown (named after your profile, or **hermes-agent** for the default profile).
+Your agent model should now appear in the model dropdown (named after your profile, or **dxrk-agent** for the default profile).
 
 :::warning
 Environment variables only take effect on Open WebUI's **first launch**. After that, connection settings are stored in its internal database. To change them later, use the Admin UI or delete the Docker volume and start fresh.
@@ -130,7 +130,7 @@ This is the default and requires no extra configuration. Open WebUI sends standa
 To use the Responses API mode:
 
 1. Go to **Admin Settings** → **Connections** → **OpenAI** → **Manage**
-2. Edit your hermes-agent connection
+2. Edit your dxrk-agent connection
 3. Change **API Type** from "Chat Completions" to **"Responses (Experimental)"**
 4. Save
 
@@ -181,7 +181,7 @@ With streaming enabled (the default), you'll see brief inline indicators as tool
 
 - **Check the URL has `/v1` suffix**: `http://host.docker.internal:8642/v1` (not just `:8642`)
 - **Verify the gateway is running**: `curl http://localhost:8642/health` should return `{"status": "ok"}`
-- **Check model listing**: `curl http://localhost:8642/v1/models` should return a list with `hermes-agent`
+- **Check model listing**: `curl http://localhost:8642/v1/models` should return a list with `dxrk-agent`
 - **Docker networking**: From inside Docker, `localhost` means the container, not your host. Use `host.docker.internal` or `--network=host`.
 
 ### Connection test passes but no models load
@@ -203,22 +203,22 @@ To run separate Hermes instances per user — each with their own config, memory
 ### 1. Create profiles and configure API servers
 
 ```bash
-hermes profile create alice
-hermes -p alice config set API_SERVER_ENABLED true
-hermes -p alice config set API_SERVER_PORT 8643
-hermes -p alice config set API_SERVER_KEY alice-secret
+dxrk profile create alice
+dxrk -p alice config set API_SERVER_ENABLED true
+dxrk -p alice config set API_SERVER_PORT 8643
+dxrk -p alice config set API_SERVER_KEY alice-secret
 
-hermes profile create bob
-hermes -p bob config set API_SERVER_ENABLED true
-hermes -p bob config set API_SERVER_PORT 8644
-hermes -p bob config set API_SERVER_KEY bob-secret
+dxrk profile create bob
+dxrk -p bob config set API_SERVER_ENABLED true
+dxrk -p bob config set API_SERVER_PORT 8644
+dxrk -p bob config set API_SERVER_KEY bob-secret
 ```
 
 ### 2. Start each gateway
 
 ```bash
-hermes -p alice gateway &
-hermes -p bob gateway &
+dxrk -p alice gateway &
+dxrk -p bob gateway &
 ```
 
 ### 3. Add connections in Open WebUI
@@ -235,7 +235,7 @@ The model dropdown will show `alice` and `bob` as distinct models. You can assig
 :::tip Custom Model Names
 The model name defaults to the profile name. To override it, set `API_SERVER_MODEL_NAME` in the profile's `.env`:
 ```bash
-hermes -p alice config set API_SERVER_MODEL_NAME "Alice's Agent"
+dxrk -p alice config set API_SERVER_MODEL_NAME "Alice's Agent"
 ```
 :::
 

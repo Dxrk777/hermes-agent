@@ -8,7 +8,7 @@ description: "Control Spotify — play music, search the catalog, manage playlis
 
 # Spotify
 
-Control Spotify — play music, search the catalog, manage playlists and library, inspect devices and playback state. Loads when the user asks to play/pause/queue music, search tracks/albums/artists, manage playlists, or check what's playing. Assumes the Hermes Spotify toolset is enabled and `hermes auth spotify` has been run.
+Control Spotify — play music, search the catalog, manage playlists and library, inspect devices and playback state. Loads when the user asks to play/pause/queue music, search tracks/albums/artists, manage playlists, or check what's playing. Assumes the Hermes Spotify toolset is enabled and `dxrk auth spotify` has been run.
 
 ## Skill metadata
 
@@ -30,7 +30,7 @@ The following is the complete skill definition that Hermes loads when this skill
 
 # Spotify
 
-Control the user's Spotify account via the Hermes Spotify toolset (7 tools). Setup guide: https://hermes-agent.nousresearch.com/docs/user-guide/features/spotify
+Control the user's Spotify account via the Hermes Spotify toolset (7 tools). Setup guide: https://dxrk-agent.nousresearch.com/docs/user-guide/features/spotify
 
 ## When to use this skill
 
@@ -127,7 +127,7 @@ spotify_devices({"action": "transfer", "device_id": "<id>", "play": true})
 
 **`429 Too Many Requests`** = rate limit. Wait and retry once. If it keeps happening, you're looping — stop.
 
-**`401 Unauthorized` after a retry** — refresh token revoked. Tell the user to run `hermes auth spotify` again.
+**`401 Unauthorized` after a retry** — refresh token revoked. Tell the user to run `dxrk auth spotify` again.
 
 ## URI and ID formats
 

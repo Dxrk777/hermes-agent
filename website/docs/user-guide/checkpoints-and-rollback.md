@@ -9,7 +9,7 @@ description: "Filesystem safety nets for destructive operations using shadow git
 
 Hermes Agent automatically snapshots your project before **destructive operations** and lets you restore it with a single command. Checkpoints are **enabled by default** — there's zero cost when no file-mutating tools fire.
 
-This safety net is powered by an internal **Checkpoint Manager** that keeps a separate shadow git repository under `~/.hermes/checkpoints/` — your real project `.git` is never touched.
+This safety net is powered by an internal **Checkpoint Manager** that keeps a separate shadow git repository under `~/.dxrk/checkpoints/` — your real project `.git` is never touched.
 
 ## What Triggers a Checkpoint
 
@@ -42,11 +42,11 @@ At a high level:
 
 ```mermaid
 flowchart LR
-  user["User command\n(hermes, gateway)"]
+  user["User command\n(dxrk, gateway)"]
   agent["AIAgent\n(run_agent.py)"]
   tools["File & terminal tools"]
   cpMgr["CheckpointManager"]
-  shadowRepo["Shadow git repo\n~/.hermes/checkpoints/<hash>"]
+  shadowRepo["Shadow git repo\n~/.dxrk/checkpoints/<hash>"]
 
   user --> agent
   agent -->|"tool call"| tools
@@ -58,18 +58,18 @@ flowchart LR
 
 ## Configuration
 
-Checkpoints are enabled by default. Configure in `~/.hermes/config.yaml`:
+Checkpoints are enabled by default. Configure in `~/.dxrk/config.yaml`:
 
 ```yaml
 checkpoints:
   enabled: true          # master switch (default: true)
   max_snapshots: 50      # max checkpoints per directory
 
-  # Auto-maintenance (opt-in): sweep ~/.hermes/checkpoints/ at startup
+  # Auto-maintenance (opt-in): sweep ~/.dxrk/checkpoints/ at startup
   # and delete shadow repos whose working directory no longer exists
   # (orphans) or whose newest commit is older than retention_days.
   # Runs at most once per min_interval_hours, tracked via a
-  # .last_prune marker inside ~/.hermes/checkpoints/.
+  # .last_prune marker inside ~/.dxrk/checkpoints/.
   auto_prune: false           # default off — enable to reclaim disk
   retention_days: 7
   delete_orphans: true        # delete repos whose workdir is gone
@@ -190,7 +190,7 @@ To keep checkpointing safe and fast, Hermes applies several guardrails:
 All shadow repos live under:
 
 ```text
-~/.hermes/checkpoints/
+~/.dxrk/checkpoints/
   ├── <hash1>/   # shadow git repo for one working directory
   ├── <hash2>/
   └── ...

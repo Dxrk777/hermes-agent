@@ -6,7 +6,7 @@ author: 0xbyt4, Hermes Agent
 license: MIT
 dependencies: []
 metadata:
-  hermes:
+  dxrk:
     tags: [ASCII, Art, Banners, Creative, Unicode, Text-Art, pyfiglet, figlet, cowsay, boxes]
     related_skills: [excalidraw]
 

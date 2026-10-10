@@ -7,7 +7,7 @@ license: MIT
 prerequisites:
   env_vars: [CANVAS_API_TOKEN, CANVAS_BASE_URL]
 metadata:
-  hermes:
+  dxrk:
     tags: [Canvas, LMS, Education, Courses, Assignments]
 ---
 
@@ -25,7 +25,7 @@ Read-only access to Canvas LMS for listing courses and assignments.
 2. Go to **Account → Settings** (click your profile icon, then Settings)
 3. Scroll to **Approved Integrations** and click **+ New Access Token**
 4. Name the token (e.g., "Hermes Agent"), set an optional expiry, and click **Generate Token**
-5. Copy the token and add to `~/.hermes/.env`:
+5. Copy the token and add to `~/.dxrk/.env`:
 
 ```
 CANVAS_API_TOKEN=your_token_here

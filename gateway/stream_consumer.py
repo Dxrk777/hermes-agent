@@ -49,7 +49,7 @@ class StreamConsumerConfig:
     # this many seconds.  This makes the platform's visible timestamp
     # reflect completion time instead of first-token time for long-running
     # responses (e.g. reasoning models that stream slowly).  Ported from
-    # openclaw/openclaw#72038.  Default 0 = always edit in place (legacy
+    # dxrk/dxrk#72038.  Default 0 = always edit in place (legacy
     # behavior).  The gateway enables this selectively per-platform.
     fresh_final_after_seconds: float = 0.0
 
@@ -103,7 +103,7 @@ class GatewayStreamConsumer:
         # first assigned from a successful first-send.  Used by the
         # fresh-final logic to detect long-lived previews whose edit
         # timestamps would be stale by completion time.  Ported from
-        # openclaw/openclaw#72038.
+        # dxrk/dxrk#72038.
         self._message_created_ts: Optional[float] = None
         self._already_sent = False
         self._edit_supported = True  # Disabled when progressive edits are no longer usable
@@ -743,7 +743,7 @@ class GatewayStreamConsumer:
             # Commentary messages are interim status updates (e.g. "Using browser
             # tool..."), not the final response. Setting already_sent would cause
             # the final response to be incorrectly suppressed when there are
-            # multiple tool calls. See: https://github.com/NousResearch/hermes-agent/issues/10454
+            # multiple tool calls. See: https://github.com/NousResearch/dxrk-agent/issues/10454
             return result.success
         except Exception as e:
             logger.error("Commentary send error: %s", e)
@@ -759,7 +759,7 @@ class GatewayStreamConsumer:
           and not ``None``).
         - The preview has been visible for at least the configured threshold.
 
-        Ported from openclaw/openclaw#72038.
+        Ported from dxrk/dxrk#72038.
         """
         threshold = getattr(self.cfg, "fresh_final_after_seconds", 0.0) or 0.0
         if threshold <= 0:
@@ -777,7 +777,7 @@ class GatewayStreamConsumer:
         time.  Returns True on successful delivery, False on any failure so
         the caller falls back to the normal edit path.
 
-        Ported from openclaw/openclaw#72038.
+        Ported from dxrk/dxrk#72038.
         """
         old_message_id = self._message_id
         try:
@@ -884,7 +884,7 @@ class GatewayStreamConsumer:
                     # timestamp reflects completion time instead of the
                     # preview creation time.  Best-effort cleanup of the
                     # old preview follows.  Ported from
-                    # openclaw/openclaw#72038.  Gated by config so the
+                    # dxrk/dxrk#72038.  Gated by config so the
                     # legacy edit-in-place path stays the default.
                     if (
                         finalize

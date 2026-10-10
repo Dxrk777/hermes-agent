@@ -15,7 +15,7 @@ Claude Code Routines offers three ways to trigger an automation:
 
 Hermes equivalent — works today:
 ```bash
-hermes cron create "0 2 * * *" \
+dxrk cron create "0 2 * * *" \
   "Pull the top bug from the issue tracker, attempt a fix, and open a draft PR." \
   --name "Nightly bug fix" \
   --deliver telegram
@@ -26,7 +26,7 @@ hermes cron create "0 2 * * *" \
 
 Hermes equivalent — works today:
 ```bash
-hermes webhook subscribe auth-watch \
+dxrk webhook subscribe auth-watch \
   --events "pull_request" \
   --prompt "PR #{pull_request.number}: {pull_request.title} by {pull_request.user.login}. Check if it touches the auth-provider module. If yes, summarize the changes." \
   --deliver slack
@@ -37,7 +37,7 @@ hermes webhook subscribe auth-watch \
 
 Hermes equivalent — works today:
 ```bash
-hermes webhook subscribe alert-triage \
+dxrk webhook subscribe alert-triage \
   --prompt "Alert: {alert.name} — Severity: {alert.severity}. Find the owning service, investigate, and post a triage summary with proposed first steps." \
   --deliver slack
 ```
@@ -73,9 +73,9 @@ Every use case in their blog post — backlog triage, docs drift, deploy verific
 Run a Python script *before* the agent. The script's stdout becomes context. The script handles mechanical work (fetching, diffing, computing); the agent handles reasoning.
 
 ```bash
-hermes cron create "every 1h" \
+dxrk cron create "every 1h" \
   "If CHANGE DETECTED, summarize what changed. If NO_CHANGE, respond with [SILENT]." \
-  --script ~/.hermes/scripts/watch-site.py \
+  --script ~/.dxrk/scripts/watch-site.py \
   --name "Pricing monitor" \
   --deliver telegram
 ```
@@ -87,7 +87,7 @@ The `[SILENT]` pattern means you only get notified when something actually happe
 Chain specialized skills together. Each skill teaches the agent a specific capability, and the prompt ties them together.
 
 ```bash
-hermes cron create "0 8 * * *" \
+dxrk cron create "0 8 * * *" \
   "Search arXiv for papers on language model reasoning. Save the top 3 as Obsidian notes." \
   --skills "arxiv,obsidian" \
   --name "Paper digest"
@@ -127,13 +127,13 @@ A nightly backlog triage on Sonnet costs roughly $0.02-0.05. A monitoring check 
 Hermes Agent is open source and free. The automation infrastructure — cron scheduler, webhook platform, skill system, multi-platform delivery — is built in.
 
 ```bash
-pip install hermes-agent
-hermes setup
+pip install dxrk-agent
+dxrk setup
 ```
 
 Set up a scheduled task in 30 seconds:
 ```bash
-hermes cron create "0 9 * * 1" \
+dxrk cron create "0 9 * * 1" \
   "Generate a weekly AI news digest. Search the web for major announcements, trending repos, and notable papers. Keep it under 500 words with links." \
   --name "Weekly digest" \
   --deliver telegram
@@ -141,19 +141,19 @@ hermes cron create "0 9 * * 1" \
 
 Set up a GitHub webhook in 60 seconds:
 ```bash
-hermes gateway setup    # enable webhooks
-hermes webhook subscribe pr-review \
+dxrk gateway setup    # enable webhooks
+dxrk webhook subscribe pr-review \
   --events "pull_request" \
   --prompt "Review PR #{pull_request.number}: {pull_request.title}" \
   --skills "github-code-review" \
   --deliver github_comment
 ```
 
-Full automation templates gallery: [hermes-agent.nousresearch.com/docs/guides/automation-templates](https://hermes-agent.nousresearch.com/docs/guides/automation-templates)
+Full automation templates gallery: [dxrk-agent.nousresearch.com/docs/guides/automation-templates](https://dxrk-agent.nousresearch.com/docs/guides/automation-templates)
 
-Documentation: [hermes-agent.nousresearch.com](https://hermes-agent.nousresearch.com)
+Documentation: [dxrk-agent.nousresearch.com](https://dxrk-agent.nousresearch.com)
 
-GitHub: [github.com/NousResearch/hermes-agent](https://github.com/NousResearch/hermes-agent)
+GitHub: [github.com/NousResearch/dxrk-agent](https://github.com/NousResearch/dxrk-agent)
 
 ---
 

@@ -23,11 +23,11 @@ If you have ever wanted Hermes to use a tool that already exists somewhere else,
 1. Install MCP support (already included if you used the standard install script):
 
 ```bash
-cd ~/.hermes/hermes-agent
+cd ~/.dxrk/dxrk-agent
 uv pip install -e ".[mcp]"
 ```
 
-2. Add an MCP server to `~/.hermes/config.yaml`:
+2. Add an MCP server to `~/.dxrk/config.yaml`:
 
 ```yaml
 mcp_servers:
@@ -39,7 +39,7 @@ mcp_servers:
 3. Start Hermes:
 
 ```bash
-hermes chat
+dxrk chat
 ```
 
 4. Ask Hermes to use the MCP-backed capability.
@@ -91,7 +91,7 @@ Use HTTP servers when:
 
 ## Basic configuration reference
 
-Hermes reads MCP config from `~/.hermes/config.yaml` under `mcp_servers`.
+Hermes reads MCP config from `~/.dxrk/config.yaml` under `mcp_servers`.
 
 ### Common keys
 
@@ -382,7 +382,7 @@ Check:
 
 ```bash
 # Verify MCP deps are installed (already included in standard install)
-cd ~/.hermes/hermes-agent && uv pip install -e ".[mcp]"
+cd ~/.dxrk/dxrk-agent && uv pip install -e ".[mcp]"
 
 node --version
 npx --version
@@ -455,7 +455,7 @@ In addition to connecting **to** MCP servers, Hermes can also **be** an MCP serv
 ### Quick start
 
 ```bash
-hermes mcp serve
+dxrk mcp serve
 ```
 
 This starts a stdio MCP server. The MCP client (not you) manages the process lifecycle.
@@ -467,8 +467,8 @@ Add Hermes to your MCP client config. For example, in Claude Code's `~/.claude/c
 ```json
 {
   "mcpServers": {
-    "hermes": {
-      "command": "hermes",
+    "dxrk": {
+      "command": "dxrk",
       "args": ["mcp", "serve"]
     }
   }
@@ -480,8 +480,8 @@ Or if you installed Hermes in a specific location:
 ```json
 {
   "mcpServers": {
-    "hermes": {
-      "command": "/home/user/.hermes/hermes-agent/venv/bin/hermes",
+    "dxrk": {
+      "command": "/home/user/.dxrk/dxrk-agent/venv/bin/dxrk",
       "args": ["mcp", "serve"]
     }
   }
@@ -524,13 +524,13 @@ The event queue is in-memory and starts when the bridge connects. Older messages
 ### Options
 
 ```bash
-hermes mcp serve              # Normal mode
-hermes mcp serve --verbose    # Debug logging on stderr
+dxrk mcp serve              # Normal mode
+dxrk mcp serve --verbose    # Debug logging on stderr
 ```
 
 ### How it works
 
-The MCP server reads conversation data directly from Hermes's session store (`~/.hermes/sessions/sessions.json` and the SQLite database). A background thread polls the database for new messages and maintains an in-memory event queue. For sending messages, it uses the same `send_message` infrastructure as the Hermes agent itself.
+The MCP server reads conversation data directly from Hermes's session store (`~/.dxrk/sessions/sessions.json` and the SQLite database). A background thread polls the database for new messages and maintains an in-memory event queue. For sending messages, it uses the same `send_message` infrastructure as the Hermes agent itself.
 
 The gateway does NOT need to be running for read operations (listing conversations, reading history, polling events). It DOES need to be running for send operations, since the platform adapters need active connections.
 
@@ -543,7 +543,7 @@ The gateway does NOT need to be running for read operations (listing conversatio
 
 ## Related docs
 
-- [Use MCP with Hermes](/docs/guides/use-mcp-with-hermes)
+- [Use MCP with Hermes](/docs/guides/use-mcp-with-dxrk)
 - [CLI Commands](/docs/reference/cli-commands)
 - [Slash Commands](/docs/reference/slash-commands)
 - [FAQ](/docs/reference/faq)
