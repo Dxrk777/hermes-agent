@@ -316,10 +316,7 @@ class _ManagedRotatingFileHandler(RotatingFileHandler):
     """
 
     def __init__(self, *args, **kwargs):
-        try:
-            from dxrk_cli.config import is_managed
-        except ImportError:
-            from hermes_cli.config import is_managed
+        from dxrk_cli.config import is_managed
 
         self._managed = is_managed()
         super().__init__(*args, **kwargs)

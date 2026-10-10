@@ -295,8 +295,7 @@ AI_GATEWAY_BASE_URL = "https://ai-gateway.vercel.sh/v1"
 
 
 # ─── Backward-compat aliases (hermes_* → dxrk_*) ─────────────────────────────
-# hermes_cli/ (still tracked) imports the old names. Keep them working until
-# the CLI cutover (dxrk_cli/) lands. New code must use the dxrk_* names.
+# Kept for external importers of the old names. New code must use dxrk_*.
 get_hermes_home = get_dxrk_home
 get_default_hermes_root = get_default_dxrk_root
 get_hermes_dir = get_dxrk_dir
