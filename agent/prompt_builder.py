@@ -12,7 +12,7 @@ import threading
 from collections import OrderedDict
 from pathlib import Path
 
-from hermes_constants import get_hermes_home, get_skills_dir, is_wsl
+from dxrk_constants import get_dxrk_home, get_skills_dir, is_wsl
 from typing import Optional
 
 from agent.skill_utils import (
@@ -86,11 +86,11 @@ def _find_git_root(start: Path) -> Optional[Path]:
     return None
 
 
-_HERMES_MD_NAMES = (".hermes.md", "HERMES.md")
+_HERMES_MD_NAMES = (".dxrk.md", "HERMES.md")
 
 
-def _find_hermes_md(cwd: Path) -> Optional[Path]:
-    """Discover the nearest ``.hermes.md`` or ``HERMES.md``.
+def _find_dxrk_md(cwd: Path) -> Optional[Path]:
+    """Discover the nearest ``.dxrk.md`` or ``HERMES.md``.
 
     Search order: *cwd* first, then each parent directory up to (and
     including) the git repository root.  Returns the first match, or
@@ -143,8 +143,8 @@ DEFAULT_AGENT_IDENTITY = (
 
 HERMES_AGENT_HELP_GUIDANCE = (
     "If the user asks about configuring, setting up, or using Hermes Agent "
-    "itself, load the `hermes-agent` skill with skill_view(name='hermes-agent') "
-    "before answering. Docs: https://hermes-agent.nousresearch.com/docs"
+    "itself, load the `dxrk-agent` skill with skill_view(name='dxrk-agent') "
+    "before answering. Docs: https://dxrk-agent.nousresearch.com/docs"
 )
 
 MEMORY_GUIDANCE = (
@@ -499,7 +499,7 @@ _SKILLS_SNAPSHOT_VERSION = 1
 
 
 def _skills_prompt_snapshot_path() -> Path:
-    return get_hermes_home() / ".skills_prompt_snapshot.json"
+    return get_dxrk_home() / ".skills_prompt_snapshot.json"
 
 
 def clear_skills_system_prompt_cache(*, clear_snapshot: bool = False) -> None:
@@ -661,7 +661,7 @@ def build_skills_system_prompt(
     Falls back to a full filesystem scan when both layers miss.
 
     External skill directories (``skills.external_dirs`` in config.yaml) are
-    scanned alongside the local ``~/.hermes/skills/`` directory.  External dirs
+    scanned alongside the local ``~/.dxrk/skills/`` directory.  External dirs
     are read-only — they appear in the index but new skills are always created
     in the local dir.  Local skills take precedence when names collide.
     """
@@ -856,9 +856,9 @@ def build_skills_system_prompt(
             "already know how to do, because the skill defines how it should be done here.\n"
             "Whenever the user asks you to configure, set up, install, enable, disable, modify, "
             "or troubleshoot Hermes Agent itself — its CLI, config, models, providers, tools, "
-            "skills, voice, gateway, plugins, or any feature — load the `hermes-agent` skill "
-            "first. It has the actual commands (e.g. `hermes config set …`, `hermes tools`, "
-            "`hermes setup`) so you don't have to guess or invent workarounds.\n"
+            "skills, voice, gateway, plugins, or any feature — load the `dxrk-agent` skill "
+            "first. It has the actual commands (e.g. `dxrk config set …`, `dxrk tools`, "
+            "`dxrk setup`) so you don't have to guess or invent workarounds.\n"
             "If a skill has issues, fix it with skill_manage(action='patch').\n"
             "After difficult/iterative tasks, offer to save as a skill. "
             "If a skill you loaded was missing steps, had wrong commands, or needed "
@@ -884,7 +884,7 @@ def build_skills_system_prompt(
 def build_nous_subscription_prompt(valid_tool_names: "set[str] | None" = None) -> str:
     """Build a compact Nous subscription capability block for the system prompt."""
     try:
-        from hermes_cli.nous_subscription import get_nous_subscription_features
+        from dxrk_cli.nous_subscription import get_nous_subscription_features
         from tools.tool_backend_helpers import managed_nous_tools_enabled
     except Exception as exc:
         logger.debug("Failed to import Nous subscription helper: %s", exc)
@@ -941,7 +941,7 @@ def build_nous_subscription_prompt(valid_tool_names: "set[str] | None" = None) -
             "When a Nous-managed feature is active, do not ask the user for Firecrawl, FAL, OpenAI TTS, or Browser-Use API keys.",
             "If the user is not subscribed and asks for a capability that Nous subscription would unlock or simplify, suggest Nous subscription as one option alongside direct setup or local alternatives.",
             "Do not mention subscription unless the user asks about it or it directly solves the current missing capability.",
-            "Useful commands: hermes setup, hermes setup tools, hermes setup terminal, hermes status.",
+            "Useful commands: dxrk setup, dxrk setup tools, dxrk setup terminal, dxrk status.",
         ]
     )
     return "\n".join(lines)
@@ -971,12 +971,12 @@ def load_soul_md() -> Optional[str]:
     ``skip_soul=True`` so SOUL.md isn't injected twice.
     """
     try:
-        from hermes_cli.config import ensure_hermes_home
-        ensure_hermes_home()
+        from dxrk_cli.config import ensure_dxrk_home
+        ensure_dxrk_home()
     except Exception as e:
         logger.debug("Could not ensure HERMES_HOME before loading SOUL.md: %s", e)
 
-    soul_path = get_hermes_home() / "SOUL.md"
+    soul_path = get_dxrk_home() / "SOUL.md"
     if not soul_path.exists():
         return None
     try:
@@ -991,26 +991,26 @@ def load_soul_md() -> Optional[str]:
         return None
 
 
-def _load_hermes_md(cwd_path: Path) -> str:
-    """.hermes.md / HERMES.md — walk to git root."""
-    hermes_md_path = _find_hermes_md(cwd_path)
-    if not hermes_md_path:
+def _load_dxrk_md(cwd_path: Path) -> str:
+    """.dxrk.md / HERMES.md — walk to git root."""
+    dxrk_md_path = _find_dxrk_md(cwd_path)
+    if not dxrk_md_path:
         return ""
     try:
-        content = hermes_md_path.read_text(encoding="utf-8").strip()
+        content = dxrk_md_path.read_text(encoding="utf-8").strip()
         if not content:
             return ""
         content = _strip_yaml_frontmatter(content)
-        rel = hermes_md_path.name
+        rel = dxrk_md_path.name
         try:
-            rel = str(hermes_md_path.relative_to(cwd_path))
+            rel = str(dxrk_md_path.relative_to(cwd_path))
         except ValueError:
             pass
         content = _scan_context_content(content, rel)
         result = f"## {rel}\n\n{content}"
-        return _truncate_content(result, ".hermes.md")
+        return _truncate_content(result, ".dxrk.md")
     except Exception as e:
-        logger.debug("Could not read %s: %s", hermes_md_path, e)
+        logger.debug("Could not read %s: %s", dxrk_md_path, e)
         return ""
 
 
@@ -1080,7 +1080,7 @@ def build_context_files_prompt(cwd: Optional[str] = None, skip_soul: bool = Fals
     """Discover and load context files for the system prompt.
 
     Priority (first found wins — only ONE project context type is loaded):
-      1. .hermes.md / HERMES.md  (walk to git root)
+      1. .dxrk.md / HERMES.md  (walk to git root)
       2. AGENTS.md / agents.md   (cwd only)
       3. CLAUDE.md / claude.md   (cwd only)
       4. .cursorrules / .cursor/rules/*.mdc  (cwd only)
@@ -1099,7 +1099,7 @@ def build_context_files_prompt(cwd: Optional[str] = None, skip_soul: bool = Fals
 
     # Priority-based project context: first match wins
     project_context = (
-        _load_hermes_md(cwd_path)
+        _load_dxrk_md(cwd_path)
         or _load_agents_md(cwd_path)
         or _load_claude_md(cwd_path)
         or _load_cursorrules(cwd_path)

@@ -18,7 +18,7 @@ import platform
 import subprocess
 from pathlib import Path
 
-from hermes_constants import get_hermes_home
+from dxrk_constants import get_dxrk_home
 from typing import Any, Dict, List, Optional, Tuple
 from utils import normalize_proxy_env_vars
 
@@ -120,7 +120,7 @@ def _get_anthropic_max_output(model: str) -> int:
 
 def _resolve_positive_anthropic_max_tokens(value) -> Optional[int]:
     """Return ``value`` floored to a positive int, or ``None`` if it is not a
-    finite positive number. Ported from openclaw/openclaw#66664.
+    finite positive number. Ported from dxrk/dxrk#66664.
 
     Anthropic's Messages API rejects ``max_tokens`` values that are 0,
     negative, non-integer, or non-finite with HTTP 400. Python's ``or``
@@ -161,7 +161,7 @@ def _resolve_anthropic_messages_max_tokens(
     not, to keep the positive-value contract independent of endpoint
     specifics.
 
-    Ported from openclaw/openclaw#66664 (resolveAnthropicMessagesMaxTokens).
+    Ported from dxrk/dxrk#66664 (resolveAnthropicMessagesMaxTokens).
     """
     resolved = _resolve_positive_anthropic_max_tokens(requested)
     if resolved is not None:
@@ -858,13 +858,13 @@ def run_oauth_setup_token() -> Optional[str]:
 
 # ── Hermes-native PKCE OAuth flow ────────────────────────────────────────
 # Mirrors the flow used by Claude Code, pi-ai, and OpenCode.
-# Stores credentials in ~/.hermes/.anthropic_oauth.json (our own file).
+# Stores credentials in ~/.dxrk/.anthropic_oauth.json (our own file).
 
 _OAUTH_CLIENT_ID = "9d1c250a-e61b-44d9-88ed-5944d1962f5e"
 _OAUTH_TOKEN_URL = "https://console.anthropic.com/v1/oauth/token"
 _OAUTH_REDIRECT_URI = "https://console.anthropic.com/oauth/code/callback"
 _OAUTH_SCOPES = "org:create_api_key user:profile user:inference"
-_HERMES_OAUTH_FILE = get_hermes_home() / ".anthropic_oauth.json"
+_HERMES_OAUTH_FILE = get_dxrk_home() / ".anthropic_oauth.json"
 
 
 def _generate_pkce() -> tuple:
@@ -880,7 +880,7 @@ def _generate_pkce() -> tuple:
     return verifier, challenge
 
 
-def run_hermes_oauth_login_pure() -> Optional[Dict[str, Any]]:
+def run_dxrk_oauth_login_pure() -> Optional[Dict[str, Any]]:
     """Run Hermes-native OAuth PKCE flow and return credential state."""
     import time
     import webbrowser
@@ -978,8 +978,8 @@ def run_hermes_oauth_login_pure() -> Optional[Dict[str, Any]]:
     }
 
 
-def read_hermes_oauth_credentials() -> Optional[Dict[str, Any]]:
-    """Read Hermes-managed OAuth credentials from ~/.hermes/.anthropic_oauth.json."""
+def read_dxrk_oauth_credentials() -> Optional[Dict[str, Any]]:
+    """Read Hermes-managed OAuth credentials from ~/.dxrk/.anthropic_oauth.json."""
     if _HERMES_OAUTH_FILE.exists():
         try:
             data = json.loads(_HERMES_OAUTH_FILE.read_text(encoding="utf-8"))
@@ -1257,7 +1257,7 @@ def convert_messages_to_anthropic(
             # Kimi's /coding endpoint (Anthropic protocol) requires assistant
             # tool-call messages to carry reasoning_content when thinking is
             # enabled server-side.  Preserve it as a thinking block so Kimi
-            # can validate the message history.  See hermes-agent#13848.
+            # can validate the message history.  See dxrk-agent#13848.
             #
             # Accept empty string "" — _copy_reasoning_content_for_api()
             # injects "" as a tier-3 fallback for Kimi tool-call messages
@@ -1564,7 +1564,7 @@ def build_anthropic_kwargs(
     # effective_max_tokens = output cap for this call (≠ total context window)
     # Use the resolver helper so non-positive values (negative ints,
     # fractional floats, NaN, non-numeric) fail locally with a clear error
-    # rather than 400-ing at the Anthropic API. See openclaw/openclaw#66664.
+    # rather than 400-ing at the Anthropic API. See dxrk/dxrk#66664.
     effective_max_tokens = _resolve_anthropic_messages_max_tokens(
         max_tokens, model, context_length=context_length
     )
@@ -1595,7 +1595,7 @@ def build_anthropic_kwargs(
                 text = block.get("text", "")
                 text = text.replace("Hermes Agent", "Claude Code")
                 text = text.replace("Hermes agent", "Claude Code")
-                text = text.replace("hermes-agent", "claude-code")
+                text = text.replace("dxrk-agent", "claude-code")
                 text = text.replace("Nous Research", "Anthropic")
                 block["text"] = text
 

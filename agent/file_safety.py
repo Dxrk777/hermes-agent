@@ -7,18 +7,18 @@ from pathlib import Path
 from typing import Optional
 
 
-def _hermes_home_path() -> Path:
+def _dxrk_home_path() -> Path:
     """Resolve the active HERMES_HOME (profile-aware) without circular imports."""
     try:
-        from hermes_constants import get_hermes_home  # local import to avoid cycles
-        return get_hermes_home()
+        from dxrk_constants import get_dxrk_home  # local import to avoid cycles
+        return get_dxrk_home()
     except Exception:
-        return Path(os.path.expanduser("~/.hermes"))
+        return Path(os.path.expanduser("~/.dxrk"))
 
 
 def build_write_denied_paths(home: str) -> set[str]:
     """Return exact sensitive paths that must never be written."""
-    hermes_home = _hermes_home_path()
+    dxrk_home = _dxrk_home_path()
     return {
         os.path.realpath(p)
         for p in [
@@ -26,7 +26,7 @@ def build_write_denied_paths(home: str) -> set[str]:
             os.path.join(home, ".ssh", "id_rsa"),
             os.path.join(home, ".ssh", "id_ed25519"),
             os.path.join(home, ".ssh", "config"),
-            str(hermes_home / ".env"),
+            str(dxrk_home / ".env"),
             os.path.join(home, ".bashrc"),
             os.path.join(home, ".zshrc"),
             os.path.join(home, ".profile"),
@@ -93,10 +93,10 @@ def is_write_denied(path: str) -> bool:
 def get_read_block_error(path: str) -> Optional[str]:
     """Return an error message when a read targets internal Hermes cache files."""
     resolved = Path(path).expanduser().resolve()
-    hermes_home = _hermes_home_path().resolve()
+    dxrk_home = _dxrk_home_path().resolve()
     blocked_dirs = [
-        hermes_home / "skills" / ".hub" / "index-cache",
-        hermes_home / "skills" / ".hub",
+        dxrk_home / "skills" / ".hub" / "index-cache",
+        dxrk_home / "skills" / ".hub",
     ]
     for blocked in blocked_dirs:
         try:
