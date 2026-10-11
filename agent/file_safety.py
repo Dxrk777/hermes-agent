@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import os
+from dxrk_constants import dxrk_getenv
 from pathlib import Path
 from typing import Optional
 
@@ -63,7 +64,7 @@ def build_write_denied_prefixes(home: str) -> list[str]:
 
 def get_safe_write_root() -> Optional[str]:
     """Return the resolved HERMES_WRITE_SAFE_ROOT path, or None if unset."""
-    root = os.getenv("HERMES_WRITE_SAFE_ROOT", "")
+    root = dxrk_getenv("DXRK_WRITE_SAFE_ROOT", "")
     if not root:
         return None
     try:

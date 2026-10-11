@@ -1,7 +1,7 @@
 """
 Doctor command for dxrk CLI.
 
-Diagnoses issues with Hermes Agent setup.
+Diagnoses issues with Dxrk Agent setup.
 """
 
 import os
@@ -14,7 +14,8 @@ from dxrk_cli.config import get_project_root, get_dxrk_home, get_env_path
 from dxrk_constants import display_dxrk_home
 
 PROJECT_ROOT = get_project_root()
-HERMES_HOME = get_dxrk_home()
+DXRK_HOME = get_dxrk_home()
+HERMES_HOME = DXRK_HOME  # deprecated alias (pre-rename importers)
 _DHH = display_dxrk_home()  # user-facing display path (e.g. ~/.dxrk or ~/.dxrk/profiles/coder)
 
 # Load environment variables from ~/.dxrk/.env so API key checks work
@@ -170,6 +171,7 @@ def run_doctor(args):
 
     # Doctor runs from the interactive CLI, so CLI-gated tool availability
     # checks (like cronjob management) should see the same context as `dxrk`.
+    os.environ.setdefault("DXRK_INTERACTIVE", "1")
     os.environ.setdefault("HERMES_INTERACTIVE", "1")
     
     issues = []
@@ -178,7 +180,7 @@ def run_doctor(args):
     
     print()
     print(color("┌─────────────────────────────────────────────────────────┐", Colors.CYAN))
-    print(color("│                 🩺 Hermes Doctor                        │", Colors.CYAN))
+    print(color("│                 🩺 Dxrk Doctor                          │", Colors.CYAN))
     print(color("└─────────────────────────────────────────────────────────┘", Colors.CYAN))
     
     # =========================================================================

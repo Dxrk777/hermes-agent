@@ -5,6 +5,7 @@ from __future__ import annotations
 import asyncio
 import logging
 import os
+from dxrk_constants import dxrk_getenv, dxrk_setenv
 from collections import defaultdict, deque
 from concurrent.futures import ThreadPoolExecutor
 from typing import Any, Deque, Optional
@@ -60,7 +61,11 @@ from acp_adapter.events import (
     make_tool_progress_cb,
 )
 from acp_adapter.permissions import make_approval_callback
-from acp_adapter.session import SessionManager, SessionState, _expand_acp_enabled_toolsets
+from acp_adapter.session import (
+    SessionManager,
+    SessionState,
+    _expand_acp_enabled_toolsets,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -169,21 +174,31 @@ class HermesACPAgent(acp.Agent):
     def _build_model_state(self, state: SessionState) -> SessionModelState | None:
         """Return the ACP model selector payload for editors like Zed."""
         model = str(state.model or getattr(state.agent, "model", "") or "").strip()
-        provider = getattr(state.agent, "provider", None) or detect_provider() or "openrouter"
+        provider = (
+            getattr(state.agent, "provider", None) or detect_provider() or "openrouter"
+        )
 
         try:
-            from dxrk_cli.models import curated_models_for_provider, normalize_provider, provider_label
+            from dxrk_cli.models import (
+                curated_models_for_provider,
+                normalize_provider,
+                provider_label,
+            )
 
             normalized_provider = normalize_provider(provider)
             provider_name = provider_label(normalized_provider)
             available_models: list[ModelInfo] = []
             seen_ids: set[str] = set()
 
-            for model_id, description in curated_models_for_provider(normalized_provider):
+            for model_id, description in curated_models_for_provider(
+                normalized_provider
+            ):
                 rendered_model = str(model_id or "").strip()
                 if not rendered_model:
                     continue
-                choice_id = self._encode_model_choice(normalized_provider, rendered_model)
+                choice_id = self._encode_model_choice(
+                    normalized_provider, rendered_model
+                )
                 if choice_id in seen_ids:
                     continue
                 desc_parts = [f"Provider: {provider_name}"]
@@ -229,7 +244,9 @@ class HermesACPAgent(acp.Agent):
         )
 
     @staticmethod
-    def _resolve_model_selection(raw_model: str, current_provider: str) -> tuple[str, str]:
+    def _resolve_model_selection(
+        raw_model: str, current_provider: str
+    ) -> tuple[str, str]:
         """Resolve ``provider:model`` input into the provider and normalized model id."""
         target_provider = current_provider
         new_model = raw_model.strip()
@@ -326,7 +343,9 @@ class HermesACPAgent(acp.Agent):
         **kwargs: Any,
     ) -> InitializeResponse:
         resolved_protocol_version = (
-            protocol_version if isinstance(protocol_version, int) else acp.PROTOCOL_VERSION
+            protocol_version
+            if isinstance(protocol_version, int)
+            else acp.PROTOCOL_VERSION
         )
         provider = detect_provider()
         auth_methods = None
@@ -360,7 +379,9 @@ class HermesACPAgent(acp.Agent):
             auth_methods=auth_methods,
         )
 
-    async def authenticate(self, method_id: str, **kwargs: Any) -> AuthenticateResponse | None:
+    async def authenticate(
+        self, method_id: str, **kwargs: Any
+    ) -> AuthenticateResponse | None:
         # Only accept authenticate() calls whose method_id matches the
         # provider we advertised in initialize(). Without this check,
         # authenticate() would acknowledge any method_id as long as the
@@ -416,7 +437,9 @@ class HermesACPAgent(acp.Agent):
     ) -> ResumeSessionResponse:
         state = self.session_manager.update_cwd(session_id, cwd)
         if state is None:
-            logger.warning("resume_session: session %s not found, creating new", session_id)
+            logger.warning(
+                "resume_session: session %s not found, creating new", session_id
+            )
             state = self.session_manager.create_session(cwd=cwd)
         await self._register_session_mcp_servers(state, mcp_servers)
         logger.info("Resumed session %s", state.session_id)
@@ -431,7 +454,9 @@ class HermesACPAgent(acp.Agent):
                 if getattr(state, "agent", None) and hasattr(state.agent, "interrupt"):
                     state.agent.interrupt()
             except Exception:
-                logger.debug("Failed to interrupt ACP session %s", session_id, exc_info=True)
+                logger.debug(
+                    "Failed to interrupt ACP session %s", session_id, exc_info=True
+                )
             logger.info("Cancelled session %s", session_id)
 
     async def fork_session(
@@ -469,7 +494,7 @@ class HermesACPAgent(acp.Agent):
         if cursor:
             for idx, s in enumerate(infos):
                 if s["session_id"] == cursor:
-                    infos = infos[idx + 1:]
+                    infos = infos[idx + 1 :]
                     break
             else:
                 # Unknown cursor -> empty page (do not fall back to full list).
@@ -541,11 +566,17 @@ class HermesACPAgent(acp.Agent):
         previous_approval_cb = None
 
         if conn:
-            tool_progress_cb = make_tool_progress_cb(conn, session_id, loop, tool_call_ids, tool_call_meta)
+            tool_progress_cb = make_tool_progress_cb(
+                conn, session_id, loop, tool_call_ids, tool_call_meta
+            )
             thinking_cb = make_thinking_cb(conn, session_id, loop)
-            step_cb = make_step_cb(conn, session_id, loop, tool_call_ids, tool_call_meta)
+            step_cb = make_step_cb(
+                conn, session_id, loop, tool_call_ids, tool_call_meta
+            )
             message_cb = make_message_cb(conn, session_id, loop)
-            approval_cb = make_approval_callback(conn.request_permission, loop, session_id)
+            approval_cb = make_approval_callback(
+                conn.request_permission, loop, session_id
+            )
         else:
             tool_progress_cb = None
             thinking_cb = None
@@ -577,14 +608,16 @@ class HermesACPAgent(acp.Agent):
             if approval_cb:
                 try:
                     from tools import terminal_tool as _terminal_tool
+
                     previous_approval_cb = _terminal_tool._get_approval_callback()
                     _terminal_tool.set_approval_callback(approval_cb)
                 except Exception:
                     logger.debug("Could not set ACP approval callback", exc_info=True)
             # Signal to tools.approval that we have an interactive callback
             # and the non-interactive auto-approve path must not fire.
-            previous_interactive = os.environ.get("HERMES_INTERACTIVE")
-            os.environ["HERMES_INTERACTIVE"] = "1"
+            previous_interactive = dxrk_getenv("DXRK_INTERACTIVE")
+            previous_legacy_interactive = os.environ.get("HERMES_INTERACTIVE")
+            dxrk_setenv("DXRK_INTERACTIVE", "1")
             try:
                 result = agent.run_conversation(
                     user_message=user_text,
@@ -596,17 +629,24 @@ class HermesACPAgent(acp.Agent):
                 logger.exception("Agent error in session %s", session_id)
                 return {"final_response": f"Error: {e}", "messages": state.history}
             finally:
-                # Restore HERMES_INTERACTIVE.
+                # Restore DXRK_INTERACTIVE (+ legacy mirror).
                 if previous_interactive is None:
+                    os.environ.pop("DXRK_INTERACTIVE", None)
+                else:
+                    os.environ["DXRK_INTERACTIVE"] = previous_interactive
+                if previous_legacy_interactive is None:
                     os.environ.pop("HERMES_INTERACTIVE", None)
                 else:
-                    os.environ["HERMES_INTERACTIVE"] = previous_interactive
+                    os.environ["HERMES_INTERACTIVE"] = previous_legacy_interactive
                 if approval_cb:
                     try:
                         from tools import terminal_tool as _terminal_tool
+
                         _terminal_tool.set_approval_callback(previous_approval_cb)
                     except Exception:
-                        logger.debug("Could not restore approval callback", exc_info=True)
+                        logger.debug(
+                            "Could not restore approval callback", exc_info=True
+                        )
 
         try:
             result = await loop.run_in_executor(_executor, _run_agent)
@@ -632,13 +672,18 @@ class HermesACPAgent(acp.Agent):
                     state.history,
                 )
             except Exception:
-                logger.debug("Failed to auto-title ACP session %s", session_id, exc_info=True)
+                logger.debug(
+                    "Failed to auto-title ACP session %s", session_id, exc_info=True
+                )
         if final_response and conn:
             update = acp.update_agent_message_text(final_response)
             await conn.session_update(session_id, update)
 
         usage = None
-        if any(result.get(key) is not None for key in ("prompt_tokens", "completion_tokens", "total_tokens")):
+        if any(
+            result.get(key) is not None
+            for key in ("prompt_tokens", "completion_tokens", "total_tokens")
+        ):
             usage = Usage(
                 input_tokens=result.get("prompt_tokens", 0),
                 output_tokens=result.get("completion_tokens", 0),
@@ -647,7 +692,11 @@ class HermesACPAgent(acp.Agent):
                 cached_read_tokens=result.get("cache_read_tokens"),
             )
 
-        stop_reason = "cancelled" if state.cancel_event and state.cancel_event.is_set() else "end_turn"
+        stop_reason = (
+            "cancelled"
+            if state.cancel_event and state.cancel_event.is_set()
+            else "end_turn"
+        )
         return PromptResponse(stop_reason=stop_reason, usage=usage)
 
     # ---- Slash commands (headless) -------------------------------------------
@@ -741,7 +790,9 @@ class HermesACPAgent(acp.Agent):
             return f"Current model: {model}\nProvider: {provider}"
 
         current_provider = getattr(state.agent, "provider", None) or "openrouter"
-        target_provider, new_model = self._resolve_model_selection(args, current_provider)
+        target_provider, new_model = self._resolve_model_selection(
+            args, current_provider
+        )
 
         state.model = new_model
         state.agent = self.session_manager._make_agent(
@@ -751,13 +802,18 @@ class HermesACPAgent(acp.Agent):
             requested_provider=target_provider,
         )
         self.session_manager.save_session(state.session_id)
-        provider_label = getattr(state.agent, "provider", None) or target_provider or current_provider
+        provider_label = (
+            getattr(state.agent, "provider", None)
+            or target_provider
+            or current_provider
+        )
         logger.info("Session %s: model switched to %s", state.session_id, new_model)
         return f"Model switched to: {new_model}\nProvider: {provider_label}"
 
     def _cmd_tools(self, args: str, state: SessionState) -> str:
         try:
             from model_tools import get_tool_definitions
+
             toolsets = _expand_acp_enabled_toolsets(
                 getattr(state.agent, "enabled_toolsets", None) or ["dxrk-acp"]
             )
@@ -858,9 +914,15 @@ class HermesACPAgent(acp.Agent):
                 current_provider or "openrouter",
             )
             state.model = resolved_model
-            provider_changed = bool(current_provider and requested_provider != current_provider)
-            current_base_url = None if provider_changed else getattr(state.agent, "base_url", None)
-            current_api_mode = None if provider_changed else getattr(state.agent, "api_mode", None)
+            provider_changed = bool(
+                current_provider and requested_provider != current_provider
+            )
+            current_base_url = (
+                None if provider_changed else getattr(state.agent, "base_url", None)
+            )
+            current_api_mode = (
+                None if provider_changed else getattr(state.agent, "api_mode", None)
+            )
             state.agent = self.session_manager._make_agent(
                 session_id=session_id,
                 cwd=state.cwd,
@@ -877,7 +939,9 @@ class HermesACPAgent(acp.Agent):
                 requested_provider,
             )
             return SetSessionModelResponse()
-        logger.warning("Session %s: model switch requested for missing session", session_id)
+        logger.warning(
+            "Session %s: model switch requested for missing session", session_id
+        )
         return None
 
     async def set_session_mode(
@@ -886,7 +950,9 @@ class HermesACPAgent(acp.Agent):
         """Persist the editor-requested mode so ACP clients do not fail on mode switches."""
         state = self.session_manager.get_session(session_id)
         if state is None:
-            logger.warning("Session %s: mode switch requested for missing session", session_id)
+            logger.warning(
+                "Session %s: mode switch requested for missing session", session_id
+            )
             return None
         setattr(state, "mode", mode_id)
         self.session_manager.save_session(session_id)
@@ -899,7 +965,9 @@ class HermesACPAgent(acp.Agent):
         """Accept ACP config option updates even when Hermes has no typed ACP config surface yet."""
         state = self.session_manager.get_session(session_id)
         if state is None:
-            logger.warning("Session %s: config update requested for missing session", session_id)
+            logger.warning(
+                "Session %s: config update requested for missing session", session_id
+            )
             return None
 
         options = getattr(state, "config_options", None)

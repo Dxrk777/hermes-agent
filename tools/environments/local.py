@@ -1,6 +1,7 @@
 """Local execution environment — spawn-per-call with session snapshot."""
 
 import os
+from dxrk_constants import dxrk_getenv
 import platform
 import shutil
 import signal
@@ -12,8 +13,10 @@ from tools.environments.base import BaseEnvironment, _pipe_stdin
 _IS_WINDOWS = platform.system() == "Windows"
 
 
-# Hermes-internal env vars that should NOT leak into terminal subprocesses.
+# Dxrk-internal env vars that should NOT leak into terminal subprocesses.
 _HERMES_PROVIDER_ENV_FORCE_PREFIX = "_HERMES_FORCE_"
+# Canonical force-pass prefix; the HERMES_* form above is a deprecated alias.
+_DXRK_PROVIDER_ENV_FORCE_PREFIX = "_DXRK_FORCE_"
 
 
 def _build_provider_env_blocklist() -> frozenset:
@@ -22,6 +25,7 @@ def _build_provider_env_blocklist() -> frozenset:
 
     try:
         from dxrk_cli.auth import PROVIDER_REGISTRY
+
         for pconfig in PROVIDER_REGISTRY.values():
             blocked.update(pconfig.api_key_env_vars)
             if pconfig.base_url_env_var:
@@ -31,6 +35,7 @@ def _build_provider_env_blocklist() -> frozenset:
 
     try:
         from dxrk_cli.config import OPTIONAL_ENV_VARS
+
         for name, metadata in OPTIONAL_ENV_VARS.items():
             category = metadata.get("category")
             if category in {"tool", "messaging"}:
@@ -40,75 +45,86 @@ def _build_provider_env_blocklist() -> frozenset:
     except ImportError:
         pass
 
-    blocked.update({
-        "OPENAI_BASE_URL",
-        "OPENAI_API_KEY",
-        "OPENAI_API_BASE",
-        "OPENAI_ORG_ID",
-        "OPENAI_ORGANIZATION",
-        "OPENROUTER_API_KEY",
-        "ANTHROPIC_BASE_URL",
-        "ANTHROPIC_TOKEN",
-        "CLAUDE_CODE_OAUTH_TOKEN",
-        "LLM_MODEL",
-        "GOOGLE_API_KEY",
-        "DEEPSEEK_API_KEY",
-        "MISTRAL_API_KEY",
-        "GROQ_API_KEY",
-        "TOGETHER_API_KEY",
-        "PERPLEXITY_API_KEY",
-        "COHERE_API_KEY",
-        "FIREWORKS_API_KEY",
-        "XAI_API_KEY",
-        "HELICONE_API_KEY",
-        "PARALLEL_API_KEY",
-        "FIRECRAWL_API_KEY",
-        "FIRECRAWL_API_URL",
-        "TELEGRAM_HOME_CHANNEL",
-        "TELEGRAM_HOME_CHANNEL_NAME",
-        "DISCORD_HOME_CHANNEL",
-        "DISCORD_HOME_CHANNEL_NAME",
-        "DISCORD_REQUIRE_MENTION",
-        "DISCORD_FREE_RESPONSE_CHANNELS",
-        "DISCORD_AUTO_THREAD",
-        "SLACK_HOME_CHANNEL",
-        "SLACK_HOME_CHANNEL_NAME",
-        "SLACK_ALLOWED_USERS",
-        "WHATSAPP_ENABLED",
-        "WHATSAPP_MODE",
-        "WHATSAPP_ALLOWED_USERS",
-        "SIGNAL_HTTP_URL",
-        "SIGNAL_ACCOUNT",
-        "SIGNAL_ALLOWED_USERS",
-        "SIGNAL_GROUP_ALLOWED_USERS",
-        "SIGNAL_HOME_CHANNEL",
-        "SIGNAL_HOME_CHANNEL_NAME",
-        "SIGNAL_IGNORE_STORIES",
-        "HASS_TOKEN",
-        "HASS_URL",
-        "EMAIL_ADDRESS",
-        "EMAIL_PASSWORD",
-        "EMAIL_IMAP_HOST",
-        "EMAIL_SMTP_HOST",
-        "EMAIL_HOME_ADDRESS",
-        "EMAIL_HOME_ADDRESS_NAME",
-        "GATEWAY_ALLOWED_USERS",
-        "GH_TOKEN",
-        "GITHUB_APP_ID",
-        "GITHUB_APP_PRIVATE_KEY_PATH",
-        "GITHUB_APP_INSTALLATION_ID",
-        "MODAL_TOKEN_ID",
-        "MODAL_TOKEN_SECRET",
-        "DAYTONA_API_KEY",
-    })
+    blocked.update(
+        {
+            "OPENAI_BASE_URL",
+            "OPENAI_API_KEY",
+            "OPENAI_API_BASE",
+            "OPENAI_ORG_ID",
+            "OPENAI_ORGANIZATION",
+            "OPENROUTER_API_KEY",
+            "ANTHROPIC_BASE_URL",
+            "ANTHROPIC_TOKEN",
+            "CLAUDE_CODE_OAUTH_TOKEN",
+            "LLM_MODEL",
+            "GOOGLE_API_KEY",
+            "DEEPSEEK_API_KEY",
+            "MISTRAL_API_KEY",
+            "GROQ_API_KEY",
+            "TOGETHER_API_KEY",
+            "PERPLEXITY_API_KEY",
+            "COHERE_API_KEY",
+            "FIREWORKS_API_KEY",
+            "XAI_API_KEY",
+            "HELICONE_API_KEY",
+            "PARALLEL_API_KEY",
+            "FIRECRAWL_API_KEY",
+            "FIRECRAWL_API_URL",
+            "TELEGRAM_HOME_CHANNEL",
+            "TELEGRAM_HOME_CHANNEL_NAME",
+            "DISCORD_HOME_CHANNEL",
+            "DISCORD_HOME_CHANNEL_NAME",
+            "DISCORD_REQUIRE_MENTION",
+            "DISCORD_FREE_RESPONSE_CHANNELS",
+            "DISCORD_AUTO_THREAD",
+            "SLACK_HOME_CHANNEL",
+            "SLACK_HOME_CHANNEL_NAME",
+            "SLACK_ALLOWED_USERS",
+            "WHATSAPP_ENABLED",
+            "WHATSAPP_MODE",
+            "WHATSAPP_ALLOWED_USERS",
+            "SIGNAL_HTTP_URL",
+            "SIGNAL_ACCOUNT",
+            "SIGNAL_ALLOWED_USERS",
+            "SIGNAL_GROUP_ALLOWED_USERS",
+            "SIGNAL_HOME_CHANNEL",
+            "SIGNAL_HOME_CHANNEL_NAME",
+            "SIGNAL_IGNORE_STORIES",
+            "HASS_TOKEN",
+            "HASS_URL",
+            "EMAIL_ADDRESS",
+            "EMAIL_PASSWORD",
+            "EMAIL_IMAP_HOST",
+            "EMAIL_SMTP_HOST",
+            "EMAIL_HOME_ADDRESS",
+            "EMAIL_HOME_ADDRESS_NAME",
+            "GATEWAY_ALLOWED_USERS",
+            "GH_TOKEN",
+            "GITHUB_APP_ID",
+            "GITHUB_APP_PRIVATE_KEY_PATH",
+            "GITHUB_APP_INSTALLATION_ID",
+            "MODAL_TOKEN_ID",
+            "MODAL_TOKEN_SECRET",
+            "DAYTONA_API_KEY",
+        }
+    )
+    # Mirror every legacy HERMES_* entry to its canonical DXRK_* form so
+    # migrated vars (e.g. DXRK_GEMINI_CLIENT_SECRET) are blocked identically.
+    blocked.update(
+        "DXRK_" + name[len("HERMES_") :]
+        for name in list(blocked)
+        if name.startswith("HERMES_")
+    )
     return frozenset(blocked)
 
 
 _HERMES_PROVIDER_ENV_BLOCKLIST = _build_provider_env_blocklist()
 
 
-def _sanitize_subprocess_env(base_env: dict | None, extra_env: dict | None = None) -> dict:
-    """Filter Hermes-managed secrets from a subprocess environment."""
+def _sanitize_subprocess_env(
+    base_env: dict | None, extra_env: dict | None = None
+) -> dict:
+    """Filter Dxrk-managed secrets from a subprocess environment."""
     try:
         from tools.env_passthrough import is_env_passthrough as _is_passthrough
     except Exception:
@@ -117,20 +133,26 @@ def _sanitize_subprocess_env(base_env: dict | None, extra_env: dict | None = Non
     sanitized: dict[str, str] = {}
 
     for key, value in (base_env or {}).items():
-        if key.startswith(_HERMES_PROVIDER_ENV_FORCE_PREFIX):
+        if key.startswith(
+            (_HERMES_PROVIDER_ENV_FORCE_PREFIX, _DXRK_PROVIDER_ENV_FORCE_PREFIX)
+        ):
             continue
         if key not in _HERMES_PROVIDER_ENV_BLOCKLIST or _is_passthrough(key):
             sanitized[key] = value
 
     for key, value in (extra_env or {}).items():
         if key.startswith(_HERMES_PROVIDER_ENV_FORCE_PREFIX):
-            real_key = key[len(_HERMES_PROVIDER_ENV_FORCE_PREFIX):]
+            real_key = key[len(_HERMES_PROVIDER_ENV_FORCE_PREFIX) :]
+            sanitized[real_key] = value
+        elif key.startswith(_DXRK_PROVIDER_ENV_FORCE_PREFIX):
+            real_key = key[len(_DXRK_PROVIDER_ENV_FORCE_PREFIX) :]
             sanitized[real_key] = value
         elif key not in _HERMES_PROVIDER_ENV_BLOCKLIST or _is_passthrough(key):
             sanitized[key] = value
 
     # Per-profile HOME isolation for background processes (same as _make_run_env).
     from dxrk_constants import get_subprocess_home
+
     _profile_home = get_subprocess_home()
     if _profile_home:
         sanitized["HOME"] = _profile_home
@@ -149,7 +171,7 @@ def _find_bash() -> str:
             or "/bin/sh"
         )
 
-    custom = os.environ.get("HERMES_GIT_BASH_PATH")
+    custom = dxrk_getenv("DXRK_GIT_BASH_PATH")
     if custom and os.path.isfile(custom):
         return custom
 
@@ -158,17 +180,29 @@ def _find_bash() -> str:
         return found
 
     for candidate in (
-        os.path.join(os.environ.get("ProgramFiles", r"C:\Program Files"), "Git", "bin", "bash.exe"),
-        os.path.join(os.environ.get("ProgramFiles(x86)", r"C:\Program Files (x86)"), "Git", "bin", "bash.exe"),
-        os.path.join(os.environ.get("LOCALAPPDATA", ""), "Programs", "Git", "bin", "bash.exe"),
+        os.path.join(
+            os.environ.get("ProgramFiles", r"C:\Program Files"),
+            "Git",
+            "bin",
+            "bash.exe",
+        ),
+        os.path.join(
+            os.environ.get("ProgramFiles(x86)", r"C:\Program Files (x86)"),
+            "Git",
+            "bin",
+            "bash.exe",
+        ),
+        os.path.join(
+            os.environ.get("LOCALAPPDATA", ""), "Programs", "Git", "bin", "bash.exe"
+        ),
     ):
         if candidate and os.path.isfile(candidate):
             return candidate
 
     raise RuntimeError(
-        "Git Bash not found. Hermes Agent requires Git for Windows on Windows.\n"
+        "Git Bash not found. Dxrk Agent requires Git for Windows on Windows.\n"
         "Install it from: https://git-scm.com/download/win\n"
-        "Or set HERMES_GIT_BASH_PATH to your bash.exe location."
+        "Or set DXRK_GIT_BASH_PATH to your bash.exe location."
     )
 
 
@@ -194,18 +228,24 @@ def _make_run_env(env: dict) -> dict:
     run_env = {}
     for k, v in merged.items():
         if k.startswith(_HERMES_PROVIDER_ENV_FORCE_PREFIX):
-            real_key = k[len(_HERMES_PROVIDER_ENV_FORCE_PREFIX):]
+            real_key = k[len(_HERMES_PROVIDER_ENV_FORCE_PREFIX) :]
+            run_env[real_key] = v
+        elif k.startswith(_DXRK_PROVIDER_ENV_FORCE_PREFIX):
+            real_key = k[len(_DXRK_PROVIDER_ENV_FORCE_PREFIX) :]
             run_env[real_key] = v
         elif k not in _HERMES_PROVIDER_ENV_BLOCKLIST or _is_passthrough(k):
             run_env[k] = v
     existing_path = run_env.get("PATH", "")
     if "/usr/bin" not in existing_path.split(":"):
-        run_env["PATH"] = f"{existing_path}:{_SANE_PATH}" if existing_path else _SANE_PATH
+        run_env["PATH"] = (
+            f"{existing_path}:{_SANE_PATH}" if existing_path else _SANE_PATH
+        )
 
     # Per-profile HOME isolation: redirect system tool configs (git, ssh, gh,
-    # npm …) into {HERMES_HOME}/home/ when that directory exists.  Only the
+    # npm …) into {DXRK_HOME}/home/ when that directory exists.  Only the
     # subprocess sees the override — the Python process keeps the real HOME.
     from dxrk_constants import get_subprocess_home
+
     _profile_home = get_subprocess_home()
     if _profile_home:
         run_env["HOME"] = _profile_home
@@ -334,9 +374,14 @@ class LocalEnvironment(BaseEnvironment):
 
         return "/tmp"
 
-    def _run_bash(self, cmd_string: str, *, login: bool = False,
-                  timeout: int = 120,
-                  stdin_data: str | None = None) -> subprocess.Popen:
+    def _run_bash(
+        self,
+        cmd_string: str,
+        *,
+        login: bool = False,
+        timeout: int = 120,
+        stdin_data: str | None = None,
+    ) -> subprocess.Popen:
         bash = _find_bash()
         # For login-shell invocations (used by init_session to build the
         # environment snapshot), prepend sources for the user's bashrc /

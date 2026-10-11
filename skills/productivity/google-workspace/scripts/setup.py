@@ -37,10 +37,11 @@ if _SCRIPTS_DIR not in sys.path:
 
 from _dxrk_home import display_dxrk_home, get_dxrk_home
 
-HERMES_HOME = get_dxrk_home()
-TOKEN_PATH = HERMES_HOME / "google_token.json"
-CLIENT_SECRET_PATH = HERMES_HOME / "google_client_secret.json"
-PENDING_AUTH_PATH = HERMES_HOME / "google_oauth_pending.json"
+DXRK_HOME = get_dxrk_home()
+HERMES_HOME = DXRK_HOME  # deprecated alias
+TOKEN_PATH = DXRK_HOME / "google_token.json"
+CLIENT_SECRET_PATH = DXRK_HOME / "google_client_secret.json"
+PENDING_AUTH_PATH = DXRK_HOME / "google_oauth_pending.json"
 
 SCOPES = [
     "https://www.googleapis.com/auth/gmail.readonly",

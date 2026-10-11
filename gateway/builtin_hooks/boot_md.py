@@ -23,8 +23,9 @@ import threading
 logger = logging.getLogger("hooks.boot-md")
 
 from dxrk_constants import get_dxrk_home
-HERMES_HOME = get_dxrk_home()
-BOOT_FILE = HERMES_HOME / "BOOT.md"
+DXRK_HOME = get_dxrk_home()
+HERMES_HOME = DXRK_HOME  # deprecated alias
+BOOT_FILE = DXRK_HOME / "BOOT.md"
 
 
 def _build_boot_prompt(content: str) -> str:

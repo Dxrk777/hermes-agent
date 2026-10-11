@@ -1,8 +1,9 @@
-"""Helpers for loading Hermes .env files consistently across entrypoints."""
+"""Helpers for loading Dxrk .env files consistently across entrypoints."""
 
 from __future__ import annotations
 
 import os
+from dxrk_constants import dxrk_getenv
 import sys
 from pathlib import Path
 
@@ -102,7 +103,7 @@ def _sanitize_env_file_if_needed(path: Path) -> None:
     (see #8908).
 
     We delegate to ``dxrk_cli.config._sanitize_env_lines`` which
-    already knows all valid Hermes env-var names and can split
+    already knows all valid Dxrk env-var names and can split
     concatenated lines correctly.
     """
     if not path.exists():
@@ -143,7 +144,7 @@ def load_dxrk_dotenv(
     dxrk_home: str | os.PathLike | None = None,
     project_env: str | os.PathLike | None = None,
 ) -> list[Path]:
-    """Load Hermes environment files with user config taking precedence.
+    """Load Dxrk environment files with user config taking precedence.
 
     Behavior:
     - `~/.dxrk/.env` overrides stale shell-exported values when present.
@@ -153,7 +154,7 @@ def load_dxrk_dotenv(
     """
     loaded: list[Path] = []
 
-    home_path = Path(dxrk_home or os.getenv("HERMES_HOME", Path.home() / ".dxrk"))
+    home_path = Path(dxrk_home or dxrk_getenv("DXRK_HOME", Path.home() / ".dxrk"))
     user_env = home_path / ".env"
     project_env_path = Path(project_env) if project_env else None
 

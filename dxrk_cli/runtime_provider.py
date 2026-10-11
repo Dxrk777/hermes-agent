@@ -28,7 +28,7 @@ from dxrk_cli.auth import (
     has_usable_secret,
 )
 from dxrk_cli.config import get_compatible_custom_providers, load_config
-from dxrk_constants import OPENROUTER_BASE_URL
+from dxrk_constants import OPENROUTER_BASE_URL, dxrk_getenv
 from utils import base_url_host_matches, base_url_hostname
 
 
@@ -303,7 +303,7 @@ def resolve_requested_provider(requested: Optional[str] = None) -> str:
 
     # Prefer the persisted config selection over any stale shell/.env
     # provider override so chat uses the endpoint the user last saved.
-    env_provider = os.getenv("HERMES_INFERENCE_PROVIDER", "").strip().lower()
+    env_provider = dxrk_getenv("DXRK_INFERENCE_PROVIDER", "").strip().lower()
     if env_provider:
         return env_provider
 
@@ -769,8 +769,8 @@ def _resolve_explicit_runtime(
         expires_at = state.get("agent_key_expires_at") or state.get("expires_at")
         if not api_key:
             creds = resolve_nous_runtime_credentials(
-                min_key_ttl_seconds=max(60, int(os.getenv("HERMES_NOUS_MIN_KEY_TTL_SECONDS", "1800"))),
-                timeout_seconds=float(os.getenv("HERMES_NOUS_TIMEOUT_SECONDS", "15")),
+                min_key_ttl_seconds=max(60, int(dxrk_getenv("DXRK_NOUS_MIN_KEY_TTL_SECONDS", "1800"))),
+                timeout_seconds=float(dxrk_getenv("DXRK_NOUS_TIMEOUT_SECONDS", "15")),
             )
             api_key = creds.get("api_key", "")
             expires_at = creds.get("expires_at")
@@ -962,7 +962,7 @@ def resolve_runtime_provider(
         # expired, clear pool_api_key so we fall through to
         # resolve_nous_runtime_credentials() which handles refresh + mint.
         if provider == "nous" and entry is not None and pool_api_key:
-            min_ttl = max(60, int(os.getenv("HERMES_NOUS_MIN_KEY_TTL_SECONDS", "1800")))
+            min_ttl = max(60, int(dxrk_getenv("DXRK_NOUS_MIN_KEY_TTL_SECONDS", "1800")))
             nous_state = {
                 "agent_key": getattr(entry, "agent_key", None),
                 "agent_key_expires_at": getattr(entry, "agent_key_expires_at", None),
@@ -983,8 +983,8 @@ def resolve_runtime_provider(
     if provider == "nous":
         try:
             creds = resolve_nous_runtime_credentials(
-                min_key_ttl_seconds=max(60, int(os.getenv("HERMES_NOUS_MIN_KEY_TTL_SECONDS", "1800"))),
-                timeout_seconds=float(os.getenv("HERMES_NOUS_TIMEOUT_SECONDS", "15")),
+                min_key_ttl_seconds=max(60, int(dxrk_getenv("DXRK_NOUS_MIN_KEY_TTL_SECONDS", "1800"))),
+                timeout_seconds=float(dxrk_getenv("DXRK_NOUS_TIMEOUT_SECONDS", "15")),
             )
             return {
                 "provider": "nous",

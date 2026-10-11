@@ -60,7 +60,11 @@ RUN uv venv && \
     uv pip install --no-cache-dir -e ".[all]"
 
 # ---------- Runtime ----------
+# DXRK_* is canonical; HERMES_* mirrors are kept for backward compatibility
+# with existing volumes, scripts, and older entrypoints.
+ENV DXRK_WEB_DIST=/opt/hermes/hermes_cli/web_dist
 ENV HERMES_WEB_DIST=/opt/hermes/hermes_cli/web_dist
+ENV DXRK_HOME=/opt/data
 ENV HERMES_HOME=/opt/data
 ENV PATH="/opt/data/.local/bin:${PATH}"
 VOLUME [ "/opt/data" ]

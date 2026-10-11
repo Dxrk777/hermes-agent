@@ -127,7 +127,9 @@ class TestIsContainer:
 
     def test_caches_result(self, monkeypatch):
         """Second call uses cached value without re-probing."""
-        monkeypatch.setattr(hermes_constants, "_container_detected", True)
+        # Canonical implementation lives in dxrk_constants (hermes_constants
+        # is a shim) — the cache global must be set where the function reads it.
+        monkeypatch.setattr(dxrk_constants, "_container_detected", True)
         assert is_container() is True
         # Even if we make os.path.exists return False, cached value wins
         monkeypatch.setattr(os.path, "exists", lambda p: False)

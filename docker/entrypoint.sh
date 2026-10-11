@@ -1,8 +1,12 @@
 #!/bin/bash
-# Docker/Podman entrypoint: bootstrap config files into the mounted volume, then run hermes.
+# Docker/Podman entrypoint: bootstrap config files into the mounted volume, then run dxrk.
 set -e
 
-HERMES_HOME="${HERMES_HOME:-/opt/data}"
+# DXRK_HOME is canonical; HERMES_HOME is a deprecated fallback.  Export both
+# (same value) so old and new code paths resolve identically.
+DXRK_HOME="${DXRK_HOME:-${HERMES_HOME:-/opt/data}}"
+HERMES_HOME="${HERMES_HOME:-$DXRK_HOME}"
+export DXRK_HOME HERMES_HOME
 INSTALL_DIR="/opt/hermes"
 
 # --- Privilege dropping via gosu ---
@@ -60,7 +64,7 @@ source "${INSTALL_DIR}/.venv/bin/activate"
 # Create essential directory structure.  Cache and platform directories
 # (cache/images, cache/audio, platforms/whatsapp, etc.) are created on
 # demand by the application — don't pre-create them here so new installs
-# get the consolidated layout from get_hermes_dir().
+# get the consolidated layout from get_dxrk_dir().
 # The "home/" subdirectory is a per-profile HOME for subprocesses (git,
 # ssh, gh, npm …).  Without it those tools write to /root which is
 # ephemeral and shared across profiles.  See issue #4426.

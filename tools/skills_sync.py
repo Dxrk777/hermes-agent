@@ -26,7 +26,7 @@ import logging
 import os
 import shutil
 from pathlib import Path
-from dxrk_constants import get_dxrk_home
+from dxrk_constants import get_dxrk_home, dxrk_getenv
 from typing import Dict, List, Tuple
 
 logger = logging.getLogger(__name__)
@@ -43,7 +43,7 @@ def _get_bundled_dir() -> Path:
     Checks HERMES_BUNDLED_SKILLS env var first (set by Nix wrapper),
     then falls back to the relative path from this source file.
     """
-    env_override = os.getenv("HERMES_BUNDLED_SKILLS")
+    env_override = dxrk_getenv("DXRK_BUNDLED_SKILLS")
     if env_override:
         return Path(env_override)
     return Path(__file__).parent.parent / "skills"

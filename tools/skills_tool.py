@@ -69,7 +69,7 @@ Usage:
 import json
 import logging
 
-from dxrk_constants import get_dxrk_home, display_dxrk_home
+from dxrk_constants import get_dxrk_home, display_dxrk_home, dxrk_getenv
 import os
 import re
 from enum import Enum
@@ -362,7 +362,7 @@ def _capture_required_environment_variables(
 
 
 def _is_gateway_surface() -> bool:
-    if os.getenv("HERMES_GATEWAY_SESSION"):
+    if dxrk_getenv("DXRK_GATEWAY_SESSION"):
         return True
     from gateway.session_context import get_session_env
     return bool(get_session_env("HERMES_SESSION_PLATFORM"))
@@ -533,7 +533,7 @@ def _is_skill_disabled(name: str, platform: str = None) -> bool:
         from dxrk_cli.config import load_config
         config = load_config()
         skills_cfg = config.get("skills", {})
-        resolved_platform = platform or os.getenv("HERMES_PLATFORM") or _get_session_platform()
+        resolved_platform = platform or dxrk_getenv("DXRK_PLATFORM") or _get_session_platform()
         if resolved_platform:
             platform_disabled = skills_cfg.get("platform_disabled", {}).get(resolved_platform)
             if platform_disabled is not None:

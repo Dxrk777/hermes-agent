@@ -13,7 +13,7 @@ import sys
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Union
 
-from dxrk_constants import display_dxrk_home
+from dxrk_constants import display_dxrk_home, dxrk_getenv
 
 logger = logging.getLogger(__name__)
 
@@ -542,9 +542,9 @@ def check_cronjob_requirements() -> bool:
     so no external crontab executable is required.
     """
     return bool(
-        os.getenv("HERMES_INTERACTIVE")
-        or os.getenv("HERMES_GATEWAY_SESSION")
-        or os.getenv("HERMES_EXEC_ASK")
+        dxrk_getenv("DXRK_INTERACTIVE")
+        or dxrk_getenv("DXRK_GATEWAY_SESSION")
+        or dxrk_getenv("DXRK_EXEC_ASK")
     )
 
 

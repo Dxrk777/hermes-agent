@@ -1,4 +1,4 @@
-"""Resolve HERMES_HOME for standalone skill scripts.
+"""Resolve DXRK_HOME for standalone skill scripts.
 
 Skill scripts may run outside the Hermes process (e.g. system Python,
 nix env, CI) where ``dxrk_constants`` is not importable.  This module
@@ -11,7 +11,7 @@ picked up automatically.  The fallback path replicates the core logic
 from ``dxrk_constants.py`` using only the stdlib.
 
 All scripts under ``google-workspace/scripts/`` should import from here
-instead of duplicating the ``HERMES_HOME = Path(os.getenv(...))`` pattern.
+instead of duplicating the ``DXRK_HOME = Path(os.getenv(...))`` pattern.
 """
 
 from __future__ import annotations
@@ -25,10 +25,12 @@ try:
 except (ModuleNotFoundError, ImportError):
 
     def get_dxrk_home() -> Path:
-        """Return the Hermes home directory (default: ~/.dxrk).
+        """Return the Dxrk home directory (default: ~/.dxrk).
 
-        Mirrors ``dxrk_constants.get_dxrk_home()``."""
-        val = os.environ.get("HERMES_HOME", "").strip()
+        Mirrors ``dxrk_constants.get_dxrk_home()`` (DXRK_HOME canonical,
+        HERMES_HOME deprecated fallback)."""
+        val = (os.environ.get("DXRK_HOME", "").strip()
+               or os.environ.get("HERMES_HOME", "").strip())
         return Path(val) if val else Path.home() / ".dxrk"
 
     def display_dxrk_home() -> str:

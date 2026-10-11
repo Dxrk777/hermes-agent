@@ -61,93 +61,95 @@ _CREDENTIAL_SUFFIXES = (
 )
 
 # Explicit names (for ones that don't fit the suffix pattern)
-_CREDENTIAL_NAMES = frozenset({
-    "AWS_ACCESS_KEY_ID",
-    "AWS_SECRET_ACCESS_KEY",
-    "AWS_SESSION_TOKEN",
-    "ANTHROPIC_TOKEN",
-    "FAL_KEY",
-    "GH_TOKEN",
-    "GITHUB_TOKEN",
-    "OPENAI_API_KEY",
-    "OPENROUTER_API_KEY",
-    "NOUS_API_KEY",
-    "GEMINI_API_KEY",
-    "GOOGLE_API_KEY",
-    "GROQ_API_KEY",
-    "XAI_API_KEY",
-    "MISTRAL_API_KEY",
-    "DEEPSEEK_API_KEY",
-    "KIMI_API_KEY",
-    "MOONSHOT_API_KEY",
-    "GLM_API_KEY",
-    "ZAI_API_KEY",
-    "MINIMAX_API_KEY",
-    "OLLAMA_API_KEY",
-    "OPENVIKING_API_KEY",
-    "COPILOT_API_KEY",
-    "CLAUDE_CODE_OAUTH_TOKEN",
-    "BROWSERBASE_API_KEY",
-    "FIRECRAWL_API_KEY",
-    "PARALLEL_API_KEY",
-    "EXA_API_KEY",
-    "TAVILY_API_KEY",
-    "WANDB_API_KEY",
-    "ELEVENLABS_API_KEY",
-    "HONCHO_API_KEY",
-    "MEM0_API_KEY",
-    "SUPERMEMORY_API_KEY",
-    "RETAINDB_API_KEY",
-    "HINDSIGHT_API_KEY",
-    "HINDSIGHT_LLM_API_KEY",
-    "TINKER_API_KEY",
-    "DAYTONA_API_KEY",
-    "TWILIO_AUTH_TOKEN",
-    "TELEGRAM_BOT_TOKEN",
-    "DISCORD_BOT_TOKEN",
-    "SLACK_BOT_TOKEN",
-    "SLACK_APP_TOKEN",
-    "MATTERMOST_TOKEN",
-    "MATRIX_ACCESS_TOKEN",
-    "MATRIX_PASSWORD",
-    "MATRIX_RECOVERY_KEY",
-    "HASS_TOKEN",
-    "EMAIL_PASSWORD",
-    "BLUEBUBBLES_PASSWORD",
-    "FEISHU_APP_SECRET",
-    "FEISHU_ENCRYPT_KEY",
-    "FEISHU_VERIFICATION_TOKEN",
-    "DINGTALK_CLIENT_SECRET",
-    "QQ_CLIENT_SECRET",
-    "QQ_STT_API_KEY",
-    "WECOM_SECRET",
-    "WECOM_CALLBACK_CORP_SECRET",
-    "WECOM_CALLBACK_TOKEN",
-    "WECOM_CALLBACK_ENCODING_AES_KEY",
-    "WEIXIN_TOKEN",
-    "MODAL_TOKEN_ID",
-    "MODAL_TOKEN_SECRET",
-    "TERMINAL_SSH_KEY",
-    "SUDO_PASSWORD",
-    "GATEWAY_PROXY_KEY",
-    "API_SERVER_KEY",
-    "TOOL_GATEWAY_USER_TOKEN",
-    "TELEGRAM_WEBHOOK_SECRET",
-    "WEBHOOK_SECRET",
-    "AI_GATEWAY_API_KEY",
-    "VOICE_TOOLS_OPENAI_KEY",
-    "BROWSER_USE_API_KEY",
-    "CUSTOM_API_KEY",
-    "GATEWAY_PROXY_URL",
-    "GEMINI_BASE_URL",
-    "OPENAI_BASE_URL",
-    "OPENROUTER_BASE_URL",
-    "OLLAMA_BASE_URL",
-    "GROQ_BASE_URL",
-    "XAI_BASE_URL",
-    "AI_GATEWAY_BASE_URL",
-    "ANTHROPIC_BASE_URL",
-})
+_CREDENTIAL_NAMES = frozenset(
+    {
+        "AWS_ACCESS_KEY_ID",
+        "AWS_SECRET_ACCESS_KEY",
+        "AWS_SESSION_TOKEN",
+        "ANTHROPIC_TOKEN",
+        "FAL_KEY",
+        "GH_TOKEN",
+        "GITHUB_TOKEN",
+        "OPENAI_API_KEY",
+        "OPENROUTER_API_KEY",
+        "NOUS_API_KEY",
+        "GEMINI_API_KEY",
+        "GOOGLE_API_KEY",
+        "GROQ_API_KEY",
+        "XAI_API_KEY",
+        "MISTRAL_API_KEY",
+        "DEEPSEEK_API_KEY",
+        "KIMI_API_KEY",
+        "MOONSHOT_API_KEY",
+        "GLM_API_KEY",
+        "ZAI_API_KEY",
+        "MINIMAX_API_KEY",
+        "OLLAMA_API_KEY",
+        "OPENVIKING_API_KEY",
+        "COPILOT_API_KEY",
+        "CLAUDE_CODE_OAUTH_TOKEN",
+        "BROWSERBASE_API_KEY",
+        "FIRECRAWL_API_KEY",
+        "PARALLEL_API_KEY",
+        "EXA_API_KEY",
+        "TAVILY_API_KEY",
+        "WANDB_API_KEY",
+        "ELEVENLABS_API_KEY",
+        "HONCHO_API_KEY",
+        "MEM0_API_KEY",
+        "SUPERMEMORY_API_KEY",
+        "RETAINDB_API_KEY",
+        "HINDSIGHT_API_KEY",
+        "HINDSIGHT_LLM_API_KEY",
+        "TINKER_API_KEY",
+        "DAYTONA_API_KEY",
+        "TWILIO_AUTH_TOKEN",
+        "TELEGRAM_BOT_TOKEN",
+        "DISCORD_BOT_TOKEN",
+        "SLACK_BOT_TOKEN",
+        "SLACK_APP_TOKEN",
+        "MATTERMOST_TOKEN",
+        "MATRIX_ACCESS_TOKEN",
+        "MATRIX_PASSWORD",
+        "MATRIX_RECOVERY_KEY",
+        "HASS_TOKEN",
+        "EMAIL_PASSWORD",
+        "BLUEBUBBLES_PASSWORD",
+        "FEISHU_APP_SECRET",
+        "FEISHU_ENCRYPT_KEY",
+        "FEISHU_VERIFICATION_TOKEN",
+        "DINGTALK_CLIENT_SECRET",
+        "QQ_CLIENT_SECRET",
+        "QQ_STT_API_KEY",
+        "WECOM_SECRET",
+        "WECOM_CALLBACK_CORP_SECRET",
+        "WECOM_CALLBACK_TOKEN",
+        "WECOM_CALLBACK_ENCODING_AES_KEY",
+        "WEIXIN_TOKEN",
+        "MODAL_TOKEN_ID",
+        "MODAL_TOKEN_SECRET",
+        "TERMINAL_SSH_KEY",
+        "SUDO_PASSWORD",
+        "GATEWAY_PROXY_KEY",
+        "API_SERVER_KEY",
+        "TOOL_GATEWAY_USER_TOKEN",
+        "TELEGRAM_WEBHOOK_SECRET",
+        "WEBHOOK_SECRET",
+        "AI_GATEWAY_API_KEY",
+        "VOICE_TOOLS_OPENAI_KEY",
+        "BROWSER_USE_API_KEY",
+        "CUSTOM_API_KEY",
+        "GATEWAY_PROXY_URL",
+        "GEMINI_BASE_URL",
+        "OPENAI_BASE_URL",
+        "OPENROUTER_BASE_URL",
+        "OLLAMA_BASE_URL",
+        "GROQ_BASE_URL",
+        "XAI_BASE_URL",
+        "AI_GATEWAY_BASE_URL",
+        "ANTHROPIC_BASE_URL",
+    }
+)
 
 
 def _looks_like_credential(name: str) -> bool:
@@ -159,83 +161,97 @@ def _looks_like_credential(name: str) -> bool:
 
 # HERMES_* vars that change test behavior by being set. Unset all of these
 # unconditionally — individual tests that need them set do so explicitly.
-_HERMES_BEHAVIORAL_VARS = frozenset({
-    "HERMES_YOLO_MODE",
-    "HERMES_INTERACTIVE",
-    "HERMES_QUIET",
-    "HERMES_TOOL_PROGRESS",
-    "HERMES_TOOL_PROGRESS_MODE",
-    "HERMES_MAX_ITERATIONS",
-    "HERMES_SESSION_PLATFORM",
-    "HERMES_SESSION_CHAT_ID",
-    "HERMES_SESSION_CHAT_NAME",
-    "HERMES_SESSION_THREAD_ID",
-    "HERMES_SESSION_SOURCE",
-    "HERMES_SESSION_KEY",
-    "HERMES_GATEWAY_SESSION",
-    "HERMES_PLATFORM",
-    "HERMES_INFERENCE_PROVIDER",
-    "HERMES_MANAGED",
-    "HERMES_DEV",
-    "HERMES_CONTAINER",
-    "HERMES_EPHEMERAL_SYSTEM_PROMPT",
-    "HERMES_TIMEZONE",
-    "HERMES_REDACT_SECRETS",
-    "HERMES_BACKGROUND_NOTIFICATIONS",
-    "HERMES_EXEC_ASK",
-    "HERMES_HOME_MODE",
-    "BROWSER_CDP_URL",
-    "CAMOFOX_URL",
-    # Platform allowlists — not credentials, but if set from any source
-    # (user shell, earlier leaky test, CI env), they change gateway auth
-    # behavior and flake button-authorization tests.
-    "TELEGRAM_ALLOWED_USERS",
-    "DISCORD_ALLOWED_USERS",
-    "WHATSAPP_ALLOWED_USERS",
-    "SLACK_ALLOWED_USERS",
-    "SIGNAL_ALLOWED_USERS",
-    "SIGNAL_GROUP_ALLOWED_USERS",
-    "EMAIL_ALLOWED_USERS",
-    "SMS_ALLOWED_USERS",
-    "MATTERMOST_ALLOWED_USERS",
-    "MATRIX_ALLOWED_USERS",
-    "DINGTALK_ALLOWED_USERS",
-    "FEISHU_ALLOWED_USERS",
-    "WECOM_ALLOWED_USERS",
-    "GATEWAY_ALLOWED_USERS",
-    "GATEWAY_ALLOW_ALL_USERS",
-    "TELEGRAM_ALLOW_ALL_USERS",
-    "DISCORD_ALLOW_ALL_USERS",
-    "WHATSAPP_ALLOW_ALL_USERS",
-    "SLACK_ALLOW_ALL_USERS",
-    "SIGNAL_ALLOW_ALL_USERS",
-    "EMAIL_ALLOW_ALL_USERS",
-    "SMS_ALLOW_ALL_USERS",
-    # Platform gating — set by load_gateway_config() as a side effect when
-    # a config.yaml is present, so individual test bodies that call the
-    # loader leak these values into later tests on the same xdist worker.
-    # Force-clear on every test setup so the leak can't happen.
-    "SLACK_REQUIRE_MENTION",
-    "SLACK_STRICT_MENTION",
-    "SLACK_FREE_RESPONSE_CHANNELS",
-    "SLACK_ALLOW_BOTS",
-    "SLACK_REACTIONS",
-    "DISCORD_REQUIRE_MENTION",
-    "DISCORD_FREE_RESPONSE_CHANNELS",
-    "TELEGRAM_REQUIRE_MENTION",
-    "WHATSAPP_REQUIRE_MENTION",
-    "DINGTALK_REQUIRE_MENTION",
-    "MATRIX_REQUIRE_MENTION",
-})
+# NOTE: DXRK_* canonical counterparts are derived below (_DXRK_BEHAVIORAL_VARS)
+# so a DXRK_* var leaked from the developer shell can't change test semantics
+# either (migrated readers check DXRK_* first).
+_HERMES_BEHAVIORAL_VARS = frozenset(
+    {
+        "HERMES_YOLO_MODE",
+        "HERMES_INTERACTIVE",
+        "HERMES_QUIET",
+        "HERMES_TOOL_PROGRESS",
+        "HERMES_TOOL_PROGRESS_MODE",
+        "HERMES_MAX_ITERATIONS",
+        "HERMES_SESSION_PLATFORM",
+        "HERMES_SESSION_CHAT_ID",
+        "HERMES_SESSION_CHAT_NAME",
+        "HERMES_SESSION_THREAD_ID",
+        "HERMES_SESSION_SOURCE",
+        "HERMES_SESSION_KEY",
+        "HERMES_GATEWAY_SESSION",
+        "HERMES_PLATFORM",
+        "HERMES_INFERENCE_PROVIDER",
+        "HERMES_MANAGED",
+        "HERMES_DEV",
+        "HERMES_CONTAINER",
+        "HERMES_EPHEMERAL_SYSTEM_PROMPT",
+        "HERMES_TIMEZONE",
+        "HERMES_REDACT_SECRETS",
+        "HERMES_BACKGROUND_NOTIFICATIONS",
+        "HERMES_EXEC_ASK",
+        "HERMES_HOME_MODE",
+        "BROWSER_CDP_URL",
+        "CAMOFOX_URL",
+        # Platform allowlists — not credentials, but if set from any source
+        # (user shell, earlier leaky test, CI env), they change gateway auth
+        # behavior and flake button-authorization tests.
+        "TELEGRAM_ALLOWED_USERS",
+        "DISCORD_ALLOWED_USERS",
+        "WHATSAPP_ALLOWED_USERS",
+        "SLACK_ALLOWED_USERS",
+        "SIGNAL_ALLOWED_USERS",
+        "SIGNAL_GROUP_ALLOWED_USERS",
+        "EMAIL_ALLOWED_USERS",
+        "SMS_ALLOWED_USERS",
+        "MATTERMOST_ALLOWED_USERS",
+        "MATRIX_ALLOWED_USERS",
+        "DINGTALK_ALLOWED_USERS",
+        "FEISHU_ALLOWED_USERS",
+        "WECOM_ALLOWED_USERS",
+        "GATEWAY_ALLOWED_USERS",
+        "GATEWAY_ALLOW_ALL_USERS",
+        "TELEGRAM_ALLOW_ALL_USERS",
+        "DISCORD_ALLOW_ALL_USERS",
+        "WHATSAPP_ALLOW_ALL_USERS",
+        "SLACK_ALLOW_ALL_USERS",
+        "SIGNAL_ALLOW_ALL_USERS",
+        "EMAIL_ALLOW_ALL_USERS",
+        "SMS_ALLOW_ALL_USERS",
+        # Platform gating — set by load_gateway_config() as a side effect when
+        # a config.yaml is present, so individual test bodies that call the
+        # loader leak these values into later tests on the same xdist worker.
+        # Force-clear on every test setup so the leak can't happen.
+        "SLACK_REQUIRE_MENTION",
+        "SLACK_STRICT_MENTION",
+        "SLACK_FREE_RESPONSE_CHANNELS",
+        "SLACK_ALLOW_BOTS",
+        "SLACK_REACTIONS",
+        "DISCORD_REQUIRE_MENTION",
+        "DISCORD_FREE_RESPONSE_CHANNELS",
+        "TELEGRAM_REQUIRE_MENTION",
+        "WHATSAPP_REQUIRE_MENTION",
+        "DINGTALK_REQUIRE_MENTION",
+        "MATRIX_REQUIRE_MENTION",
+    }
+)
+
+
+# Canonical DXRK_* counterparts of the HERMES_* behavioral vars above.
+# Derived programmatically so the two lists can't drift apart.
+_DXRK_BEHAVIORAL_VARS = frozenset(
+    "DXRK_" + name[len("HERMES_") :]
+    for name in _HERMES_BEHAVIORAL_VARS
+    if name.startswith("HERMES_")
+)
 
 
 @pytest.fixture(autouse=True)
 def _hermetic_environment(tmp_path, monkeypatch):
     """Blank out all credential/behavioral env vars so local and CI match.
 
-    Also redirects HOME and HERMES_HOME to per-test tempdirs so code that
-    reads ``~/.dxrk/*`` can't touch the real one, and pins TZ/LANG so
-    datetime/locale-sensitive tests are deterministic.
+    Also redirects HOME and DXRK_HOME (plus legacy HERMES_HOME) to per-test
+    tempdirs so code that reads ``~/.dxrk/*`` can't touch the real one, and
+    pins TZ/LANG so datetime/locale-sensitive tests are deterministic.
     """
     # 1. Blank every credential-shaped env var that's currently set.
     for name in list(os.environ.keys()):
@@ -245,9 +261,22 @@ def _hermetic_environment(tmp_path, monkeypatch):
     # 2. Blank behavioral HERMES_* vars that could change test semantics.
     for name in _HERMES_BEHAVIORAL_VARS:
         monkeypatch.delenv(name, raising=False)
+    # 2b. Blank canonical DXRK_* counterparts for the same reason.
+    for name in _DXRK_BEHAVIORAL_VARS:
+        monkeypatch.delenv(name, raising=False)
+    # 2b. Blank canonical DXRK_* counterparts for the same reason.
+    for name in _DXRK_BEHAVIORAL_VARS:
+        monkeypatch.delenv(name, raising=False)
 
-    # 3. Redirect HERMES_HOME to a per-test tempdir. Code that reads
-    #    ``~/.dxrk/*`` via ``get_dxrk_home()`` now gets the tempdir.
+    # 3. Redirect DXRK_HOME (canonical) + HERMES_HOME (legacy fallback) to a
+    #    per-test tempdir. Code that reads ``~/.dxrk/*`` via
+    #    ``get_dxrk_home()`` now gets the tempdir.
+    #
+    #    DXRK_HOME is *deleted*, not pointed at the tempdir: get_dxrk_home()
+    #    checks DXRK_HOME first, so pointing it here would shadow a test's
+    #    own HERMES_HOME override and break legacy-compat tests.  Deleting
+    #    it makes resolution fall through to HERMES_HOME below (the tempdir)
+    #    while still blocking host-DXRK_HOME leakage.
     #
     #    NOTE: We do NOT also redirect HOME. Doing so broke CI because
     #    some tests (and their transitive deps) spawn subprocesses that
@@ -262,6 +291,7 @@ def _hermetic_environment(tmp_path, monkeypatch):
     (fake_dxrk_home / "cron").mkdir()
     (fake_dxrk_home / "memories").mkdir()
     (fake_dxrk_home / "skills").mkdir()
+    monkeypatch.delenv("DXRK_HOME", raising=False)
     monkeypatch.setenv("HERMES_HOME", str(fake_dxrk_home))
 
     # 4. Deterministic locale / timezone / hashseed. CI runs in UTC with
@@ -285,6 +315,7 @@ def _hermetic_environment(tmp_path, monkeypatch):
     #    singleton might still be cached from a previous test).
     try:
         import dxrk_cli.plugins as _plugins_mod
+
         monkeypatch.setattr(_plugins_mod, "_plugin_manager", None)
     except Exception:
         pass
@@ -318,6 +349,7 @@ def _isolate_dxrk_home(_hermetic_environment):
 # CI runs because ``tools.approval._session_approved`` carried approvals
 # from one test's session into another's.
 
+
 @pytest.fixture(autouse=True)
 def _reset_module_state():
     """Clear module-level mutable state and ContextVars between tests.
@@ -329,6 +361,7 @@ def _reset_module_state():
     # --- tools.approval — the single biggest source of cross-test pollution ---
     try:
         from tools import approval as _approval_mod
+
         _approval_mod._session_approved.clear()
         _approval_mod._session_yolo.clear()
         _approval_mod._permanent_approved.clear()
@@ -345,6 +378,7 @@ def _reset_module_state():
     # --- tools.interrupt — per-thread interrupt flag set ---
     try:
         from tools import interrupt as _interrupt_mod
+
         with _interrupt_mod._lock:
             _interrupt_mod._interrupted_threads.clear()
     except Exception:
@@ -355,6 +389,7 @@ def _reset_module_state():
     #     the next test's get_session_env() reads stale values.
     try:
         from gateway import session_context as _sc_mod
+
         for _cv in (
             _sc_mod._SESSION_PLATFORM,
             _sc_mod._SESSION_CHAT_ID,
@@ -376,6 +411,7 @@ def _reset_module_state():
     # empty set unconditionally normalizes the starting state.
     try:
         from tools import env_passthrough as _envp_mod
+
         _envp_mod._allowed_env_vars_var.set(set())
     except Exception:
         pass
@@ -383,6 +419,7 @@ def _reset_module_state():
     # --- tools.credential_files — ContextVar<dict> ---
     try:
         from tools import credential_files as _credf_mod
+
         _credf_mod._registered_files_var.set({})
     except Exception:
         pass
@@ -393,6 +430,7 @@ def _reset_module_state():
     # cap is hit faster than expected and capacity-related tests flake.
     try:
         from tools import file_tools as _ft_mod
+
         with _ft_mod._read_tracker_lock:
             _ft_mod._read_tracker.clear()
         with _ft_mod._file_ops_lock:
@@ -432,8 +470,10 @@ def mock_config():
 # Prevents hanging tests (subprocess spawns, blocking I/O) from stalling the
 # entire test suite.
 
+
 def _timeout_handler(signum, frame):
     raise TimeoutError("Test exceeded 30 second timeout")
+
 
 @pytest.fixture(autouse=True)
 def _ensure_current_event_loop(request):

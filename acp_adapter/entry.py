@@ -82,7 +82,7 @@ def _setup_logging() -> None:
 
 
 def _load_env() -> None:
-    """Load .env from HERMES_HOME (default ``~/.dxrk``)."""
+    """Load .env from DXRK_HOME (default ``~/.dxrk``)."""
     from dxrk_cli.env_loader import load_dxrk_dotenv
 
     dxrk_home = get_dxrk_home()

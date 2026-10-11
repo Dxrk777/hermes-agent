@@ -2,7 +2,7 @@
 """Memento card storage, spaced-repetition engine, and CSV I/O.
 
 Stdlib-only. All output is JSON for agent parsing.
-Data file: $HERMES_HOME/skills/productivity/memento-flashcards/data/cards.json
+Data file: $DXRK_HOME/skills/productivity/memento-flashcards/data/cards.json
 """
 
 import argparse
@@ -15,7 +15,10 @@ import uuid
 from datetime import datetime, timedelta, timezone
 from pathlib import Path
 
-_HERMES_HOME = Path(os.environ.get("HERMES_HOME", Path.home() / ".dxrk"))
+_DXRK_HOME = Path(
+    os.environ.get("DXRK_HOME", os.environ.get("HERMES_HOME", Path.home() / ".dxrk"))
+)
+_HERMES_HOME = _DXRK_HOME  # deprecated alias
 DATA_DIR = _HERMES_HOME / "skills" / "productivity" / "memento-flashcards" / "data"
 CARDS_FILE = DATA_DIR / "cards.json"
 

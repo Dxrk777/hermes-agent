@@ -75,7 +75,7 @@ try:
 except ImportError:  # pragma: no cover
     fcntl = None  # type: ignore[assignment]
 
-from dxrk_constants import get_dxrk_home
+from dxrk_constants import get_dxrk_home, dxrk_getenv
 
 logger = logging.getLogger(__name__)
 
@@ -750,7 +750,7 @@ def _resolve_effective_accept(
     """
     if accept_hooks_arg:
         return True
-    env = os.environ.get("HERMES_ACCEPT_HOOKS", "").strip().lower()
+    env = dxrk_getenv("DXRK_ACCEPT_HOOKS", "").strip().lower()
     if env in ("1", "true", "yes", "on"):
         return True
     cfg_val = cfg.get("hooks_auto_accept", False)

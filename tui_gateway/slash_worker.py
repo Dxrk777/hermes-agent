@@ -8,6 +8,7 @@ import contextlib
 import io
 import json
 import os
+from dxrk_constants import dxrk_setenv
 import sys
 
 import cli as cli_mod
@@ -49,8 +50,8 @@ def main():
     p.add_argument("--model", default="")
     args = p.parse_args()
 
-    os.environ["HERMES_SESSION_KEY"] = args.session_key
-    os.environ["HERMES_INTERACTIVE"] = "1"
+    dxrk_setenv("DXRK_SESSION_KEY", args.session_key)
+    dxrk_setenv("DXRK_INTERACTIVE", "1")
 
     with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
         cli = HermesCLI(model=args.model or None, compact=True, resume=args.session_key, verbose=False)

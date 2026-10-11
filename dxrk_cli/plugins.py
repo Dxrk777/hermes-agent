@@ -100,6 +100,7 @@ def _get_disabled_plugins() -> set:
     """
     try:
         from dxrk_cli.config import load_config
+
         config = load_config()
         disabled = config.get("plugins", {}).get("disabled", [])
         return set(disabled) if isinstance(disabled, list) else set()
@@ -123,6 +124,7 @@ def _get_enabled_plugins() -> Optional[set]:
     """
     try:
         from dxrk_cli.config import load_config
+
         config = load_config()
         plugins_cfg = config.get("plugins")
         if not isinstance(plugins_cfg, dict):
@@ -155,7 +157,7 @@ class PluginManifest:
     requires_env: List[Union[str, Dict[str, Any]]] = field(default_factory=list)
     provides_tools: List[str] = field(default_factory=list)
     provides_hooks: List[str] = field(default_factory=list)
-    source: str = ""        # "user", "project", or "entrypoint"
+    source: str = ""  # "user", "project", or "entrypoint"
     path: Optional[str] = None
     # Plugin kind — see plugins.py module docstring for semantics.
     # ``standalone`` (default): hooks/tools of its own; opt-in via
@@ -192,6 +194,7 @@ class LoadedPlugin:
 # ---------------------------------------------------------------------------
 # PluginContext  – handed to each plugin's ``register()`` function
 # ---------------------------------------------------------------------------
+
 
 class PluginContext:
     """Facade given to plugins so they can register tools and hooks."""
@@ -246,7 +249,9 @@ class PluginContext:
         """
         cli = self._manager._cli_ref
         if cli is None:
-            logger.warning("inject_message: no CLI reference (not available in gateway mode)")
+            logger.warning(
+                "inject_message: no CLI reference (not available in gateway mode)"
+            )
             return False
 
         msg = content if role == "user" else f"[{role}] {content}"
@@ -322,11 +327,13 @@ class PluginContext:
         # Reject if it conflicts with a built-in command
         try:
             from dxrk_cli.commands import resolve_command
+
             if resolve_command(clean) is not None:
                 logger.warning(
                     "Plugin '%s' tried to register command '/%s' which conflicts "
                     "with a built-in command. Skipping.",
-                    self.manifest.name, clean,
+                    self.manifest.name,
+                    clean,
                 )
                 return
         except Exception:
@@ -390,6 +397,7 @@ class PluginContext:
             return
         # Defer the import to avoid circular deps at module level
         from agent.context_engine import ContextEngine
+
         if not isinstance(engine, ContextEngine):
             logger.warning(
                 "Plugin '%s' tried to register a context engine that does not "
@@ -400,7 +408,8 @@ class PluginContext:
         self._manager._context_engine = engine
         logger.info(
             "Plugin '%s' registered context engine: %s",
-            self.manifest.name, engine.name,
+            self.manifest.name,
+            engine.name,
         )
 
     # -- image gen provider registration ------------------------------------
@@ -427,7 +436,8 @@ class PluginContext:
         register_provider(provider)
         logger.info(
             "Plugin '%s' registered image_gen provider: %s",
-            self.manifest.name, provider.name,
+            self.manifest.name,
+            provider.name,
         )
 
     # -- hook registration --------------------------------------------------
@@ -440,8 +450,7 @@ class PluginContext:
         """
         if hook_name not in VALID_HOOKS:
             logger.warning(
-                "Plugin '%s' registered unknown hook '%s' "
-                "(valid: %s)",
+                "Plugin '%s' registered unknown hook '%s' (valid: %s)",
                 self.manifest.name,
                 hook_name,
                 ", ".join(sorted(VALID_HOOKS)),
@@ -478,9 +487,7 @@ class PluginContext:
                 f"'{self.manifest.name}' automatically)."
             )
         if not name or not _NAMESPACE_RE.match(name):
-            raise ValueError(
-                f"Invalid skill name '{name}'. Must match [a-zA-Z0-9_-]+."
-            )
+            raise ValueError(f"Invalid skill name '{name}'. Must match [a-zA-Z0-9_-]+.")
         if not path.exists():
             raise FileNotFoundError(f"SKILL.md not found at {path}")
 
@@ -493,13 +500,15 @@ class PluginContext:
         }
         logger.debug(
             "Plugin %s registered skill: %s",
-            self.manifest.name, qualified,
+            self.manifest.name,
+            qualified,
         )
 
 
 # ---------------------------------------------------------------------------
 # PluginManager
 # ---------------------------------------------------------------------------
+
 
 class PluginManager:
     """Central manager that discovers, loads, and invokes plugins."""
@@ -510,7 +519,9 @@ class PluginManager:
         self._plugin_tool_names: Set[str] = set()
         self._cli_commands: Dict[str, dict] = {}
         self._context_engine = None  # Set by a plugin via register_context_engine()
-        self._plugin_commands: Dict[str, dict] = {}  # Slash commands registered by plugins
+        self._plugin_commands: Dict[
+            str, dict
+        ] = {}  # Slash commands registered by plugins
         self._discovered: bool = False
         self._cli_ref = None  # Set by CLI after plugin discovery
         # Plugin skill registry: qualified name → metadata dict.
@@ -566,7 +577,7 @@ class PluginManager:
         manifests.extend(self._scan_directory(user_dir, source="user"))
 
         # 3. Project plugins (./.dxrk/plugins/)
-        if _env_enabled("HERMES_ENABLE_PROJECT_PLUGINS"):
+        if _env_enabled("DXRK_ENABLE_PROJECT_PLUGINS"):
             project_dir = Path.cwd() / ".dxrk" / "plugins"
             manifests.extend(self._scan_directory(project_dir, source="project"))
 
@@ -624,20 +635,16 @@ class PluginManager:
             # entry-point plugins) is opt-in via plugins.enabled.
             # Accept both the path-derived key and the legacy bare name
             # so existing configs keep working.
-            is_enabled = (
-                enabled is not None
-                and (lookup_key in enabled or manifest.name in enabled)
+            is_enabled = enabled is not None and (
+                lookup_key in enabled or manifest.name in enabled
             )
             if not is_enabled:
                 loaded = LoadedPlugin(manifest=manifest, enabled=False)
-                loaded.error = (
-                    "not enabled in config (run `dxrk plugins enable {}` to activate)"
-                    .format(lookup_key)
+                loaded.error = "not enabled in config (run `dxrk plugins enable {}` to activate)".format(
+                    lookup_key
                 )
                 self._plugins[lookup_key] = loaded
-                logger.debug(
-                    "Skipping '%s' (not in plugins.enabled)", lookup_key
-                )
+                logger.debug("Skipping '%s' (not in plugins.enabled)", lookup_key)
                 continue
             self._load_plugin(manifest)
 
@@ -706,9 +713,7 @@ class PluginManager:
                 manifest_file = child / "plugin.yml"
 
             if manifest_file.exists():
-                manifest = self._parse_manifest(
-                    manifest_file, child, source, prefix
-                )
+                manifest = self._parse_manifest(manifest_file, child, source, prefix)
                 if manifest is not None:
                     manifests.append(manifest)
                 continue
@@ -760,7 +765,9 @@ class PluginManager:
             if kind not in _VALID_PLUGIN_KINDS:
                 logger.warning(
                     "Plugin %s: unknown kind '%s' (valid: %s); treating as 'standalone'",
-                    key, raw_kind, ", ".join(sorted(_VALID_PLUGIN_KINDS)),
+                    key,
+                    raw_kind,
+                    ", ".join(sorted(_VALID_PLUGIN_KINDS)),
                 )
                 kind = "standalone"
 
@@ -860,8 +867,10 @@ class PluginManager:
                 ctx = PluginContext(manifest, self)
                 register_fn(ctx)
                 loaded.tools_registered = [
-                    t for t in self._plugin_tool_names
-                    if t not in {
+                    t
+                    for t in self._plugin_tool_names
+                    if t
+                    not in {
                         n
                         for name, p in self._plugins.items()
                         for n in p.tools_registered
@@ -880,7 +889,8 @@ class PluginManager:
                     }
                 )
                 loaded.commands_registered = [
-                    c for c in self._plugin_commands
+                    c
+                    for c in self._plugin_commands
                     if self._plugin_commands[c].get("plugin") == manifest.name
                 ]
                 loaded.enabled = True
@@ -1065,7 +1075,6 @@ def invoke_hook(hook_name: str, **kwargs: Any) -> List[Any]:
     Returns a list of non-``None`` return values from plugin callbacks.
     """
     return get_plugin_manager().invoke_hook(hook_name, **kwargs)
-
 
 
 def get_pre_tool_call_block_message(

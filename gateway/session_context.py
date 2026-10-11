@@ -1,8 +1,8 @@
 """
-Session-scoped context variables for the Hermes gateway.
+Session-scoped context variables for the Dxrk gateway.
 
 Replaces the previous ``os.environ``-based session state
-(``HERMES_SESSION_PLATFORM``, ``HERMES_SESSION_CHAT_ID``, etc.) with
+(``DXRK_SESSION_PLATFORM``, ``DXRK_SESSION_CHAT_ID``, etc.) with
 Python's ``contextvars.ContextVar``.
 
 **Why this matters**
@@ -10,7 +10,7 @@ Python's ``contextvars.ContextVar``.
 The gateway processes messages concurrently via ``asyncio``.  When two
 messages arrive at the same time the old code did:
 
-    os.environ["HERMES_SESSION_THREAD_ID"] = str(context.source.thread_id)
+    os.environ["DXRK_SESSION_THREAD_ID"] = str(context.source.thread_id)
 
 Because ``os.environ`` is *process-global*, Message A's value was
 silently overwritten by Message B before Message A's agent finished
@@ -24,8 +24,10 @@ so concurrent messages never interfere.
 **Backward compatibility**
 
 The public helper ``get_session_env(name, default="")`` mirrors the old
-``os.getenv("HERMES_SESSION_*", ...)`` calls.  Existing tool code only
-needs to replace the import + call site:
+``os.getenv("DXRK_SESSION_*", ...)`` calls.  ``DXRK_*`` names are
+canonical; the legacy ``HERMES_*`` names resolve to the same variables
+(deprecated fallback).  Existing tool code only needs to replace the
+import + call site:
 
     # before
     import os
@@ -33,7 +35,7 @@ needs to replace the import + call site:
 
     # after
     from gateway.session_context import get_session_env
-    platform = get_session_env("HERMES_SESSION_PLATFORM", "")
+    platform = get_session_env("DXRK_SESSION_PLATFORM", "")
 """
 
 from contextvars import ContextVar
@@ -45,30 +47,42 @@ from typing import Any
 _UNSET: Any = object()
 
 # ---------------------------------------------------------------------------
-# Per-task session variables
+# Per-task session variables (canonical DXRK_* names)
 # ---------------------------------------------------------------------------
 
-_SESSION_PLATFORM: ContextVar = ContextVar("HERMES_SESSION_PLATFORM", default=_UNSET)
-_SESSION_CHAT_ID: ContextVar = ContextVar("HERMES_SESSION_CHAT_ID", default=_UNSET)
-_SESSION_CHAT_NAME: ContextVar = ContextVar("HERMES_SESSION_CHAT_NAME", default=_UNSET)
-_SESSION_THREAD_ID: ContextVar = ContextVar("HERMES_SESSION_THREAD_ID", default=_UNSET)
-_SESSION_USER_ID: ContextVar = ContextVar("HERMES_SESSION_USER_ID", default=_UNSET)
-_SESSION_USER_NAME: ContextVar = ContextVar("HERMES_SESSION_USER_NAME", default=_UNSET)
-_SESSION_KEY: ContextVar = ContextVar("HERMES_SESSION_KEY", default=_UNSET)
+_SESSION_PLATFORM: ContextVar = ContextVar("DXRK_SESSION_PLATFORM", default=_UNSET)
+_SESSION_CHAT_ID: ContextVar = ContextVar("DXRK_SESSION_CHAT_ID", default=_UNSET)
+_SESSION_CHAT_NAME: ContextVar = ContextVar("DXRK_SESSION_CHAT_NAME", default=_UNSET)
+_SESSION_THREAD_ID: ContextVar = ContextVar("DXRK_SESSION_THREAD_ID", default=_UNSET)
+_SESSION_USER_ID: ContextVar = ContextVar("DXRK_SESSION_USER_ID", default=_UNSET)
+_SESSION_USER_NAME: ContextVar = ContextVar("DXRK_SESSION_USER_NAME", default=_UNSET)
+_SESSION_KEY: ContextVar = ContextVar("DXRK_SESSION_KEY", default=_UNSET)
 
 # Cron auto-delivery vars — set per-job in run_job() so concurrent jobs
 # don't clobber each other's delivery targets.
 _CRON_AUTO_DELIVER_PLATFORM: ContextVar = ContextVar(
-    "HERMES_CRON_AUTO_DELIVER_PLATFORM", default=_UNSET
+    "DXRK_CRON_AUTO_DELIVER_PLATFORM", default=_UNSET
 )
 _CRON_AUTO_DELIVER_CHAT_ID: ContextVar = ContextVar(
-    "HERMES_CRON_AUTO_DELIVER_CHAT_ID", default=_UNSET
+    "DXRK_CRON_AUTO_DELIVER_CHAT_ID", default=_UNSET
 )
 _CRON_AUTO_DELIVER_THREAD_ID: ContextVar = ContextVar(
-    "HERMES_CRON_AUTO_DELIVER_THREAD_ID", default=_UNSET
+    "DXRK_CRON_AUTO_DELIVER_THREAD_ID", default=_UNSET
 )
 
 _VAR_MAP = {
+    "DXRK_SESSION_PLATFORM": _SESSION_PLATFORM,
+    "DXRK_SESSION_CHAT_ID": _SESSION_CHAT_ID,
+    "DXRK_SESSION_CHAT_NAME": _SESSION_CHAT_NAME,
+    "DXRK_SESSION_THREAD_ID": _SESSION_THREAD_ID,
+    "DXRK_SESSION_USER_ID": _SESSION_USER_ID,
+    "DXRK_SESSION_USER_NAME": _SESSION_USER_NAME,
+    "DXRK_SESSION_KEY": _SESSION_KEY,
+    "DXRK_CRON_AUTO_DELIVER_PLATFORM": _CRON_AUTO_DELIVER_PLATFORM,
+    "DXRK_CRON_AUTO_DELIVER_CHAT_ID": _CRON_AUTO_DELIVER_CHAT_ID,
+    "DXRK_CRON_AUTO_DELIVER_THREAD_ID": _CRON_AUTO_DELIVER_THREAD_ID,
+    # Legacy HERMES_* aliases — same ContextVars, for backward compat with
+    # callers that still use the pre-rename names. Canonical names are DXRK_*.
     "HERMES_SESSION_PLATFORM": _SESSION_PLATFORM,
     "HERMES_SESSION_CHAT_ID": _SESSION_CHAT_ID,
     "HERMES_SESSION_CHAT_NAME": _SESSION_CHAT_NAME,
@@ -79,16 +93,14 @@ _VAR_MAP = {
     "HERMES_CRON_AUTO_DELIVER_PLATFORM": _CRON_AUTO_DELIVER_PLATFORM,
     "HERMES_CRON_AUTO_DELIVER_CHAT_ID": _CRON_AUTO_DELIVER_CHAT_ID,
     "HERMES_CRON_AUTO_DELIVER_THREAD_ID": _CRON_AUTO_DELIVER_THREAD_ID,
-    # Legacy DXRK_* aliases — same ContextVars, for backward compat with
-    # callers that still use the pre-rename names. Canonical names are HERMES_*.
-    "DXRK_SESSION_PLATFORM": _SESSION_PLATFORM,
-    "DXRK_SESSION_CHAT_ID": _SESSION_CHAT_ID,
-    "DXRK_SESSION_CHAT_NAME": _SESSION_CHAT_NAME,
-    "DXRK_SESSION_THREAD_ID": _SESSION_THREAD_ID,
-    "DXRK_SESSION_USER_ID": _SESSION_USER_ID,
-    "DXRK_SESSION_USER_NAME": _SESSION_USER_NAME,
-    "DXRK_SESSION_KEY": _SESSION_KEY,
 }
+
+
+def _canonical_name(name: str) -> str:
+    """Map a legacy ``HERMES_*`` name to its canonical ``DXRK_*`` form."""
+    if name.startswith("HERMES_"):
+        return "DXRK_" + name[len("HERMES_") :]
+    return name
 
 
 def set_session_vars(
@@ -144,9 +156,11 @@ def clear_session_vars(tokens: list) -> None:
 
 
 def get_session_env(name: str, default: str = "") -> str:
-    """Read a session context variable by its legacy ``HERMES_SESSION_*`` name.
+    """Read a session context variable by its ``DXRK_SESSION_*`` name.
 
-    Drop-in replacement for ``os.getenv("HERMES_SESSION_*", default)``.
+    Drop-in replacement for ``os.getenv("DXRK_SESSION_*", default)``.
+    Legacy ``HERMES_SESSION_*`` / ``HERMES_CRON_*`` names resolve to the
+    same variables (deprecated fallback).
 
     Resolution order:
     1. Context variable (set by the gateway for concurrency-safe access).
@@ -155,7 +169,8 @@ def get_session_env(name: str, default: str = "") -> str:
        returned — **no fallback to os.environ**.
     2. ``os.environ`` (only when the context variable was never set in
        this context — i.e. CLI, cron scheduler, and test processes that
-       don't use ``set_session_vars`` at all).
+       don't use ``set_session_vars`` at all).  Canonical ``DXRK_*`` is
+       checked first, then legacy ``HERMES_*``.
     3. *default*
     """
     import os
@@ -165,5 +180,16 @@ def get_session_env(name: str, default: str = "") -> str:
         value = var.get()
         if value is not _UNSET:
             return value
-    # Fall back to os.environ for CLI, cron, and test compatibility
-    return os.getenv(name, default)
+    # Fall back to os.environ for CLI, cron, and test compatibility.
+    # Canonical DXRK_* first, legacy HERMES_* second.
+    if name.startswith("HERMES_"):
+        canonical = _canonical_name(name)
+        if canonical in os.environ:
+            return os.environ[canonical]
+        return os.environ.get(name, default)
+    if name.startswith("DXRK_"):
+        if name in os.environ:
+            return os.environ[name]
+        legacy = "HERMES_" + name[len("DXRK_") :]
+        return os.environ.get(legacy, default)
+    return os.environ.get(name, default)

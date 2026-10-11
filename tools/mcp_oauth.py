@@ -36,6 +36,7 @@ import asyncio
 import json
 import logging
 import os
+from dxrk_constants import dxrk_getenv
 import re
 import socket
 import sys
@@ -101,7 +102,7 @@ def _get_token_dir() -> Path:
         from dxrk_constants import get_dxrk_home
         base = Path(get_dxrk_home())
     except ImportError:
-        base = Path(os.environ.get("HERMES_HOME", str(Path.home() / ".dxrk")))
+        base = Path(dxrk_getenv("DXRK_HOME", str(Path.home() / ".dxrk")))
     return base / "mcp-tokens"
 
 

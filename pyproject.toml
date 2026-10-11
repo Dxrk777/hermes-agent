@@ -126,9 +126,12 @@ all = [
 ]
 
 [project.scripts]
-hermes = "dxrk_cli.main:main"
+# Canonical entry points. `hermes` / `hermes-acp` are deprecated aliases
+# kept for backward compatibility with existing installs and scripts.
 dxrk = "dxrk_cli.main:main"
 dxrk-agent = "run_agent:main"
+dxrk-acp = "acp_adapter.entry:main"
+hermes = "dxrk_cli.main:main"
 hermes-acp = "acp_adapter.entry:main"
 
 [tool.setuptools]

@@ -36,7 +36,9 @@ def _dbg(label: str, data: bytes) -> None:
     if DEBUG_MODE:
         hex_str = " ".join(f"{b:02x}" for b in data[:64])
         ellipsis = "..." if len(data) > 64 else ""
-        logger.debug("[yuanbao_proto] %s (%dB): %s", label, len(data), hex_str + ellipsis)
+        logger.debug(
+            "[yuanbao_proto] %s (%dB): %s", label, len(data), hex_str + ellipsis
+        )
 
 
 # ============================================================
@@ -57,10 +59,10 @@ PB_MSG_TYPES = {
 
 # cmd_type 枚举
 CMD_TYPE = {
-    "Request": 0,   # 上行请求
+    "Request": 0,  # 上行请求
     "Response": 1,  # 上行请求的回包
-    "Push": 2,      # 下行推送
-    "PushAck": 3,   # 下行推送的回包（ACK）
+    "Push": 2,  # 下行推送
+    "PushAck": 3,  # 下行推送的回包（ACK）
 }
 
 # 内置命令字
@@ -97,6 +99,9 @@ BIZ_SERVICES = {
 
 # dxrk instance_id（固定值 17）
 HERMES_INSTANCE_ID = 17
+# NOTE: intentionally NOT renamed — this constant is part of the Yuanbao
+# client wire protocol (encoded into device buffers).  Renaming the symbol
+# would break the protocol mapping; DXRK_* canonicalization stops here.
 
 # Reply Heartbeat 状态常量
 WS_HEARTBEAT_RUNNING = 1
@@ -108,7 +113,7 @@ WS_HEARTBEAT_FINISH = 2
 
 _seq_lock = threading.Lock()
 _seq_counter = 0
-_SEQ_MAX = 2 ** 32 - 1  # uint32 上限
+_SEQ_MAX = 2**32 - 1  # uint32 上限
 
 
 def next_seq_no() -> int:
@@ -207,15 +212,15 @@ def _parse_fields(data: bytes) -> list[tuple[int, int, bytes | int]]:
             fields.append((field_number, wire_type, val))
         elif wire_type == WT_LEN:
             length, pos = _decode_varint(data, pos)
-            val = data[pos: pos + length]
+            val = data[pos : pos + length]
             pos += length
             fields.append((field_number, wire_type, val))
         elif wire_type == WT_64BIT:
-            val = data[pos: pos + 8]
+            val = data[pos : pos + 8]
             pos += 8
             fields.append((field_number, wire_type, val))
         elif wire_type == WT_32BIT:
-            val = data[pos: pos + 4]
+            val = data[pos : pos + 4]
             pos += 4
             fields.append((field_number, wire_type, val))
         else:
@@ -375,10 +380,19 @@ def decode_conn_msg(data: bytes) -> dict:
     fdict = _fields_to_dict(_parse_fields(data))
     head_bytes = _get_bytes(fdict, 1)
     payload = _get_bytes(fdict, 2)
-    head = _decode_head(head_bytes) if head_bytes else {
-        "cmd_type": 0, "cmd": "", "seq_no": 0, "msg_id": "", "module": "",
-        "need_ack": False, "status": 0,
-    }
+    head = (
+        _decode_head(head_bytes)
+        if head_bytes
+        else {
+            "cmd_type": 0,
+            "cmd": "",
+            "seq_no": 0,
+            "msg_id": "",
+            "module": "",
+            "need_ack": False,
+            "status": 0,
+        }
+    )
     return {
         "msg_type": head["cmd_type"],
         "seq_no": head["seq_no"],
@@ -498,8 +512,14 @@ def decode_biz_msg(data: bytes) -> dict:
 def _encode_msg_content(content: dict) -> bytes:
     buf = b""
     for fn, key in [
-        (1, "text"), (2, "uuid"), (4, "data"), (5, "desc"),
-        (6, "ext"), (7, "sound"), (10, "url"), (12, "file_name"),
+        (1, "text"),
+        (2, "uuid"),
+        (4, "data"),
+        (5, "desc"),
+        (6, "ext"),
+        (7, "sound"),
+        (10, "url"),
+        (12, "file_name"),
     ]:
         v = content.get(key, "")
         if v:
@@ -526,8 +546,14 @@ def _decode_msg_content(data: bytes) -> dict:
     fdict = _fields_to_dict(_parse_fields(data))
     content: dict = {}
     for fn, key in [
-        (1, "text"), (2, "uuid"), (4, "data"), (5, "desc"),
-        (6, "ext"), (7, "sound"), (10, "url"), (12, "file_name"),
+        (1, "text"),
+        (2, "uuid"),
+        (4, "data"),
+        (5, "desc"),
+        (6, "ext"),
+        (7, "sound"),
+        (10, "url"),
+        (12, "file_name"),
     ]:
         v = _get_string(fdict, fn)
         if v:
@@ -675,7 +701,9 @@ def decode_inbound_push(data: bytes) -> Optional[dict]:
             msg_body.append(_decode_msg_body_element(el_bytes))
 
         log_ext_bytes = _get_bytes(fdict, 20)
-        trace_id = _decode_log_ext(log_ext_bytes).get("trace_id", "") if log_ext_bytes else ""
+        trace_id = (
+            _decode_log_ext(log_ext_bytes).get("trace_id", "") if log_ext_bytes else ""
+        )
 
         recall_seq_raw = _get_repeated_bytes(fdict, 17)
         recall_msg_seq_list = [_decode_im_msg_seq(b) for b in recall_seq_raw] or None
@@ -713,6 +741,7 @@ def decode_inbound_push(data: bytes) -> Optional[dict]:
 # ============================================================
 # 出站消息编码
 # ============================================================
+
 
 def _encode_send_c2c_req(
     to_account: str,
@@ -910,6 +939,7 @@ def encode_send_group_message(
 # AuthBind / Ping 帮助函数
 # ============================================================
 
+
 def encode_auth_bind(
     biz_id: str,
     uid: str,
@@ -992,6 +1022,7 @@ def encode_push_ack(original_head: dict) -> bytes:
 # Heartbeat 编码
 # ============================================================
 
+
 def encode_send_private_heartbeat(
     from_account: str,
     to_account: str,
@@ -1036,6 +1067,7 @@ def encode_send_group_heartbeat(
       5: heartbeat    (varint: RUNNING=1, FINISH=2)
     """
     import time as _time
+
     ts = send_time or int(_time.time() * 1000)
     buf = (
         _encode_field(1, WT_LEN, _encode_string(from_account))
@@ -1056,6 +1088,7 @@ def encode_send_group_heartbeat(
 # ============================================================
 # 群信息查询
 # ============================================================
+
 
 def encode_query_group_info(group_code: str) -> bytes:
     """
@@ -1128,6 +1161,7 @@ def decode_query_group_info_rsp(data: bytes) -> Optional[dict]:
 # ============================================================
 # 群成员列表查询
 # ============================================================
+
 
 def encode_get_group_member_list(
     group_code: str,

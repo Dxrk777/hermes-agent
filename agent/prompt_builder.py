@@ -12,7 +12,7 @@ import threading
 from collections import OrderedDict
 from pathlib import Path
 
-from dxrk_constants import get_dxrk_home, get_skills_dir, is_wsl
+from dxrk_constants import get_dxrk_home, get_skills_dir, is_wsl, dxrk_getenv
 from typing import Optional
 
 from agent.skill_utils import (
@@ -142,7 +142,7 @@ DEFAULT_AGENT_IDENTITY = (
 )
 
 HERMES_AGENT_HELP_GUIDANCE = (
-    "If the user asks about configuring, setting up, or using Hermes Agent "
+    "If the user asks about configuring, setting up, or using Dxrk Agent "
     "itself, load the `dxrk-agent` skill with skill_view(name='dxrk-agent') "
     "before answering. Docs: https://dxrk-agent.nousresearch.com/docs"
 )
@@ -676,7 +676,7 @@ def build_skills_system_prompt(
     # produce distinct cache entries (gateway serves multiple platforms).
     from gateway.session_context import get_session_env
     _platform_hint = (
-        os.environ.get("HERMES_PLATFORM")
+        dxrk_getenv("DXRK_PLATFORM")
         or get_session_env("HERMES_SESSION_PLATFORM")
         or ""
     )

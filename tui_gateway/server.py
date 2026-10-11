@@ -15,7 +15,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any, Optional
 
-from dxrk_constants import get_dxrk_home
+from dxrk_constants import get_dxrk_home, dxrk_getenv, dxrk_setenv, dxrk_unsetenv
 from dxrk_cli.env_loader import load_dxrk_dotenv
 from tui_gateway.transport import (
     StdioTransport,
@@ -126,7 +126,7 @@ _cfg_cache: dict | None = None
 _cfg_mtime: float | None = None
 _cfg_path = None
 _SLASH_WORKER_TIMEOUT_S = max(
-    5.0, float(os.environ.get("HERMES_TUI_SLASH_TIMEOUT_S", "45") or 45)
+    5.0, float(dxrk_getenv("DXRK_TUI_SLASH_TIMEOUT_S", "45") or 45)
 )
 
 # ── Async RPC dispatch (#12546) ──────────────────────────────────────
@@ -150,7 +150,7 @@ _LONG_HANDLERS = frozenset(
 )
 
 _pool = concurrent.futures.ThreadPoolExecutor(
-    max_workers=max(2, int(os.environ.get("HERMES_TUI_RPC_POOL_WORKERS", "4") or 4)),
+    max_workers=max(2, int(dxrk_getenv("DXRK_TUI_RPC_POOL_WORKERS", "4") or 4)),
     thread_name_prefix="tui-rpc",
 )
 atexit.register(lambda: _pool.shutdown(wait=False, cancel_futures=True))
@@ -554,9 +554,9 @@ def _clear_session_context(tokens: list) -> None:
 
 def _enable_gateway_prompts() -> None:
     """Route approvals through gateway callbacks instead of CLI input()."""
-    os.environ["HERMES_GATEWAY_SESSION"] = "1"
-    os.environ["HERMES_EXEC_ASK"] = "1"
-    os.environ["HERMES_INTERACTIVE"] = "1"
+    dxrk_setenv("DXRK_GATEWAY_SESSION", "1")
+    dxrk_setenv("DXRK_EXEC_ASK", "1")
+    dxrk_setenv("DXRK_INTERACTIVE", "1")
 
 
 # ── Blocking prompt factory ──────────────────────────────────────────
@@ -612,8 +612,8 @@ def resolve_skin() -> dict:
 
 def _resolve_model() -> str:
     env = (
-        os.environ.get("HERMES_MODEL", "")
-        or os.environ.get("HERMES_INFERENCE_MODEL", "")
+        dxrk_getenv("DXRK_MODEL", "")
+        or dxrk_getenv("DXRK_INFERENCE_MODEL", "")
     ).strip()
     if env:
         return env
@@ -627,13 +627,13 @@ def _resolve_model() -> str:
 
 def _resolve_startup_runtime() -> tuple[str, str | None]:
     model = _resolve_model()
-    explicit_provider = os.environ.get("HERMES_TUI_PROVIDER", "").strip()
+    explicit_provider = dxrk_getenv("DXRK_TUI_PROVIDER", "").strip()
     if explicit_provider:
         return model, explicit_provider
 
     explicit_model = (
-        os.environ.get("HERMES_MODEL", "")
-        or os.environ.get("HERMES_INFERENCE_MODEL", "")
+        dxrk_getenv("DXRK_MODEL", "")
+        or dxrk_getenv("DXRK_INFERENCE_MODEL", "")
     ).strip()
     if not explicit_model:
         return model, None
@@ -648,7 +648,7 @@ def _resolve_startup_runtime() -> tuple[str, str | None]:
                 if isinstance(cfg, dict)
                 else ""
             )
-            or os.environ.get("HERMES_INFERENCE_PROVIDER", "").strip().lower()
+            or dxrk_getenv("DXRK_INFERENCE_PROVIDER", "").strip().lower()
             or "auto"
         )
         detected = detect_static_provider_for_model(explicit_model, current_provider)
@@ -841,16 +841,16 @@ def _apply_model_switch(sid: str, session: dict, raw_input: str) -> dict:
         _restart_slash_worker(session)
         _emit("session.info", sid, _session_info(agent))
 
-    os.environ["HERMES_MODEL"] = result.new_model
-    os.environ["HERMES_INFERENCE_MODEL"] = result.new_model
+    dxrk_setenv("DXRK_MODEL", result.new_model)
+    dxrk_setenv("DXRK_INFERENCE_MODEL", result.new_model)
     # Keep the process-level provider env var in sync with the user's explicit
     # choice so any ambient re-resolution (credential pool refresh, compressor
     # rebuild, aux clients) resolves to the new provider instead of the
     # original one persisted in config or env.
     if result.target_provider:
-        os.environ["HERMES_INFERENCE_PROVIDER"] = result.target_provider
-        if os.environ.get("HERMES_TUI_PROVIDER"):
-            os.environ["HERMES_TUI_PROVIDER"] = result.target_provider
+        dxrk_setenv("DXRK_INFERENCE_PROVIDER", result.target_provider)
+        if dxrk_getenv("DXRK_TUI_PROVIDER"):
+            dxrk_setenv("DXRK_TUI_PROVIDER", result.target_provider)
     if persist_global:
         _persist_model_switch(result)
     return {"value": result.new_model, "warning": result.warning_message or ""}
@@ -2989,12 +2989,12 @@ def _(rid, params: dict) -> dict:
                     enable_session_yolo(session["session_key"])
                     nv = "1"
             else:
-                current = bool(os.environ.get("HERMES_YOLO_MODE"))
+                current = bool(dxrk_getenv("DXRK_YOLO_MODE"))
                 if current:
-                    os.environ.pop("HERMES_YOLO_MODE", None)
+                    dxrk_unsetenv("DXRK_YOLO_MODE")
                     nv = "0"
                 else:
-                    os.environ["HERMES_YOLO_MODE"] = "1"
+                    dxrk_setenv("DXRK_YOLO_MODE", "1")
                     nv = "1"
             return _ok(rid, {"key": key, "value": nv})
         except Exception as e:
@@ -4334,12 +4334,12 @@ def _voice_mode_enabled() -> bool:
     avoids the TUI auto-starting in REC the next time the user opens it
     just because they happened to enable voice in a prior session.
     """
-    return os.environ.get("HERMES_VOICE", "").strip() == "1"
+    return dxrk_getenv("DXRK_VOICE", "").strip() == "1"
 
 
 def _voice_tts_enabled() -> bool:
     """Whether agent replies should be spoken back via TTS (runtime only)."""
-    return os.environ.get("HERMES_VOICE_TTS", "").strip() == "1"
+    return dxrk_getenv("DXRK_VOICE_TTS", "").strip() == "1"
 
 
 @method("voice.toggle")
@@ -4386,7 +4386,7 @@ def _(rid, params: dict) -> dict:
         # Runtime-only flag (CLI parity) — no _write_config_key, so the
         # next TUI launch starts with voice OFF instead of auto-REC from a
         # persisted stale toggle.
-        os.environ["HERMES_VOICE"] = "1" if enabled else "0"
+        dxrk_setenv("DXRK_VOICE", "1" if enabled else "0")
 
         if not enabled:
             # Disabling the mode must tear the continuous loop down; the
@@ -4407,7 +4407,7 @@ def _(rid, params: dict) -> dict:
             return _err(rid, 4014, "enable voice mode first: /voice on")
         new_value = not _voice_tts_enabled()
         # Runtime-only flag (CLI parity) — see voice.toggle on/off above.
-        os.environ["HERMES_VOICE_TTS"] = "1" if new_value else "0"
+        dxrk_setenv("DXRK_VOICE_TTS", "1" if new_value else "0")
         return _ok(rid, {"enabled": True, "tts": new_value})
 
     return _err(rid, 4013, f"unknown voice action: {action}")
@@ -4692,9 +4692,9 @@ def _(rid, params: dict) -> dict:
     try:
         cfg = _load_cfg()
         model = _resolve_model()
-        api_key = os.environ.get("HERMES_API_KEY", "") or cfg.get("api_key", "")
+        api_key = dxrk_getenv("DXRK_API_KEY", "") or cfg.get("api_key", "")
         masked = f"****{api_key[-4:]}" if len(api_key) > 4 else "(not set)"
-        base_url = os.environ.get("HERMES_BASE_URL", "") or cfg.get("base_url", "")
+        base_url = dxrk_getenv("DXRK_BASE_URL", "") or cfg.get("base_url", "")
 
         sections = [
             {

@@ -1,11 +1,13 @@
 #!/usr/bin/env python3
 """
-Hermes Agent CLI launcher.
+Dxrk Agent CLI launcher (deprecated ``hermes`` alias).
 
-This wrapper should behave like the installed `hermes` command, including
+Kept for backward compatibility with scripts and muscle memory that
+invoke ``./hermes``.  New code should call ``dxrk`` / ``dxrk_cli.main``.
+This wrapper behaves like the installed `dxrk` command, including
 subcommands such as `gateway`, `cron`, and `doctor`.
 """
 
 if __name__ == "__main__":
-    from hermes_cli.main import main
+    from dxrk_cli.main import main
     main()

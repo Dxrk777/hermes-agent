@@ -12,7 +12,7 @@ import sys
 from pathlib import Path
 from typing import Any, Dict, List, Optional, Set, Tuple
 
-from dxrk_constants import get_config_path, get_skills_dir
+from dxrk_constants import get_config_path, get_skills_dir, dxrk_getenv
 
 logger = logging.getLogger(__name__)
 
@@ -148,7 +148,7 @@ def get_disabled_skill_names(platform: str | None = None) -> Set[str]:
     from gateway.session_context import get_session_env
     resolved_platform = (
         platform
-        or os.getenv("HERMES_PLATFORM")
+        or dxrk_getenv("DXRK_PLATFORM")
         or get_session_env("HERMES_SESSION_PLATFORM")
     )
     if resolved_platform:

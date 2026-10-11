@@ -48,7 +48,7 @@ from openai import OpenAI
 
 from agent.credential_pool import load_pool
 from dxrk_cli.config import get_dxrk_home
-from dxrk_constants import OPENROUTER_BASE_URL
+from dxrk_constants import OPENROUTER_BASE_URL, dxrk_getenv
 from utils import base_url_host_matches, base_url_hostname, normalize_proxy_env_vars
 
 logger = logging.getLogger(__name__)
@@ -774,8 +774,8 @@ def _resolve_nous_runtime_api(*, force_refresh: bool = False) -> Optional[tuple[
         from dxrk_cli.auth import resolve_nous_runtime_credentials
 
         creds = resolve_nous_runtime_credentials(
-            min_key_ttl_seconds=max(60, int(os.getenv("HERMES_NOUS_MIN_KEY_TTL_SECONDS", "1800"))),
-            timeout_seconds=float(os.getenv("HERMES_NOUS_TIMEOUT_SECONDS", "15")),
+            min_key_ttl_seconds=max(60, int(dxrk_getenv("DXRK_NOUS_MIN_KEY_TTL_SECONDS", "1800"))),
+            timeout_seconds=float(dxrk_getenv("DXRK_NOUS_TIMEOUT_SECONDS", "15")),
             force_mint=force_refresh,
         )
     except Exception as exc:
@@ -1446,8 +1446,8 @@ def _refresh_provider_credentials(provider: str) -> bool:
             from dxrk_cli.auth import resolve_nous_runtime_credentials
 
             creds = resolve_nous_runtime_credentials(
-                min_key_ttl_seconds=max(60, int(os.getenv("HERMES_NOUS_MIN_KEY_TTL_SECONDS", "1800"))),
-                timeout_seconds=float(os.getenv("HERMES_NOUS_TIMEOUT_SECONDS", "15")),
+                min_key_ttl_seconds=max(60, int(dxrk_getenv("DXRK_NOUS_MIN_KEY_TTL_SECONDS", "1800"))),
+                timeout_seconds=float(dxrk_getenv("DXRK_NOUS_TIMEOUT_SECONDS", "15")),
                 force_mint=True,
             )
             if not str(creds.get("api_key", "") or "").strip():

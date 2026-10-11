@@ -29,8 +29,20 @@ def is_truthy_value(value: Any, default: bool = False) -> bool:
 
 
 def env_var_enabled(name: str, default: str = "") -> bool:
-    """Return True when an environment variable is set to a truthy value."""
-    return is_truthy_value(os.getenv(name, default), default=False)
+    """Return True when an environment variable is set to a truthy value.
+
+    ``DXRK_*`` names are canonical; the ``HERMES_*`` equivalent is checked
+    as a deprecated fallback (and vice versa for legacy callers).
+    """
+    value = os.getenv(name, None)
+    if value is None:
+        if name.startswith("DXRK_"):
+            value = os.getenv("HERMES_" + name[len("DXRK_") :], None)
+        elif name.startswith("HERMES_"):
+            value = os.getenv("DXRK_" + name[len("HERMES_") :], None)
+    if value is None:
+        value = default
+    return is_truthy_value(value, default=False)
 
 
 def _preserve_file_mode(path: Path) -> "int | None":
@@ -145,7 +157,9 @@ def atomic_yaml_write(
     )
     try:
         with os.fdopen(fd, "w", encoding="utf-8") as f:
-            yaml.dump(data, f, default_flow_style=default_flow_style, sort_keys=sort_keys)
+            yaml.dump(
+                data, f, default_flow_style=default_flow_style, sort_keys=sort_keys
+            )
             if extra_content:
                 f.write(extra_content)
             f.flush()
@@ -201,8 +215,12 @@ def env_bool(key: str, default: bool = False) -> bool:
 
 
 _PROXY_ENV_KEYS = (
-    "HTTPS_PROXY", "HTTP_PROXY", "ALL_PROXY",
-    "https_proxy", "http_proxy", "all_proxy",
+    "HTTPS_PROXY",
+    "HTTP_PROXY",
+    "ALL_PROXY",
+    "https_proxy",
+    "http_proxy",
+    "all_proxy",
 )
 
 
@@ -217,7 +235,7 @@ def normalize_proxy_url(proxy_url: str | None) -> str | None:
     if not candidate:
         return None
     if candidate.lower().startswith("socks://"):
-        return f"socks5://{candidate[len('socks://'):]}"
+        return f"socks5://{candidate[len('socks://') :]}"
     return candidate
 
 

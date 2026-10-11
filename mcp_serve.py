@@ -1,5 +1,5 @@
 """
-Hermes MCP Server — expose messaging conversations as MCP tools.
+Dxrk MCP Server — expose messaging conversations as MCP tools.
 
 Starts a stdio MCP server that lets any MCP client (Claude Code, Cursor, Codex,
 etc.) list conversations, read message history, send messages, poll for live
@@ -10,7 +10,7 @@ Matches OpenClaw's 9-tool MCP channel bridge surface:
   events_poll, events_wait, messages_send, permissions_list_open,
   permissions_respond
 
-Plus: channels_list (Hermes-specific extra)
+Plus: channels_list (Dxrk-specific extra)
 
 Usage:
     dxrk mcp serve
@@ -32,6 +32,7 @@ from __future__ import annotations
 import json
 import logging
 import os
+from dxrk_constants import dxrk_getenv
 import re
 import sys
 import threading
@@ -60,12 +61,12 @@ except ImportError:
 # ---------------------------------------------------------------------------
 
 def _get_sessions_dir() -> Path:
-    """Return the sessions directory using HERMES_HOME."""
+    """Return the sessions directory using DXRK_HOME."""
     try:
         from dxrk_constants import get_dxrk_home
         return get_dxrk_home() / "sessions"
     except ImportError:
-        return Path(os.environ.get("HERMES_HOME", Path.home() / ".dxrk")) / "sessions"
+        return Path(dxrk_getenv("DXRK_HOME", Path.home() / ".dxrk")) / "sessions"
 
 
 def _get_session_db():
@@ -102,7 +103,7 @@ def _load_channel_directory() -> dict:
         directory_file = get_dxrk_home() / "channel_directory.json"
     except ImportError:
         directory_file = Path(
-            os.environ.get("HERMES_HOME", Path.home() / ".dxrk")
+            dxrk_getenv("DXRK_HOME", Path.home() / ".dxrk")
         ) / "channel_directory.json"
 
     if not directory_file.exists():
@@ -186,7 +187,7 @@ class EventBridge:
     """Background poller that watches SessionDB for new messages and
     maintains an in-memory event queue with waiter support.
 
-    This is the Hermes equivalent of OpenClaw's WebSocket gateway bridge.
+    This is the Dxrk equivalent of OpenClaw's WebSocket gateway bridge.
     Instead of WebSocket events, we poll the SQLite database for changes.
     """
 
@@ -346,7 +347,7 @@ class EventBridge:
             from dxrk_constants import get_dxrk_home
             db_file = get_dxrk_home() / "state.db"
         except ImportError:
-            db_file = Path(os.environ.get("HERMES_HOME", Path.home() / ".dxrk")) / "state.db"
+            db_file = Path(dxrk_getenv("DXRK_HOME", Path.home() / ".dxrk")) / "state.db"
 
         try:
             db_mtime = db_file.stat().st_mtime if db_file.exists() else 0.0
@@ -429,7 +430,7 @@ class EventBridge:
 # ---------------------------------------------------------------------------
 
 def create_mcp_server(event_bridge: Optional[EventBridge] = None) -> "FastMCP":
-    """Create and return the Hermes MCP server with all tools registered."""
+    """Create and return the Dxrk MCP server with all tools registered."""
     if not _MCP_SERVER_AVAILABLE:
         raise ImportError(
             "MCP server requires the 'mcp' package. "
@@ -439,7 +440,7 @@ def create_mcp_server(event_bridge: Optional[EventBridge] = None) -> "FastMCP":
     mcp = FastMCP(
         "dxrk",
         instructions=(
-            "Hermes Agent messaging bridge. Use these tools to interact with "
+            "Dxrk Agent messaging bridge. Use these tools to interact with "
             "conversations across Telegram, Discord, Slack, WhatsApp, Signal, "
             "Matrix, and other connected platforms."
         ),
@@ -834,7 +835,7 @@ def create_mcp_server(event_bridge: Optional[EventBridge] = None) -> "FastMCP":
 # ---------------------------------------------------------------------------
 
 def run_mcp_server(verbose: bool = False) -> None:
-    """Start the Hermes MCP server on stdio."""
+    """Start the Dxrk MCP server on stdio."""
     if not _MCP_SERVER_AVAILABLE:
         print(
             "Error: MCP server requires the 'mcp' package.\n"

@@ -69,7 +69,9 @@ class OwnedTwilioNumber:
 
 
 def _dxrk_home() -> Path:
-    return Path(os.environ.get("HERMES_HOME", "~/.dxrk")).expanduser()
+    return Path(
+        os.environ.get("DXRK_HOME", os.environ.get("HERMES_HOME", "~/.dxrk"))
+    ).expanduser()
 
 
 def _env_path() -> Path:
