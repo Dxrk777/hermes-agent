@@ -32,7 +32,7 @@ on CLI, Telegram, Discord, or any platform.
 Define a shorthand first:
 
 ```bash
-GSETUP="python ${HERMES_HOME:-$HOME/.dxrk}/skills/productivity/google-workspace/scripts/setup.py"
+GSETUP="python ${DXRK_HOME:-${HERMES_HOME:-$HOME/.dxrk}}/skills/productivity/google-workspace/scripts/setup.py"
 ```
 
 ### Step 0: Check if already set up
@@ -163,7 +163,7 @@ Should print `AUTHENTICATED`. Setup is complete — token refreshes automaticall
 All commands go through the API script. Set `GAPI` as a shorthand:
 
 ```bash
-GAPI="python ${HERMES_HOME:-$HOME/.dxrk}/skills/productivity/google-workspace/scripts/google_api.py"
+GAPI="python ${DXRK_HOME:-${HERMES_HOME:-$HOME/.dxrk}}/skills/productivity/google-workspace/scripts/google_api.py"
 ```
 
 ### Gmail

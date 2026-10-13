@@ -8,8 +8,9 @@ OK="${GREEN}✔${NC}"; FAIL="${RED}✘${NC}"; WARN="${YELLOW}⚠${NC}"
 
 TWOZERO_URL="https://www.404zero.com/pisang/twozero.tox"
 TOX_PATH="$HOME/Downloads/twozero.tox"
-HERMES_HOME_DIR="${HERMES_HOME:-$HOME/.hermes}"
-HERMES_CFG="${HERMES_HOME_DIR}/config.yaml"
+DXRK_HOME_DIR="${DXRK_HOME:-${HERMES_HOME:-$HOME/.dxrk}}"
+HERMES_HOME_DIR="${DXRK_HOME_DIR}"  # deprecated alias
+HERMES_CFG="${DXRK_HOME_DIR}/config.yaml"
 MCP_PORT=40404
 MCP_ENDPOINT="http://localhost:${MCP_PORT}/mcp"
 

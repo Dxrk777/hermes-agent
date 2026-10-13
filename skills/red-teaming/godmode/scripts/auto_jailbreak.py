@@ -54,12 +54,13 @@ if _race_path.exists():
     exec(compile(open(_race_path).read(), str(_race_path), 'exec'), _caller_globals)
 
 # ═══════════════════════════════════════════════════════════════════
-# Hermes config paths
+# Dxrk config paths
 # ═══════════════════════════════════════════════════════════════════
 
-HERMES_HOME = Path(os.getenv("DXRK_HOME", os.getenv("HERMES_HOME", Path.home() / ".dxrk")))
-CONFIG_PATH = HERMES_HOME / "config.yaml"
-PREFILL_PATH = HERMES_HOME / "prefill.json"
+DXRK_HOME = Path(os.getenv("DXRK_HOME", os.getenv("HERMES_HOME", Path.home() / ".dxrk")))
+HERMES_HOME = DXRK_HOME  # deprecated alias
+CONFIG_PATH = DXRK_HOME / "config.yaml"
+PREFILL_PATH = DXRK_HOME / "prefill.json"
 
 # ═══════════════════════════════════════════════════════════════════
 # Canary queries — questions that typically trigger safety filters

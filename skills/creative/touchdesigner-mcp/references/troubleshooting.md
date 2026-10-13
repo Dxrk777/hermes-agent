@@ -137,7 +137,7 @@ actual = str(n.width) + 'x' + str(n.height)
 
 ### Config location
 
-`$HERMES_HOME/config.yaml` (defaults to `~/.dxrk/config.yaml` when `HERMES_HOME` is unset)
+`$DXRK_HOME/config.yaml` (defaults to `~/.dxrk/config.yaml` when `DXRK_HOME` is unset, `HERMES_HOME` fallback)
 
 ### MCP entry format
 

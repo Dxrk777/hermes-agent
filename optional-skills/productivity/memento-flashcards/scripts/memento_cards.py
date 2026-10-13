@@ -19,7 +19,7 @@ _DXRK_HOME = Path(
     os.environ.get("DXRK_HOME", os.environ.get("HERMES_HOME", Path.home() / ".dxrk"))
 )
 _HERMES_HOME = _DXRK_HOME  # deprecated alias
-DATA_DIR = _HERMES_HOME / "skills" / "productivity" / "memento-flashcards" / "data"
+DATA_DIR = _DXRK_HOME / "skills" / "productivity" / "memento-flashcards" / "data"
 CARDS_FILE = DATA_DIR / "cards.json"
 
 RETIRED_SENTINEL = "9999-12-31T23:59:59+00:00"

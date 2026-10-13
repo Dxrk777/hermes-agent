@@ -311,7 +311,7 @@ Type these during an interactive chat session.
 ```
 ~/.dxrk/config.yaml       Main configuration
 ~/.dxrk/.env              API keys and secrets
-$HERMES_HOME/skills/        Installed skills
+$DXRK_HOME/skills/        Installed skills
 ~/.dxrk/sessions/         Session transcripts
 ~/.dxrk/logs/             Gateway and error logs
 ~/.dxrk/auth.json         OAuth tokens and credential pools
@@ -737,7 +737,7 @@ python -m pytest tests/ -o 'addopts=' -q   # Full suite
 python -m pytest tests/tools/ -q            # Specific area
 ```
 
-- Tests auto-redirect `HERMES_HOME` to temp dirs — never touch real `~/.dxrk/`
+- Tests auto-redirect `DXRK_HOME` (`HERMES_HOME` fallback) to temp dirs — never touch real `~/.dxrk/`
 - Run full suite before pushing any change
 - Use `-o 'addopts='` to clear any baked-in pytest flags
 
