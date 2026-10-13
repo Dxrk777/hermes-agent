@@ -1,5 +1,5 @@
 """
-Hermes-Agent Atropos Environments
+Dxrk-Agent Atropos Environments
 
 Provides a layered integration between dxrk-agent's tool-calling capabilities
 and the Atropos RL training framework.
@@ -19,9 +19,9 @@ Benchmarks (eval-only):
 """
 
 try:
-    from environments.agent_loop import AgentResult, HermesAgentLoop
+    from environments.agent_loop import AgentResult, DxrkAgentLoop
     from environments.tool_context import ToolContext
-    from environments.dxrk_base_env import HermesAgentBaseEnv, HermesAgentEnvConfig
+    from environments.dxrk_base_env import DxrkAgentBaseEnv, DxrkAgentEnvConfig
 except ImportError:
     # atroposlib not installed — environments are unavailable but
     # submodules like tool_call_parsers can still be imported directly.
@@ -29,8 +29,16 @@ except ImportError:
 
 __all__ = [
     "AgentResult",
-    "HermesAgentLoop",
+    "DxrkAgentLoop",
     "ToolContext",
-    "HermesAgentBaseEnv",
-    "HermesAgentEnvConfig",
+    "DxrkAgentBaseEnv",
+    "DxrkAgentEnvConfig",
 ]
+
+# Deprecated aliases — use Dxrk*.
+try:
+    HermesAgentLoop = DxrkAgentLoop
+    HermesAgentBaseEnv = DxrkAgentBaseEnv
+    HermesAgentEnvConfig = DxrkAgentEnvConfig
+except NameError:
+    pass
