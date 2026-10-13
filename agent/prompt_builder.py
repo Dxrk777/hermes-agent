@@ -141,11 +141,14 @@ DEFAULT_AGENT_IDENTITY = (
     "Be targeted and efficient in your exploration and investigations."
 )
 
-HERMES_AGENT_HELP_GUIDANCE = (
+DXRK_AGENT_HELP_GUIDANCE = (
     "If the user asks about configuring, setting up, or using Dxrk Agent "
     "itself, load the `dxrk-agent` skill with skill_view(name='dxrk-agent') "
     "before answering. Docs: https://dxrk-agent.nousresearch.com/docs"
 )
+
+# Deprecated alias — use DXRK_AGENT_HELP_GUIDANCE.
+HERMES_AGENT_HELP_GUIDANCE = DXRK_AGENT_HELP_GUIDANCE
 
 MEMORY_GUIDANCE = (
     "You have persistent memory across sessions. Save durable facts using the memory "

@@ -100,7 +100,7 @@ from agent.prompt_builder import (
     MEMORY_GUIDANCE,
     SESSION_SEARCH_GUIDANCE,
     SKILLS_GUIDANCE,
-    HERMES_AGENT_HELP_GUIDANCE,
+    DXRK_AGENT_HELP_GUIDANCE,
     build_nous_subscription_prompt,
 )
 from agent.model_metadata import (
@@ -4904,7 +4904,7 @@ class AIAgent:
             prompt_parts = [DEFAULT_AGENT_IDENTITY]
 
         # Pointer to the dxrk-agent skill + docs for user questions about Hermes itself.
-        prompt_parts.append(HERMES_AGENT_HELP_GUIDANCE)
+        prompt_parts.append(DXRK_AGENT_HELP_GUIDANCE)
 
         # Tool-aware behavioral guidance: only inject when the tools are loaded
         tool_guidance = []

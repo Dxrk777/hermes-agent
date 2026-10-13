@@ -486,7 +486,7 @@ def load_cli_config() -> Dict[str, Any]:
                     # choice isn't shadowed by the hardcoded default.  Without this,
                     # profile configs that only set "model:" (not "default:") silently
                     # fall back to claude-opus because the merge preserves the
-                    # hardcoded default and HermesCLI.__init__ checks "default" first.
+                    # hardcoded default and DxrkCLI.__init__ checks "default" first.
                     if (
                         "model" in file_config["model"]
                         and "default" not in file_config["model"]
@@ -1827,21 +1827,21 @@ class ChatConsole:
         ``ChatConsole()``, which historically only implemented ``print()``.
         Returning a silent context manager keeps slash commands compatible
         without duplicating the higher-level busy indicator already shown by
-        ``HermesCLI._busy_command()``.
+        ``DxrkCLI._busy_command()``.
         """
         yield self
 
 
-# ASCII Art - HERMES-AGENT logo (full width, single line - requires ~95 char terminal)
-HERMES_AGENT_LOGO = """[bold #FFD700]██╗  ██╗███████╗██████╗ ███╗   ███╗███████╗███████╗       █████╗  ██████╗ ███████╗███╗   ██╗████████╗[/]
+# ASCII Art - DXRK-AGENT logo (full width, single line - requires ~95 char terminal)
+DXRK_AGENT_LOGO = """[bold #FFD700]██╗  ██╗███████╗██████╗ ███╗   ███╗███████╗███████╗       █████╗  ██████╗ ███████╗███╗   ██╗████████╗[/]
 [bold #FFD700]██║  ██║██╔════╝██╔══██╗████╗ ████║██╔════╝██╔════╝      ██╔══██╗██╔════╝ ██╔════╝████╗  ██║╚══██╔══╝[/]
 [#FFBF00]███████║█████╗  ██████╔╝██╔████╔██║█████╗  ███████╗█████╗███████║██║  ███╗█████╗  ██╔██╗ ██║   ██║[/]
 [#FFBF00]██╔══██║██╔══╝  ██╔══██╗██║╚██╔╝██║██╔══╝  ╚════██║╚════╝██╔══██║██║   ██║██╔══╝  ██║╚██╗██║   ██║[/]
 [#CD7F32]██║  ██║███████╗██║  ██║██║ ╚═╝ ██║███████╗███████║      ██║  ██║╚██████╔╝███████╗██║ ╚████║   ██║[/]
 [#CD7F32]╚═╝  ╚═╝╚══════╝╚═╝  ╚═╝╚═╝     ╚═╝╚══════╝╚══════╝      ╚═╝  ╚═╝ ╚═════╝ ╚══════╝╚═╝  ╚═══╝   ╚═╝[/]"""
 
-# ASCII Art - Hermes Caduceus (compact, fits in left panel)
-HERMES_CADUCEUS = """[#CD7F32]⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣀⡀⠀⣀⣀⠀⢀⣀⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀[/]
+# ASCII Art - Dxrk Caduceus (compact, fits in left panel)
+DXRK_CADUCEUS = """[#CD7F32]⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣀⡀⠀⣀⣀⠀⢀⣀⡀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀[/]
 [#CD7F32]⠀⠀⠀⠀⠀⠀⢀⣠⣴⣾⣿⣿⣇⠸⣿⣿⠇⣸⣿⣿⣷⣦⣄⡀⠀⠀⠀⠀⠀⠀[/]
 [#FFBF00]⠀⢀⣠⣴⣶⠿⠋⣩⡿⣿⡿⠻⣿⡇⢠⡄⢸⣿⠟⢿⣿⢿⣍⠙⠿⣶⣦⣄⡀⠀[/]
 [#FFBF00]⠀⠀⠉⠉⠁⠶⠟⠋⠀⠉⠀⢀⣈⣁⡈⢁⣈⣁⡀⠀⠉⠀⠙⠻⠶⠈⠉⠉⠀⠀[/]
@@ -1856,6 +1856,10 @@ HERMES_CADUCEUS = """[#CD7F32]⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⢀⣀⡀⠀⣀⣀�
 [#B8860B]⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⣿⠁⢰⡆⠈⡿⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀[/]
 [#B8860B]⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠳⠈⣡⠞⠁⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀[/]
 [#B8860B]⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠈⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀⠀[/]"""
+
+# Deprecated aliases — use DXRK_*.
+HERMES_AGENT_LOGO = DXRK_AGENT_LOGO
+HERMES_CADUCEUS = DXRK_CADUCEUS
 
 
 def _build_compact_banner() -> str:
@@ -2037,11 +2041,11 @@ def save_config_value(key_path: str, value: any) -> bool:
 
 
 # ============================================================================
-# HermesCLI Class
+# DxrkCLI Class
 # ============================================================================
 
 
-class HermesCLI:
+class DxrkCLI:
     """
     Interactive CLI for the Dxrk Agent.
 
@@ -2065,7 +2069,7 @@ class HermesCLI:
         ignore_rules: bool = False,
     ):
         """
-        Initialize the Hermes CLI.
+        Initialize the Dxrk CLI.
 
         Args:
             model: Model to use (default: from env or claude-sonnet)
@@ -11709,7 +11713,7 @@ class HermesCLI:
                 term_rows = get_app().output.get_size().rows
             except Exception:
                 term_rows = shutil.get_terminal_size((100, 24)).lines
-            scroll_offset, visible = HermesCLI._compute_model_picker_viewport(
+            scroll_offset, visible = DxrkCLI._compute_model_picker_viewport(
                 selected,
                 state.get("_scroll_offset", 0),
                 len(choices),
@@ -12438,7 +12442,7 @@ def main(
     parsed_skills = _parse_skills_argument(skills)
 
     # Create CLI instance
-    cli = HermesCLI(
+    cli = DxrkCLI(
         model=model,
         toolsets=toolsets_list,
         provider=provider,
@@ -12493,7 +12497,7 @@ def main(
     atexit.register(_run_cleanup)
 
     # Also install signal handlers in single-query / `-q` mode.  Interactive
-    # mode registers its own inside HermesCLI.run(), but `-q` runs
+    # mode registers its own inside DxrkCLI.run(), but `-q` runs
     # cli.agent.run_conversation() below and AIAgent spawns worker threads
     # for tools — so when SIGTERM arrives on the main thread, raising
     # KeyboardInterrupt only unwinds the main thread, not the worker
@@ -12607,3 +12611,7 @@ def main(
 
 if __name__ == "__main__":
     fire.Fire(main)
+
+
+# Deprecated alias — use DxrkCLI.
+HermesCLI = DxrkCLI

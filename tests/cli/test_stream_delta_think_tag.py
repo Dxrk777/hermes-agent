@@ -7,10 +7,10 @@ import pytest
 
 
 def _make_cli_stub():
-    """Create a minimal HermesCLI-like object with stream state."""
-    from cli import HermesCLI
+    """Create a minimal DxrkCLI-like object with stream state."""
+    from cli import DxrkCLI
 
-    cli = HermesCLI.__new__(HermesCLI)
+    cli = DxrkCLI.__new__(DxrkCLI)
     cli.show_reasoning = False
     cli._stream_buf = ""
     cli._stream_started = False

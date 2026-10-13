@@ -28,7 +28,7 @@ from typing import List, Dict, Any, Set, Optional
 
 # Shared tool list for CLI and all messaging platform toolsets.
 # Edit this once to update all platforms simultaneously.
-_HERMES_CORE_TOOLS = [
+_DXRK_CORE_TOOLS = [
     # Web
     "web_search", "web_extract",
     # Terminal + process management
@@ -61,6 +61,9 @@ _HERMES_CORE_TOOLS = [
     # Home Assistant smart home control (gated on HASS_TOKEN via check_fn)
     "ha_list_entities", "ha_get_state", "ha_list_services", "ha_call_service",
 ]
+
+# Deprecated alias — use _DXRK_CORE_TOOLS.
+_HERMES_CORE_TOOLS = _DXRK_CORE_TOOLS
 
 
 # Core toolset definitions
@@ -326,7 +329,7 @@ TOOLSETS = {
     
     "dxrk-cli": {
         "description": "Full interactive CLI toolset - all default tools plus cronjob management",
-        "tools": _HERMES_CORE_TOOLS,
+        "tools": _DXRK_CORE_TOOLS,
         "includes": []
     },
 
@@ -337,19 +340,19 @@ TOOLSETS = {
         # homeassistant, rl) are excluded by _get_platform_tools() unless
         # the user explicitly enables them.
         "description": "Default cron toolset - same core tools as dxrk-cli; gated by `dxrk tools`",
-        "tools": _HERMES_CORE_TOOLS,
+        "tools": _DXRK_CORE_TOOLS,
         "includes": []
     },
 
     "dxrk-telegram": {
         "description": "Telegram bot toolset - full access for personal use (terminal has safety checks)",
-        "tools": _HERMES_CORE_TOOLS,
+        "tools": _DXRK_CORE_TOOLS,
         "includes": []
     },
     
     "dxrk-discord": {
         "description": "Discord bot toolset - full access (terminal has safety checks via dangerous command approval)",
-        "tools": _HERMES_CORE_TOOLS + [
+        "tools": _DXRK_CORE_TOOLS + [
             "discord",
             "discord_admin",
         ],
@@ -358,61 +361,61 @@ TOOLSETS = {
     
     "dxrk-whatsapp": {
         "description": "WhatsApp bot toolset - similar to Telegram (personal messaging, more trusted)",
-        "tools": _HERMES_CORE_TOOLS,
+        "tools": _DXRK_CORE_TOOLS,
         "includes": []
     },
     
     "dxrk-slack": {
         "description": "Slack bot toolset - full access for workspace use (terminal has safety checks)",
-        "tools": _HERMES_CORE_TOOLS,
+        "tools": _DXRK_CORE_TOOLS,
         "includes": []
     },
     
     "dxrk-signal": {
         "description": "Signal bot toolset - encrypted messaging platform (full access)",
-        "tools": _HERMES_CORE_TOOLS,
+        "tools": _DXRK_CORE_TOOLS,
         "includes": []
     },
 
     "dxrk-bluebubbles": {
         "description": "BlueBubbles iMessage bot toolset - Apple iMessage via local BlueBubbles server",
-        "tools": _HERMES_CORE_TOOLS,
+        "tools": _DXRK_CORE_TOOLS,
         "includes": []
     },
 
     "dxrk-homeassistant": {
         "description": "Home Assistant bot toolset - smart home event monitoring and control",
-        "tools": _HERMES_CORE_TOOLS,
+        "tools": _DXRK_CORE_TOOLS,
         "includes": []
     },
 
     "dxrk-email": {
         "description": "Email bot toolset - interact with Hermes via email (IMAP/SMTP)",
-        "tools": _HERMES_CORE_TOOLS,
+        "tools": _DXRK_CORE_TOOLS,
         "includes": []
     },
 
     "dxrk-mattermost": {
         "description": "Mattermost bot toolset - self-hosted team messaging (full access)",
-        "tools": _HERMES_CORE_TOOLS,
+        "tools": _DXRK_CORE_TOOLS,
         "includes": []
     },
 
     "dxrk-matrix": {
         "description": "Matrix bot toolset - decentralized encrypted messaging (full access)",
-        "tools": _HERMES_CORE_TOOLS,
+        "tools": _DXRK_CORE_TOOLS,
         "includes": []
     },
 
     "dxrk-dingtalk": {
         "description": "DingTalk bot toolset - enterprise messaging platform (full access)",
-        "tools": _HERMES_CORE_TOOLS,
+        "tools": _DXRK_CORE_TOOLS,
         "includes": []
     },
 
     "dxrk-feishu": {
         "description": "Feishu/Lark bot toolset - enterprise messaging via Feishu/Lark (full access)",
-        "tools": _HERMES_CORE_TOOLS + [
+        "tools": _DXRK_CORE_TOOLS + [
             "feishu_doc_read",
             "feishu_drive_list_comments",
             "feishu_drive_list_comment_replies",
@@ -424,31 +427,31 @@ TOOLSETS = {
 
     "dxrk-weixin": {
         "description": "Weixin bot toolset - personal WeChat messaging via iLink (full access)",
-        "tools": _HERMES_CORE_TOOLS,
+        "tools": _DXRK_CORE_TOOLS,
         "includes": []
     },
 
     "dxrk-qqbot": {
         "description": "QQBot toolset - QQ messaging via Official Bot API v2 (full access)",
-        "tools": _HERMES_CORE_TOOLS,
+        "tools": _DXRK_CORE_TOOLS,
         "includes": []
     },
 
     "dxrk-wecom": {
         "description": "WeCom bot toolset - enterprise WeChat messaging (full access)",
-        "tools": _HERMES_CORE_TOOLS,
+        "tools": _DXRK_CORE_TOOLS,
         "includes": []
     },
 
     "dxrk-wecom-callback": {
         "description": "WeCom callback toolset - enterprise self-built app messaging (full access)",
-        "tools": _HERMES_CORE_TOOLS,
+        "tools": _DXRK_CORE_TOOLS,
         "includes": []
     },
 
     "dxrk-yuanbao": {
         "description": "Yuanbao Bot 元宝消息平台工具集 - 群信息、成员查询、私聊、贴纸表情",
-        "tools": _HERMES_CORE_TOOLS + [
+        "tools": _DXRK_CORE_TOOLS + [
             "yb_query_group_info",
             "yb_query_group_members",
             "yb_send_dm",
@@ -461,13 +464,13 @@ TOOLSETS = {
 
     "dxrk-sms": {
         "description": "SMS bot toolset - interact with Hermes via SMS (Twilio)",
-        "tools": _HERMES_CORE_TOOLS,
+        "tools": _DXRK_CORE_TOOLS,
         "includes": []
     },
 
     "dxrk-webhook": {
         "description": "Webhook toolset - receive and process external webhook events",
-        "tools": _HERMES_CORE_TOOLS,
+        "tools": _DXRK_CORE_TOOLS,
         "includes": []
     },
 

@@ -1,4 +1,4 @@
-"""Persistent slash-command worker — one HermesCLI per TUI session.
+"""Persistent slash-command worker — one DxrkCLI per TUI session.
 
 Protocol: reads JSON lines from stdin {id, command}, writes {id, ok, output|error} to stdout.
 """
@@ -12,11 +12,11 @@ from dxrk_constants import dxrk_setenv
 import sys
 
 import cli as cli_mod
-from cli import HermesCLI
+from cli import DxrkCLI
 from rich.console import Console
 
 
-def _run(cli: HermesCLI, command: str) -> str:
+def _run(cli: DxrkCLI, command: str) -> str:
     cmd = (command or "").strip()
     if not cmd:
         return ""
@@ -54,7 +54,7 @@ def main():
     dxrk_setenv("DXRK_INTERACTIVE", "1")
 
     with contextlib.redirect_stdout(io.StringIO()), contextlib.redirect_stderr(io.StringIO()):
-        cli = HermesCLI(model=args.model or None, compact=True, resume=args.session_key, verbose=False)
+        cli = DxrkCLI(model=args.model or None, compact=True, resume=args.session_key, verbose=False)
 
     for raw in sys.stdin:
         line = raw.strip()
