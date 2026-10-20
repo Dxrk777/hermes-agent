@@ -807,14 +807,14 @@ _QWEN_CODE_VERSION = "0.14.1"
 def _routermint_headers() -> dict:
     """Return the User-Agent RouterMint needs to avoid Cloudflare 1010 blocks.
 
-    NOTE: the ``HermesAgent/`` UA prefix and ``_HERMES_VERSION`` name are
+    NOTE: the ``DxrkAgent/`` UA prefix and ``_HERMES_VERSION`` name are
     intentionally NOT renamed — RouterMint's Cloudflare rules allowlist this
     exact UA, and provider attribution tests pin it.  External wire boundary.
     """
     from dxrk_cli import __version__ as _HERMES_VERSION
 
     return {
-        "User-Agent": f"HermesAgent/{_HERMES_VERSION}",
+        "User-Agent": f"DxrkAgent/{_HERMES_VERSION}",
     }
 
 
